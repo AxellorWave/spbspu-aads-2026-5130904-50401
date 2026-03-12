@@ -192,6 +192,175 @@ namespace zharov {
   {
     return curr_ != it.curr_;
   }
+
+  template< class T >
+  List< T >::List():
+    head_(nullptr),
+    tail_(nullptr),
+    size_(0)
+  {}
+
+  template< class T >
+  List< T >::List(const List< T > & h):
+    List()
+  {
+    for (Node< T > * curr = h.head_; curr != nullptr; curr = curr->next_) {
+      pushBack(curr->val_);
+    }
+  }
+
+  template< class T >
+  List< T >::List(List< T > && h) noexcept:
+    head_(h.head_),
+    tail_(h.tail_),
+    size_(h.size_)
+  {
+    h.head_ = nullptr;
+    h.tail_ = nullptr;
+    h.size_ = 0;
+  }
+
+  template< class T >
+  List< T >::~List()
+  {
+    clear();
+  }
+
+  template< class T >
+  List< T > & List< T >::operator=(const List< T > & h)
+  {
+    if (this != std::addressof(h)) {
+      List< T > temp(h);
+      std::swap(temp.head_, head_);
+      std::swap(temp.tail_, tail_);
+      std::swap(temp.size_, size_);
+    }
+    return *this;
+  }
+
+  template< class T >
+  List< T > & List< T >::operator=(List< T > && h) noexcept
+  {
+    if (this != std::addressof(h)) {
+      clear();
+      head_ = h.head_;
+      tail_ = h.tail_;
+      size_ = h.size_;
+      h.head_ = nullptr;
+      h.tail_ = nullptr;
+      h.size_ = 0;
+    }
+    return *this;
+  }
+
+  template< class T >
+  LIter< T > List< T >::begin()
+  {
+    return LIter< T >(head_);
+  }
+
+  template< class T >
+  LIter< T > List< T >::end()
+  {
+    return LIter< T >(nullptr);
+  }
+
+  template< class T >
+  LCIter< T > List< T >::constBegin()
+  {
+    return LCIter< T >(head_);
+  }
+
+  template< class T >
+  LCIter< T > List< T >::constEnd()
+  {
+    return LCIter< T >(nullptr);
+  }
+
+  template< class T >
+  T & List< T >::front()
+  {
+    return head_->val_;
+  }
+
+  template< class T >
+  const T & List< T >::front() const
+  {
+    return head_->val_;
+  }
+
+  template< class T >
+  T & List< T >::back()
+  {
+    return tail_->val_;
+  }
+
+  template< class T >
+  const T & List< T >::back() const
+  {
+    return tail_->val_;
+  }
+
+  template< class T >
+  void List< T >::pushFront(const T & v)
+  {
+    Node< T > * new_node = new Node< T > {v, nullptr, nullptr};
+    new_node->next_ = head_;
+    if (head_) {
+      head_->prev_ = new_node;
+    } else {
+      tail_ = new_node;
+    }
+    head_ = new_node;
+    ++size_;
+  }
+
+  template< class T >
+  void List< T >::pushBack(const T & v)
+  {
+    Node< T > * new_node = new Node< T > {v, nullptr, nullptr};
+    new_node->prev_ = tail_;
+    if (tail_) {
+      tail_->next_ = new_node;
+    } else {
+      head_ = new_node;
+    }
+    tail_ = new_node;
+    ++size_;
+  }
+
+  template< class T >
+  LIter< T > List< T >::insert(LIter< T > pos, const T & v)
+  {
+    if (!pos->curr_) {
+      pushBack(v);
+      return LIter< T >(tail_);
+    } else if (pos_->curr == head_) {
+      pushFront(v);
+      return LIter< T >(head_);
+    }
+
+  }
+
+  template< class T >
+  void List< T >::popFront()
+  {}
+
+  template< class T >
+  void List< T >::popBack()
+  {}
+
+  template< class T >
+  LIter< T > List< T >::erase(LIter< T > pos)
+  {}
+
+  template< class T >
+  void List< T >::clear()
+  {}
+
+  template< class T >
+  size_t List< T >::size()
+  {}
 }
 
 #endif
