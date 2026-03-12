@@ -353,23 +353,78 @@ namespace zharov {
   template< class T >
   void List< T >::popFront()
   {
+    if (head_) {
+      return;
+    }
+    Node< T > * next = head_->next_;
+    if (next) {
+      next->prev_ = nullptr;
+    } else {
+      tail_ = nullptr;
+    }
+    delete head_;
+    head_ = next;
+    --size_;
   }
 
   template< class T >
   void List< T >::popBack()
-  {}
+  {
+    if (tail_) {
+      return;
+    }
+    Node< T > * prev = tail_-> prev_;
+    if (prev) {
+      prev->next = nullptr;
+    } else {
+      head_ = nullptr;
+    }
+    delete[] tail_;
+    tail_ = prev;
+    --size;
+  }
 
   template< class T >
   LIter< T > List< T >::erase(LIter< T > pos)
-  {}
+  {
+    if (!pos->curr_) {
+      return end();
+    }
+    Node< T > * next = pos->curr_->next_;
+    Node< T > * prev = pos->curr_->prev_;
+    if (next) {
+      next->prev = prev;
+    } else {
+      tail_ = prev;
+    }
+    if (prev) {
+      prev->next = next;
+    } else {
+      head_ = next;
+    }
+    delete pos->curr_;
+    --size_;
+    return LIter< T >(next);
+  }
 
   template< class T >
   void List< T >::clear()
-  {}
+  {
+    while (head_) {
+      Node< T > * next = head_->next;
+      delete head_;
+      head_ = next;
+      --size_
+    }
+    tail_ = nullptr;
+  }
 
   template< class T >
   size_t List< T >::size()
-  {}
+  {
+    return size_;
+  }
 }
 
 #endif
+
