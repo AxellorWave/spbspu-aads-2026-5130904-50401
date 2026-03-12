@@ -1,6 +1,8 @@
 #ifndef LIST_HPP
 #define LIST_HPP
-
+#include <cstddef>
+#include <utility>
+#include <memory>
 namespace zharov {
 
   template< class T >
@@ -59,8 +61,8 @@ namespace zharov {
     List & operator=(List && h) noexcept;
     LIter< T > begin();
     LIter< T > end();
-    LCIter< T > constBegin();
-    LCIter< T > constEnd();
+    LCIter< T > constBegin() const;
+    LCIter< T > constEnd() const;
     T & front();
     const T & front() const;
     T & back();
@@ -72,7 +74,7 @@ namespace zharov {
     void popBack();
     LIter< T > erase(LIter< T > pos);
     void clear();
-    size_t size();
+    size_t size() const;
   };
 
   template< class T >
@@ -266,13 +268,13 @@ namespace zharov {
   }
 
   template< class T >
-  LCIter< T > List< T >::constBegin()
+  LCIter< T > List< T >::constBegin() const
   {
     return LCIter< T >(head_);
   }
 
   template< class T >
-  LCIter< T > List< T >::constEnd()
+  LCIter< T > List< T >::constEnd() const
   {
     return LCIter< T >(nullptr);
   }
@@ -332,10 +334,10 @@ namespace zharov {
   template< class T >
   LIter< T > List< T >::insert(LIter< T > pos, const T & v)
   {
-    if (!pos->curr_) {
+    if (!pos.curr_) {
       pushBack(v);
       return LIter< T >(tail_);
-    } else if (pos_->curr == head_) {
+    } else if (pos_.curr_ == head_) {
       pushFront(v);
       return LIter< T >(head_);
     }
@@ -353,7 +355,7 @@ namespace zharov {
   template< class T >
   void List< T >::popFront()
   {
-    if (head_) {
+    if (!head_) {
       return;
     }
     Node< T > * next = head_->next_;
@@ -370,39 +372,39 @@ namespace zharov {
   template< class T >
   void List< T >::popBack()
   {
-    if (tail_) {
+    if (!tail_) {
       return;
     }
-    Node< T > * prev = tail_-> prev_;
+    Node< T > * prev = tail_->prev_;
     if (prev) {
-      prev->next = nullptr;
+      prev->next_ = nullptr;
     } else {
       head_ = nullptr;
     }
-    delete[] tail_;
+    delete tail_;
     tail_ = prev;
-    --size;
+    --size_;
   }
 
   template< class T >
   LIter< T > List< T >::erase(LIter< T > pos)
   {
-    if (!pos->curr_) {
+    if (!pos.curr_) {
       return end();
     }
-    Node< T > * next = pos->curr_->next_;
-    Node< T > * prev = pos->curr_->prev_;
+    Node< T > * next = pos.curr_->next_;
+    Node< T > * prev = pos.curr_->prev_;
     if (next) {
-      next->prev = prev;
+      next->prev_ = prev;
     } else {
       tail_ = prev;
     }
     if (prev) {
-      prev->next = next;
+      prev->next_ = next;
     } else {
       head_ = next;
     }
-    delete pos->curr_;
+    delete pos.curr_;
     --size_;
     return LIter< T >(next);
   }
@@ -411,20 +413,19 @@ namespace zharov {
   void List< T >::clear()
   {
     while (head_) {
-      Node< T > * next = head_->next;
+      Node< T > * next = head_->next_;
       delete head_;
       head_ = next;
-      --size_
+      --size_;
     }
     tail_ = nullptr;
   }
 
   template< class T >
-  size_t List< T >::size()
+  size_t List< T >::size() const
   {
     return size_;
   }
 }
 
 #endif
-
