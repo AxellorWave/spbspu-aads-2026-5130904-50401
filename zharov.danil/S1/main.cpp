@@ -5,18 +5,18 @@
 
 namespace zharov {
   std::istream & getData(std::istream & in,
-    List< std::pair< std::string, List< int > > > & data);
-  std::ostream & printNums(std::ostream & out, List< List< int> > nums);
+    List< std::pair< std::string, List< size_t > > > & data);
+  std::ostream & printNums(std::ostream & out, List< List< size_t> > nums);
   std::ostream & printNames(std::ostream & out, List< std::pair< std::string,
-    List< int > > > data);
-  List< List< int> > transposeNums(List< std::pair< std::string, List< int > > > data);
-  size_t getSize(List< std::pair< std::string, List< int > > > data);
-  std::ostream & printSums(std::ostream & out, List< List < int > > nums);
+    List< size_t > > > data);
+  List< List< size_t> > transposeNums(List< std::pair< std::string, List< size_t > > > data);
+  size_t getSize(List< std::pair< std::string, List< size_t > > > data);
+  std::ostream & printSums(std::ostream & out, List< List < size_t > > nums);
 }
 
 int main()
 {
-  zharov::List< std::pair< std::string, zharov::List< int > > > data;
+  zharov::List< std::pair< std::string, zharov::List< size_t > > > data;
   zharov::getData(std::cin, data);
   if (data.constBegin() == data.constEnd()) {
     std::cout << "0\n";
@@ -38,12 +38,12 @@ int main()
 }
 
 std::istream & zharov::getData(std::istream & in,
-  List< std::pair< std::string, List< int > > > & data)
+  List< std::pair< std::string, List< size_t > > > & data)
 {
   std::string name;
   while (in >> name) {
-    int num;
-    List< int > nums;
+    size_t num;
+    List< size_t > nums;
     while (in >> num) {
       nums.pushBack(num);
     }
@@ -53,11 +53,16 @@ std::istream & zharov::getData(std::istream & in,
   return in;
 }
 
-std::ostream & zharov::printNums(std::ostream & out, List< List< int> > nums)
+std::ostream & zharov::printNums(std::ostream & out, List< List< size_t > > nums)
 {
+  bool first = true;
   for (auto it = nums.constBegin(); it != nums.constEnd(); ++it) {
     for (auto inner_it = it->constBegin(); inner_it != it->constEnd(); ++inner_it) {
-      out << *inner_it << ' ';
+      if (!first) {
+        std::cout << ' ';
+      }
+      out << *inner_it;
+      first = false;
     }
     out << "\n";
   }
@@ -65,16 +70,21 @@ std::ostream & zharov::printNums(std::ostream & out, List< List< int> > nums)
 }
 
 std::ostream & zharov::printNames(std::ostream & out, List< std::pair< std::string,
-  List< int > > > data)
+  List< size_t > > > data)
 {
+  bool first = true;
   for (auto it = data.constBegin(); it != data.constEnd(); ++it) {
-    out << it->first << " ";
+    if (!first) {
+      std::cout << ' ';
+    }
+    out << it->first;
+    first = false;
   }
   out << "\n";
   return out;
 }
 
-size_t zharov::getSize(List< std::pair< std::string, List< int > > > data)
+size_t zharov::getSize(List< std::pair< std::string, List< size_t > > > data)
 {
   size_t res = 0;
   for (auto it = data.constBegin(); it != data.constEnd(); ++it) {
@@ -83,12 +93,12 @@ size_t zharov::getSize(List< std::pair< std::string, List< int > > > data)
   return res;
 }
 
-zharov::List< zharov::List< int> > zharov::transposeNums(
-  List< std::pair< std::string, List< int > > > data)
+zharov::List< zharov::List< size_t> > zharov::transposeNums(
+  List< std::pair< std::string, List< size_t > > > data)
 {
-  List< List < int > > res;
+  List< List < size_t > > res;
   for (size_t i = 0; i < getSize(data); ++i) {
-    List< int > inner;
+    List< size_t > inner;
     for (auto it = data.constBegin(); it != data.constEnd(); ++it) {
       auto num_it = it->second.constBegin();
       if (it->second.size() > i) {
@@ -103,18 +113,23 @@ zharov::List< zharov::List< int> > zharov::transposeNums(
   return res;
 }
 
-std::ostream & zharov::printSums(std::ostream & out, List< List < int > > nums)
+std::ostream & zharov::printSums(std::ostream & out, List< List < size_t > > nums)
 {
-  constexpr int MAX = std::numeric_limits< int >::max();
+  constexpr size_t MAX = std::numeric_limits< size_t >::max();
+  bool first = true;
   for (auto it = nums.constBegin(); it != nums.constEnd(); ++it) {
-    int sum = 0;
+    size_t sum = 0;
     for (auto inner_it = it->constBegin(); inner_it != it->constEnd(); ++inner_it) {
       if (MAX - *inner_it < sum) {
         throw std::overflow_error("Overflow");
       }
       sum += *inner_it;
     }
-    out << sum << ' ';
+    if (!first) {
+      out << ' ';
+    }
+    out << sum;
+    first = false;
   }
   out << "\n";
   return out;
