@@ -26,7 +26,7 @@ int main()
   zharov::printNames(std::cout, data);
   if (zharov::getSize(data) == 0) {
     std::cout << "0\n";
-    return 1;
+    return 0;
   }
   auto transpose_nums = zharov::transposeNums(data);
   zharov::printNums(std::cout, transpose_nums);
@@ -141,6 +141,7 @@ std::ostream & zharov::printSums(std::ostream & out, List< size_t > sums)
       out << ' ';
     }
     out << *it;
+    first = false;
   }
   out << '\n';
   return out;
