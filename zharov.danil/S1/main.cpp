@@ -2,30 +2,45 @@
 #include "list.hpp"
 #include <string>
 
+namespace zharov {
+  std::istream & getData(std::istream & in,
+    List< std::pair< std::string, List< int > > > & data);
+  std::ostream & printList(std::ostream & out, List< std::pair< std::string,
+    List< int > > > data);
+}
+
 int main()
 {
   zharov::List< std::pair< std::string, zharov::List< int > > > data;
+  zharov::getData(std::cin, data);
+  zharov::printList(std::cout, data);
+}
+
+std::istream & zharov::getData(std::istream & in,
+  List< std::pair< std::string, List< int > > > & data)
+{
   std::string name;
-  while (std::cin >> name) {
+  while (in >> name) {
     int num;
-    zharov::List< int > nums;
-    while (std::cin >> num) {
+    List< int > nums;
+    while (in >> num) {
       nums.pushBack(num);
     }
     data.pushBack(make_pair(name, nums));
-    std::cin.clear();
+    in.clear();
   }
+  return in;
+}
 
-  std::cout << data.size() << '\n';
-  auto it = data.constBegin();
-  for (size_t i = 0; i < data.size(); ++i) {
-    std::cout << it->first << " ";
-    auto num_it = it->second.constBegin();
-    while (num_it != it->second.constEnd()) {
-      std::cout << *num_it << " ";
-      ++num_it;
+std::ostream & zharov::printList(std::ostream & out, List< std::pair< std::string,
+  List< int > > > data)
+{
+  for (auto it = data.constBegin(); it != data.constEnd(); ++it) {
+    out << it->first << " ";
+    for (auto num_it = it->second.constBegin(); num_it != it->second.constEnd(); ++num_it) {
+      out << *num_it << " ";
     }
-    ++it;
-    std::cout << "\n";
+    out << "\n";
   }
+  return out;
 }
