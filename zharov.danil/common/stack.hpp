@@ -62,13 +62,13 @@ zharov::Stack< T > & zharov::Stack< T >::operator=(Stack && s) noexcept
 template< class T >
 T & zharov::Stack< T >::top()
 {
-  return list_.back;
+  return list_.back();
 }
 
 template< class T >
 const T & zharov::Stack< T >::top() const
 {
-  return list_.back;
+  return list_.back();
 }
 
 template< class T >
@@ -98,7 +98,9 @@ void zharov::Stack< T >::push(T rhs)
 template< class T >
 T zharov::Stack< T >::drop()
 {
+  T tp = top();
   list_.popBack();
+  return tp;
 }
 
 template< class T >
