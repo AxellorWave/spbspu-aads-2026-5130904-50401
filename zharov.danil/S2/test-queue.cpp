@@ -1,13 +1,13 @@
 #include <boost/test/unit_test.hpp>
 #include <queue.hpp>
 
-BOOST_AUTO_TEST_CASE(DefaultQueueConstructorTest)
+BOOST_AUTO_TEST_CASE(QueueDefaultConstructorTest)
 {
   zharov::Queue< int > queue;
   BOOST_CHECK_EQUAL(queue.size(), 0);
 }
 
-BOOST_AUTO_TEST_CASE(CopyQueueConstructorTest)
+BOOST_AUTO_TEST_CASE(QueueCopyConstructorTest)
 {
   zharov::Queue< int > queue1;
   queue1.push(1);
@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(CopyQueueConstructorTest)
   BOOST_CHECK_EQUAL(queue2.back(), 3);
 }
 
-BOOST_AUTO_TEST_CASE(MoveQueueConstructorTest)
+BOOST_AUTO_TEST_CASE(QueueMoveConstructorTest)
 {
   zharov::Queue< int > queue1;
   queue1.push(1);
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(MoveQueueConstructorTest)
   BOOST_CHECK_EQUAL(queue1.size(), 0);
 }
 
-BOOST_AUTO_TEST_CASE(DestructorTest)
+BOOST_AUTO_TEST_CASE(QueueDestructorTest)
 {
   zharov::Queue< int > queue;
   for (size_t i = 0; i < 10; ++i) {
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(DestructorTest)
   BOOST_CHECK_EQUAL(queue.size(), 10);
 }
 
-BOOST_AUTO_TEST_CASE(CopyOperatorTest)
+BOOST_AUTO_TEST_CASE(QueueCopyOperatorTest)
 {
   zharov::Queue< int > queue1;
   queue1.push(1);
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(CopyOperatorTest)
   BOOST_CHECK_EQUAL(queue2.back(), 3);
 }
 
-BOOST_AUTO_TEST_CASE(MoveOperatorTest)
+BOOST_AUTO_TEST_CASE(QueueMoveOperatorTest)
 {
   zharov::Queue< int > queue1;
   queue1.push(1);
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(MoveOperatorTest)
   BOOST_CHECK_EQUAL(queue1.size(), 0);
 }
 
-BOOST_AUTO_TEST_CASE(FrontTest)
+BOOST_AUTO_TEST_CASE(QueueFrontTest)
 {
   zharov::Queue< int > queue;
   queue.push(1);
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(FrontTest)
   BOOST_CHECK_EQUAL(queue2.front(), 1);
 }
 
-BOOST_AUTO_TEST_CASE(BackTest)
+BOOST_AUTO_TEST_CASE(QueueBackTest)
 {
   zharov::Queue< int > queue;
   queue.push(1);
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(BackTest)
   BOOST_CHECK_EQUAL(queue2.back(), 3);
 }
 
-BOOST_AUTO_TEST_CASE(pushTest)
+BOOST_AUTO_TEST_CASE(QueuepushTest)
 {
   zharov::Queue< int > queue;
   queue.push(1);
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE(pushTest)
   BOOST_CHECK_EQUAL(queue.front(), 1);
 }
 
-BOOST_AUTO_TEST_CASE(DropTest)
+BOOST_AUTO_TEST_CASE(QueueDropTest)
 {
   zharov::Queue< int > queue;
   queue.push(1);
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(DropTest)
   BOOST_CHECK_EQUAL(queue.size(), 2);
 }
 
-BOOST_AUTO_TEST_CASE(ClearTest)
+BOOST_AUTO_TEST_CASE(QueueClearTest)
 {
   zharov::Queue< int > queue;
   queue.push(1);
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(ClearTest)
   BOOST_CHECK_EQUAL(queue.size(), 0);
 }
 
-BOOST_AUTO_TEST_CASE(SizeTest)
+BOOST_AUTO_TEST_CASE(QueueSizeTest)
 {
   zharov::Queue< int > queue;
   queue.push(1);
@@ -139,13 +139,13 @@ BOOST_AUTO_TEST_CASE(SizeTest)
   BOOST_CHECK_EQUAL(queue.size(), 3);
 }
 
-BOOST_AUTO_TEST_CASE(EmptyTest)
+BOOST_AUTO_TEST_CASE(QueueEmptyTest)
 {
   zharov::Queue< int > queue;
   BOOST_CHECK(queue.empty());
 }
 
-BOOST_AUTO_TEST_CASE(SwapTest)
+BOOST_AUTO_TEST_CASE(QueueSwapTest)
 {
   zharov::Queue< int > queue1;
   queue1.push(10);
