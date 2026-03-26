@@ -53,10 +53,14 @@ zharov::Queue< std::string > zharov::getPostfix(Queue< std::string > & infix)
     } else if (curr == "(") {
       stack.push(infix.drop());
     } else if (curr == ")") {
-      while (stack.empty() && stack.top() != "(") {
+      while (!stack.empty() && stack.top() != ")") {
         res.push(stack.drop());
       }
-      stack.drop();
+      if (!stack.empty()) {
+        stack.drop();
+      } else {
+        throw std::logic_error("Bad sign (");
+      }
     } else {
       while (!stack.empty() && stack.top() != "(") {
         if (getPriority(curr) > getPriority(stack.top())) {
@@ -65,7 +69,54 @@ zharov::Queue< std::string > zharov::getPostfix(Queue< std::string > & infix)
           break;
         }
       }
+      stack.push(curr);
+    }
+  }
+  while (!stack.empty()) {
+    if (stack.top() != "(") {
+      res.push(stack.drop());
+    } else {
+      throw std::logic_error("Bad sign (");
     }
   }
   return res;
+}
+
+zharov::ll_t zharov::getResult(Queue< std::string > & postfix)
+{
+  ll_t res;
+  Stack< ll_t > temp;
+  while (!postfix.empty()) {
+    std::string curr = postfix.drop();
+    if (!isOperand(curr)) {
+      if (temp.size() < 2) {
+        throw std::logic_error("Not enough operands for operator: " + curr);
+      }
+      else {
+        ll_t a = temp.drop();
+        ll_t b = temp.drop();
+        if (curr == "+") {
+          temp.push(add(a, b));
+        } else if (curr == "-") {
+          temp.push(sub(a, b));
+        } else if (curr == "*") {
+          temp.push(mul(a, b));
+        } else if (curr == "/") {
+          temp.push(div(a, b));
+        } else if (curr == "%") {
+          temp.push(mod(a, b));
+        } else if (curr == "<<") {
+          temp.push(bitShiftLeft(a, b));
+        } else {
+          throw std::logic_error("Unknown operator" + curr);
+        }
+      }
+    } else {
+      temp.push(std::stoll(curr));
+    }
+  }
+  if (temp.size() != 1) {
+    throw std::logic_error("Not enough operators");
+  }
+  return temp.drop();
 }
