@@ -124,6 +124,9 @@ std::istream & zharov::getResults(std::istream & in, Stack< ll_t > & results)
 {
   std::string line;
   while (!std::getline(in, line).eof()) {
+    if (line == "") {
+      continue;
+    }
     zharov::Queue< std::string> queue = zharov::getQueue(line);
     queue = zharov::getPostfix(queue);
     ll_t result = zharov::calculate(queue);

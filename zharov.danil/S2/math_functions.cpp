@@ -54,10 +54,11 @@ ll_t zharov::mod(const ll_t & a, const ll_t & b)
   if (b == 0) {
     throw std::logic_error("Mod by zero");
   }
-  if (a == MIN && b == -1) {
-    throw std::overflow_error("Overflow in mod");
+  ll_t result = a % b;
+  if (result < 0) {
+    result += (b > 0) ? b : -b;
   }
-  return a % b;
+  return result;
 }
 
 ll_t zharov::bitShiftLeft(const ll_t & a, const ll_t & b)
