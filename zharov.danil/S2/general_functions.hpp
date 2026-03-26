@@ -1,5 +1,5 @@
 #ifndef GENERAL_FUNCTIONS_HPP
-#define GENERAL_FUNCTIOINS_HPP
+#define GENERAL_FUNCTIONS_HPP
 #include <iostream>
 #include <stack.hpp>
 #include <queue.hpp>
