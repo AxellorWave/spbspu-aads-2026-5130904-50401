@@ -16,8 +16,8 @@ BOOST_AUTO_TEST_CASE(ShiftNegativeNumberTest)
 {
   BOOST_CHECK_THROW(zharov::bitShiftLeft(-1, 1), std::overflow_error);
   BOOST_CHECK_THROW(zharov::bitShiftLeft(-5, 2), std::overflow_error);
-  BOOST_CHECK_THROW(zharov::bitShiftLeft(std::numeric_limits< ll_t >::min(), 1),
-    std::overflow_error);
+  BOOST_CHECK_THROW(
+    zharov::bitShiftLeft(std::numeric_limits< ll_t >::min(), 1), std::overflow_error);
 }
 
 BOOST_AUTO_TEST_CASE(ShiftNegativeShiftAmountTest)

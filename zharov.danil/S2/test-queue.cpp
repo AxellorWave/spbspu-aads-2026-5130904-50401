@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_CASE(QueueCopyConstructorTest)
   queue1.push(3);
   BOOST_CHECK_EQUAL(queue1.front(), 1);
   BOOST_CHECK_EQUAL(queue1.back(), 3);
-  zharov::Queue< int > queue2 = zharov::Queue<int>(queue1);
+  zharov::Queue< int > queue2 = zharov::Queue< int >(queue1);
   BOOST_CHECK_EQUAL(queue2.front(), 1);
   BOOST_CHECK_EQUAL(queue2.back(), 3);
 }
@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(QueueMoveConstructorTest)
   queue1.push(3);
   BOOST_CHECK_EQUAL(queue1.front(), 1);
   BOOST_CHECK_EQUAL(queue1.back(), 3);
-  zharov::Queue< int > queue2 = zharov::Queue<int>(std::move(queue1));
+  zharov::Queue< int > queue2 = zharov::Queue< int >(std::move(queue1));
   BOOST_CHECK_EQUAL(queue2.front(), 1);
   BOOST_CHECK_EQUAL(queue2.back(), 3);
   BOOST_CHECK_EQUAL(queue1.size(), 0);
@@ -37,7 +37,8 @@ BOOST_AUTO_TEST_CASE(QueueMoveConstructorTest)
 BOOST_AUTO_TEST_CASE(QueueDestructorTest)
 {
   zharov::Queue< int > queue;
-  for (size_t i = 0; i < 10; ++i) {
+  for (size_t i = 0; i < 10; ++i)
+  {
     queue.push(i);
   }
   BOOST_CHECK_EQUAL(queue.size(), 10);

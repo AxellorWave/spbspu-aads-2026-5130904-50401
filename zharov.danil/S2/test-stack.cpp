@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_CASE(CopyStackConstructorTest)
   stack1.push(2);
   stack1.push(3);
   BOOST_CHECK_EQUAL(stack1.top(), 3);
-  zharov::Stack< int > stack2 = zharov::Stack<int>(stack1);
+  zharov::Stack< int > stack2 = zharov::Stack< int >(stack1);
   BOOST_CHECK_EQUAL(stack2.top(), 3);
 }
 
@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE(MoveStackConstructorTest)
   stack1.push(2);
   stack1.push(3);
   BOOST_CHECK_EQUAL(stack1.top(), 3);
-  zharov::Stack< int > stack2 = zharov::Stack<int>(std::move(stack1));
+  zharov::Stack< int > stack2 = zharov::Stack< int >(std::move(stack1));
   BOOST_CHECK_EQUAL(stack2.top(), 3);
   BOOST_CHECK_EQUAL(stack1.size(), 0);
 }
@@ -33,7 +33,8 @@ BOOST_AUTO_TEST_CASE(MoveStackConstructorTest)
 BOOST_AUTO_TEST_CASE(StackDestructorTest)
 {
   zharov::Stack< int > stack;
-  for (size_t i = 0; i < 10; ++i) {
+  for (size_t i = 0; i < 10; ++i)
+  {
     stack.push(i);
   }
   BOOST_CHECK_EQUAL(stack.size(), 10);
