@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(CopyListConstructorTest)
   list1.pushBack(3);
   BOOST_CHECK_EQUAL(list1.front(), 1);
   BOOST_CHECK_EQUAL(list1.back(), 3);
-  zharov::List< int > list2 = zharov::List<int>(list1);
+  zharov::List< int > list2 = zharov::List< int >(list1);
   zharov::LIter< int > it = list2.begin();
   BOOST_CHECK_EQUAL(*it, 1);
   ++it;
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(MoveListConstructorTest)
   list1.pushBack(3);
   BOOST_CHECK_EQUAL(list1.front(), 1);
   BOOST_CHECK_EQUAL(list1.back(), 3);
-  zharov::List< int > list2 = zharov::List<int>(std::move(list1));
+  zharov::List< int > list2 = zharov::List< int >(std::move(list1));
   zharov::LIter< int > it = list2.begin();
   BOOST_CHECK_EQUAL(*it, 1);
   ++it;
@@ -43,7 +43,8 @@ BOOST_AUTO_TEST_CASE(MoveListConstructorTest)
 BOOST_AUTO_TEST_CASE(DestructorTest)
 {
   zharov::List< int > list;
-  for (size_t i = 0; i < 10; ++i) {
+  for (size_t i = 0; i < 10; ++i)
+  {
     list.pushBack(i);
   }
   BOOST_CHECK_EQUAL(list.size(), 10);
