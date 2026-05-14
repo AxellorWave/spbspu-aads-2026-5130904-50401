@@ -223,4 +223,32 @@ void zharov::HashTable< Key, Value, Hash, Equal >::add(Key k, Value v)
   ++size_;
 }
 
+template < class Key, class Value, class Hash, class Equal >
+Value& zharov::HashTable< Key, Value, Hash, Equal >::at(Key k)
+{
+  const HashTable* const_table = this;
+  return const_cast< Value& >((*const_table).at(k));
+}
+
+template < class Key, class Value, class Hash, class Equal >
+const Value& zharov::HashTable< Key, Value, Hash, Equal >::at(Key k) const
+{
+  size_t hash = hasher_(k);
+  size_t i = 0;
+  size_t pos = 0;
+  for (; i < capacity_; ++i)
+  {
+    pos = (hash + (i + i * i) / 2) % capacity_;
+    if (states_[pos] == State::OCCUPIED && comparator_(slots_[pos].key, k))
+    {
+      return slots_[pos].value;
+    }
+    else if (states_[pos] == State::EMPTY)
+    {
+      break;
+    }
+  }
+  throw std::logic_error("Key not found");
+}
+
 #endif
