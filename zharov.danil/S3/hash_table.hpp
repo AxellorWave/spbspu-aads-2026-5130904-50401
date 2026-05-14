@@ -79,8 +79,30 @@ zharov::HashTable< Key, Value, Hash, Equal >::HashTable(size_t capacity):
 }
 
 template < class Key, class Value, class Hash, class Equal >
+zharov::HashTable< Key, Value, Hash, Equal >::HashTable(const HashTable& table):
+  HashTable(table.capacity_)
+{
+  for (size_t i = 0; i < capacity_; ++i)
+  {
+    if (table.states_[i] == State::OCCUPIED)
+    {
+      new (slots_ + i) Slot< Key, Value >(table.slots_[i].first, table.slots_[i].second);
+      ++size_;
+    }
+    states_[i] = table.states_[i];
+  }
+}
+
+template < class Key, class Value, class Hash, class Equal >
 zharov::HashTable< Key, Value, Hash, Equal >::~HashTable()
 {
+  for (size_t i = 0; i < capacity_; ++i)
+  {
+    if (states_[i] == State::OCCUPIED)
+    {
+      (slots_ + i)->~Slot();
+    }
+  }
   delete[] states_;
   ::operator delete(slots_);
 }
