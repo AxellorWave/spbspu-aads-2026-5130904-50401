@@ -7,16 +7,19 @@
 namespace zharov
 {
 
-  template < class T > struct Node
+  template < class T >
+  struct Node
   {
     T val_;
     Node< T >* next_;
     Node< T >* prev_;
   };
 
-  template < class T > class List;
+  template < class T >
+  class List;
 
-  template < class T > class LIter
+  template < class T >
+  class LIter
   {
     friend class List< T >;
     Node< T >* curr_;
@@ -33,7 +36,8 @@ namespace zharov
     bool operator!=(const LIter& it) const;
   };
 
-  template < class T > class LCIter
+  template < class T >
+  class LCIter
   {
     friend class List< T >;
     const Node< T >* curr_;
@@ -50,7 +54,8 @@ namespace zharov
     bool operator!=(const LCIter& it) const;
   };
 
-  template < class T > class List
+  template < class T >
+  class List
   {
     Node< T >* head_;
     Node< T >* tail_;
@@ -79,7 +84,7 @@ namespace zharov
     LIter< T > erase(LIter< T > pos);
     void clear();
     size_t size() const;
-    void swap(List & h) noexcept;
+    void swap(List& h) noexcept;
   };
 
   template < class T >
@@ -88,48 +93,56 @@ namespace zharov
   {
   }
 
-  template < class T > T& LIter< T >::operator*() const
+  template < class T >
+  T& LIter< T >::operator*() const
   {
     return curr_->val_;
   }
 
-  template < class T > T* LIter< T >::operator->() const
+  template < class T >
+  T* LIter< T >::operator->() const
   {
     return std::addressof(curr_->val_);
   }
 
-  template < class T > LIter< T >& LIter< T >::operator++()
+  template < class T >
+  LIter< T >& LIter< T >::operator++()
   {
     curr_ = curr_->next_;
     return *this;
   }
 
-  template < class T > LIter< T > LIter< T >::operator++(int)
+  template < class T >
+  LIter< T > LIter< T >::operator++(int)
   {
     LIter< T > temp = *this;
     curr_ = curr_->next_;
     return temp;
   }
 
-  template < class T > LIter< T >& LIter< T >::operator--()
+  template < class T >
+  LIter< T >& LIter< T >::operator--()
   {
     curr_ = curr_->prev_;
     return *this;
   }
 
-  template < class T > LIter< T > LIter< T >::operator--(int)
+  template < class T >
+  LIter< T > LIter< T >::operator--(int)
   {
     LIter< T > temp = *this;
     curr_ = curr_->prev_;
     return temp;
   }
 
-  template < class T > bool LIter< T >::operator==(const LIter& it) const
+  template < class T >
+  bool LIter< T >::operator==(const LIter& it) const
   {
     return curr_ == it.curr_;
   }
 
-  template < class T > bool LIter< T >::operator!=(const LIter& it) const
+  template < class T >
+  bool LIter< T >::operator!=(const LIter& it) const
   {
     return curr_ != it.curr_;
   }
@@ -140,48 +153,56 @@ namespace zharov
   {
   }
 
-  template < class T > const T& LCIter< T >::operator*() const
+  template < class T >
+  const T& LCIter< T >::operator*() const
   {
     return curr_->val_;
   }
 
-  template < class T > const T* LCIter< T >::operator->() const
+  template < class T >
+  const T* LCIter< T >::operator->() const
   {
     return std::addressof(curr_->val_);
   }
 
-  template < class T > LCIter< T >& LCIter< T >::operator++()
+  template < class T >
+  LCIter< T >& LCIter< T >::operator++()
   {
     curr_ = curr_->next_;
     return *this;
   }
 
-  template < class T > LCIter< T > LCIter< T >::operator++(int)
+  template < class T >
+  LCIter< T > LCIter< T >::operator++(int)
   {
     LCIter< T > temp = *this;
     curr_ = curr_->next_;
     return temp;
   }
 
-  template < class T > LCIter< T >& LCIter< T >::operator--()
+  template < class T >
+  LCIter< T >& LCIter< T >::operator--()
   {
     curr_ = curr_->prev_;
     return *this;
   }
 
-  template < class T > LCIter< T > LCIter< T >::operator--(int)
+  template < class T >
+  LCIter< T > LCIter< T >::operator--(int)
   {
     LCIter< T > temp = *this;
     curr_ = curr_->prev_;
     return temp;
   }
 
-  template < class T > bool LCIter< T >::operator==(const LCIter& it) const
+  template < class T >
+  bool LCIter< T >::operator==(const LCIter& it) const
   {
     return curr_ == it.curr_;
   }
 
-  template < class T > bool LCIter< T >::operator!=(const LCIter& it) const
+  template < class T >
+  bool LCIter< T >::operator!=(const LCIter& it) const
   {
     return curr_ != it.curr_;
   }
@@ -215,12 +236,14 @@ namespace zharov
     h.size_ = 0;
   }
 
-  template < class T > List< T >::~List()
+  template < class T >
+  List< T >::~List()
   {
     clear();
   }
 
-  template < class T > List< T >& List< T >::operator=(const List< T >& h)
+  template < class T >
+  List< T >& List< T >::operator=(const List< T >& h)
   {
     if (this != std::addressof(h))
     {
@@ -230,7 +253,8 @@ namespace zharov
     return *this;
   }
 
-  template < class T > List< T >& List< T >::operator=(List< T >&& h) noexcept
+  template < class T >
+  List< T >& List< T >::operator=(List< T >&& h) noexcept
   {
     if (this != std::addressof(h))
     {
@@ -245,47 +269,56 @@ namespace zharov
     return *this;
   }
 
-  template < class T > LIter< T > List< T >::begin()
+  template < class T >
+  LIter< T > List< T >::begin()
   {
     return LIter< T >(head_);
   }
 
-  template < class T > LIter< T > List< T >::end()
+  template < class T >
+  LIter< T > List< T >::end()
   {
     return LIter< T >(nullptr);
   }
 
-  template < class T > LCIter< T > List< T >::constBegin() const
+  template < class T >
+  LCIter< T > List< T >::constBegin() const
   {
     return LCIter< T >(head_);
   }
 
-  template < class T > LCIter< T > List< T >::constEnd() const
+  template < class T >
+  LCIter< T > List< T >::constEnd() const
   {
     return LCIter< T >(nullptr);
   }
 
-  template < class T > T& List< T >::front()
+  template < class T >
+  T& List< T >::front()
   {
     return head_->val_;
   }
 
-  template < class T > const T& List< T >::front() const
+  template < class T >
+  const T& List< T >::front() const
   {
     return head_->val_;
   }
 
-  template < class T > T& List< T >::back()
+  template < class T >
+  T& List< T >::back()
   {
     return tail_->val_;
   }
 
-  template < class T > const T& List< T >::back() const
+  template < class T >
+  const T& List< T >::back() const
   {
     return tail_->val_;
   }
 
-  template < class T > void List< T >::pushFront(const T& v)
+  template < class T >
+  void List< T >::pushFront(const T& v)
   {
     Node< T >* new_node = new Node< T >{v, nullptr, nullptr};
     new_node->next_ = head_;
@@ -301,7 +334,8 @@ namespace zharov
     ++size_;
   }
 
-  template < class T > void List< T >::pushBack(const T& v)
+  template < class T >
+  void List< T >::pushBack(const T& v)
   {
     Node< T >* new_node = new Node< T >{v, nullptr, nullptr};
     new_node->prev_ = tail_;
@@ -317,7 +351,8 @@ namespace zharov
     ++size_;
   }
 
-  template < class T > LIter< T > List< T >::insert(LIter< T > pos, const T& v)
+  template < class T >
+  LIter< T > List< T >::insert(LIter< T > pos, const T& v)
   {
     if (!pos.curr_)
     {
@@ -340,7 +375,8 @@ namespace zharov
     return LIter< T >(new_node);
   }
 
-  template < class T > void List< T >::popFront()
+  template < class T >
+  void List< T >::popFront()
   {
     if (!head_)
     {
@@ -360,7 +396,8 @@ namespace zharov
     --size_;
   }
 
-  template < class T > void List< T >::popBack()
+  template < class T >
+  void List< T >::popBack()
   {
     if (!tail_)
     {
@@ -380,7 +417,8 @@ namespace zharov
     --size_;
   }
 
-  template < class T > LIter< T > List< T >::erase(LIter< T > pos)
+  template < class T >
+  LIter< T > List< T >::erase(LIter< T > pos)
   {
     if (!pos.curr_)
     {
@@ -409,7 +447,8 @@ namespace zharov
     return LIter< T >(next);
   }
 
-  template < class T > void List< T >::clear()
+  template < class T >
+  void List< T >::clear()
   {
     while (head_)
     {
@@ -421,20 +460,19 @@ namespace zharov
     tail_ = nullptr;
   }
 
-  template < class T > size_t List< T >::size() const
+  template < class T >
+  size_t List< T >::size() const
   {
     return size_;
   }
 
-  template< class T >
-  void List< T >::swap(List & h) noexcept
+  template < class T >
+  void List< T >::swap(List& h) noexcept
   {
     std::swap(h.head_, head_);
     std::swap(h.tail_, tail_);
     std::swap(h.size_, size_);
   }
 }
-
-
 
 #endif
