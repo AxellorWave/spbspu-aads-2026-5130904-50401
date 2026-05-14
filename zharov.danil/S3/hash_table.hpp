@@ -37,8 +37,8 @@ namespace zharov
     void rehash(size_t slots);
     size_t getSize() const;
     size_t getCapacity() const;
-    Value& at(Key key);
-    const Value& at(Key key) const;
+    Value& at(Key k);
+    const Value& at(Key k) const;
 
   private:
     Hash hasher_;
@@ -83,6 +83,18 @@ zharov::HashTable< Key, Value, Hash, Equal >::~HashTable()
 {
   delete[] states_;
   ::operator delete(slots_);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+size_t zharov::HashTable< Key, Value, Hash, Equal >::getCapacity() const
+{
+  return capacity_;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+size_t zharov::HashTable< Key, Value, Hash, Equal >::getSize() const
+{
+  return size;
 }
 
 #endif
