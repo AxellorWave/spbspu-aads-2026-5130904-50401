@@ -44,10 +44,45 @@ namespace zharov
     Hash hasher_;
     Equal comparator_;
     State* states_;
-    Slot< Key, Value >* sllots_;
+    Slot< Key, Value >* slots_;
     size_t capacity_;
     size_t size_;
   };
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::HashTable< Key, Value, Hash, Equal >::HashTable():
+  HashTable(16)
+{}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::HashTable< Key, Value, Hash, Equal >::HashTable(size_t capacity):
+  hasher_(Hash{}),
+  comparator_(Equal{}),
+  states_(nullptr),
+  slots_(nullptr),
+  capacity_(capacity),
+  size_(0),
+{
+  try
+  {
+    states_ = new State[capacity_]{};
+    slots_ =
+      static_cast< Slot< Key, Value >* >(::operator new(sizeof(Slot< Key, Value >) * capacity_));
+  }
+  catch (...)
+  {
+    delete[] states_;
+    ::operator delete(slots_);
+    throw;
+  }
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::HashTable< Key, Value, Hash, Equal >::~HashTable()
+{
+  delete[] states_;
+  ::operator delete(slots_);
 }
 
 #endif
