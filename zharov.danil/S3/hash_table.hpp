@@ -62,7 +62,7 @@ zharov::HashTable< Key, Value, Hash, Equal >::HashTable(size_t capacity):
   comparator_(Equal{}),
   states_(nullptr),
   slots_(nullptr),
-  capacity_(capacity),
+  capacity_(std::pow(2, ceil(log2(capacity)))),
   size_(0),
 {
   try
@@ -172,6 +172,55 @@ template < class Key, class Value, class Hash, class Equal >
 size_t zharov::HashTable< Key, Value, Hash, Equal >::getSize() const
 {
   return size;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+bool zharov::HashTable< Key, Value, Hash, Equal >::has(Key k)
+{
+  size_t hash = hasher_(k);
+  size_t i = 0;
+  size_t pos = 0;
+  for (; i < capacity_; ++i)
+  {
+    pos = (hash + (i + i * i) / 2) % capacity_;
+    if (states_[pos] == State::OCCUPIED && comparator_(slots_[pos].key, k))
+    {
+      return true;
+    }
+    else if (states_[pos] == State::EMPTY)
+    {
+      return false;
+    }
+  }
+  return false;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+void zharov::HashTable< Key, Value, Hash, Equal >::add(Key k, Value v)
+{
+  if (size_ == capacity_)
+  {
+    throw std::logic_error("Not enough place to add");
+  }
+
+  if (has(k))
+  {
+    throw std::logic_error("Key already exist");
+  }
+  size_t hash = hasher_(k);
+  size_t i = 0;
+  size_t pos = 0;
+  for (; i < capacity_; ++i)
+  {
+    pos = (hash + (i + i * i) / 2) % capacity_;
+    if (states_[pos] == State::EMPTY || states_[pos] == State::TOMBSTONE)
+    {
+      break;
+    }
+  }
+  new (slots_ + pos) Slot< Key, Value >(k, val);
+  states_[pos] = State::OCCUPIED;
+  ++size_;
 }
 
 #endif
