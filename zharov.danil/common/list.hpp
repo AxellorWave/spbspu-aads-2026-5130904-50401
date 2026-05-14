@@ -84,7 +84,7 @@ namespace zharov
     LIter< T > erase(LIter< T > pos);
     void clear();
     size_t size() const;
-    void swap(List & h) noexcept;
+    void swap(List& h) noexcept;
   };
 
   template < class T >
@@ -466,15 +466,13 @@ namespace zharov
     return size_;
   }
 
-  template< class T >
-  void List< T >::swap(List & h) noexcept
+  template < class T >
+  void List< T >::swap(List& h) noexcept
   {
     std::swap(h.head_, head_);
     std::swap(h.tail_, tail_);
     std::swap(h.size_, size_);
   }
 }
-
-
 
 #endif
