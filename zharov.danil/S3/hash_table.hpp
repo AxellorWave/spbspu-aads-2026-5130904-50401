@@ -35,6 +35,7 @@ namespace zharov
     Value drop(Key k);
     bool has(Key k);
     void rehash(size_t slots);
+    void swap(HashTable& table) noexcept;
     size_t getSize() const;
     size_t getCapacity() const;
     Value& at(Key k);
@@ -94,6 +95,21 @@ zharov::HashTable< Key, Value, Hash, Equal >::HashTable(const HashTable& table):
 }
 
 template < class Key, class Value, class Hash, class Equal >
+zharov::HashTable< Key, Value, Hash, Equal >::HashTable(HashTable&& table) noexcept:
+  hasher_(table.hasher_),
+  comparator_(table.comparator_),
+  states_(table.states_),
+  slots_(table.slots_),
+  capacity_(table.capacity_),
+  size_(table.size_)
+{
+  states_ = nullptr;
+  slots_ = nullptr;
+  capacity_ = 0;
+  size_ = 0;
+}
+
+template < class Key, class Value, class Hash, class Equal >
 zharov::HashTable< Key, Value, Hash, Equal >::~HashTable()
 {
   for (size_t i = 0; i < capacity_; ++i)
@@ -105,6 +121,45 @@ zharov::HashTable< Key, Value, Hash, Equal >::~HashTable()
   }
   delete[] states_;
   ::operator delete(slots_);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+void zharov::HashTable< Key, Value, Hash, Equal >::swap(HashTable& table) noexcept
+{
+  std::swap(table.hasher_, hasher_);
+  std::swap(table.comparator_, comparator_);
+  std::swap(table.states_, states_);
+  std::swap(table.slots_, slots_);
+  std::swap(table.capacity_, capacity_);
+  std::swap(table.size_, size_);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::HashTable< Key, Value, Hash, Equal >&
+zharov::HashTable< Key, Value, Hash, Equal >::operator=(const HashTable& table)
+{
+  if (std::addressof(table) == this)
+  {
+    return *this;
+  }
+
+  HashTable< Key, Value, Hash, Equal > cp(table);
+  swap(cp);
+  return *this;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::HashTable< Key, Value, Hash, Equal >&
+zharov::HashTable< Key, Value, Hash, Equal >::operator=(HashTable&& table) noexcept
+{
+  if (std::addressof(table) == this)
+  {
+    return *this;
+  }
+
+  HashTable< Key, Value, Hash, Equal > cp(std::move(table));
+  swap(cp);
+  return *this;
 }
 
 template < class Key, class Value, class Hash, class Equal >
