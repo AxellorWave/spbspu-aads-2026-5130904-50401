@@ -1,5 +1,6 @@
 #ifndef HASH_TABLE_HPP
 #define HASH_TABLE_HPP
+#include <cmath>
 #include <cstddef>
 
 namespace zharov
@@ -14,6 +15,15 @@ namespace zharov
   template < class Key, class Value >
   struct Slot
   {
+    Slot() = delete;
+    Slot(const Key& key, const Value& value):
+      key_(key),
+      value_(value)
+    {}
+    Slot(Key&& key, Value&& value):
+      key_(std::move(key)),
+      value_(std::move(value))
+    {}
     Key key_;
     Value value_;
   };
@@ -63,7 +73,7 @@ zharov::HashTable< Key, Value, Hash, Equal >::HashTable(size_t capacity):
   states_(nullptr),
   slots_(nullptr),
   capacity_(std::pow(2, ceil(log2(capacity)))),
-  size_(0),
+  size_(0)
 {
   try
   {
@@ -87,7 +97,7 @@ zharov::HashTable< Key, Value, Hash, Equal >::HashTable(const HashTable& table):
   {
     if (table.states_[i] == State::OCCUPIED)
     {
-      new (slots_ + i) Slot< Key, Value >(table.slots_[i].first, table.slots_[i].second);
+      new (slots_ + i) Slot< Key, Value >(table.slots_[i].key_, table.slots_[i].value_);
       ++size_;
     }
     states_[i] = table.states_[i];
@@ -103,10 +113,10 @@ zharov::HashTable< Key, Value, Hash, Equal >::HashTable(HashTable&& table) noexc
   capacity_(table.capacity_),
   size_(table.size_)
 {
-  states_ = nullptr;
-  slots_ = nullptr;
-  capacity_ = 0;
-  size_ = 0;
+  table.states_ = nullptr;
+  table.slots_ = nullptr;
+  table.capacity_ = 0;
+  table.size_ = 0;
 }
 
 template < class Key, class Value, class Hash, class Equal >
@@ -171,7 +181,7 @@ size_t zharov::HashTable< Key, Value, Hash, Equal >::getCapacity() const
 template < class Key, class Value, class Hash, class Equal >
 size_t zharov::HashTable< Key, Value, Hash, Equal >::getSize() const
 {
-  return size;
+  return size_;
 }
 
 template < class Key, class Value, class Hash, class Equal >
@@ -218,7 +228,7 @@ void zharov::HashTable< Key, Value, Hash, Equal >::add(Key k, Value v)
       break;
     }
   }
-  new (slots_ + pos) Slot< Key, Value >(k, val);
+  new (slots_ + pos) Slot< Key, Value >(k, v);
   states_[pos] = State::OCCUPIED;
   ++size_;
 }
