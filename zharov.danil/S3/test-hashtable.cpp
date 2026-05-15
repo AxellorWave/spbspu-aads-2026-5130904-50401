@@ -229,3 +229,115 @@ BOOST_AUTO_TEST_CASE(AtThrowsWhenNotFound)
   BOOST_CHECK_THROW(table.at(999), std::logic_error);
 }
 BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(IteratorSuite)
+BOOST_AUTO_TEST_CASE(BeginEndNonEmpty)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, comp > table;
+  table.add(1, "one");
+  table.add(2, "two");
+  table.add(3, "three");
+  std::vector< std::string > values;
+  for (auto it = table.begin(); it != table.end(); ++it)
+    values.push_back(it->value_);
+  std::sort(values.begin(), values.end());
+  std::vector< std::string > expected = {"one", "three", "two"};
+  BOOST_CHECK_EQUAL_COLLECTIONS(values.begin(), values.end(), expected.begin(), expected.end());
+}
+
+BOOST_AUTO_TEST_CASE(EmptyTableBeginEqualsEnd)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, comp > table;
+  BOOST_CHECK(table.begin() == table.end());
+  BOOST_CHECK(table.cbegin() == table.cend());
+}
+
+BOOST_AUTO_TEST_CASE(DereferenceOperator)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, comp > table;
+  table.add(1, "one");
+  auto it = table.begin();
+  BOOST_CHECK_EQUAL((*it).key_, 1);
+  BOOST_CHECK_EQUAL(it->value_, "one");
+}
+
+BOOST_AUTO_TEST_CASE(PreIncrement)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, comp > table;
+  table.add(1, "a");
+  table.add(2, "b");
+  auto it = table.begin();
+  auto prev = it;
+  ++it;
+  BOOST_CHECK(prev != it);
+  BOOST_CHECK(prev->key_ != it->key_);
+  ++it;
+  BOOST_CHECK(it == table.end());
+}
+
+BOOST_AUTO_TEST_CASE(PostIncrement)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, comp > table;
+  table.add(10, "x");
+  table.add(20, "y");
+  auto it = table.begin();
+  auto old = it++;
+  BOOST_CHECK(old != it);
+  BOOST_CHECK(old->key_ != it->key_);
+}
+
+BOOST_AUTO_TEST_CASE(PreDecrement)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, comp > table;
+  table.add(5, "five");
+  table.add(6, "six");
+  auto it = table.begin();
+  ++it;
+  --it;
+  BOOST_CHECK(it == table.begin());
+}
+
+BOOST_AUTO_TEST_CASE(PostDecrement)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, comp > table;
+  table.add(7, "seven");
+  table.add(8, "eight");
+  auto it = table.begin();
+  ++it;
+  auto old = it--;
+  BOOST_CHECK(old != it);
+  BOOST_CHECK(it == table.begin());
+}
+
+BOOST_AUTO_TEST_CASE(EqualityComparators)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, comp > table;
+  table.add(100, "hundred");
+  auto it1 = table.begin();
+  auto it2 = table.begin();
+  auto it3 = table.end();
+  BOOST_CHECK(it1 == it2);
+  BOOST_CHECK(it1 != it3);
+}
+
+BOOST_AUTO_TEST_CASE(ConstIteratorNonModifiable)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, comp > table;
+  table.add(99, "const");
+  const auto& constTable = table;
+  auto cit = constTable.cbegin();
+  BOOST_CHECK_EQUAL(cit->value_, "const");
+}
+
+BOOST_AUTO_TEST_CASE(RangeForLoop)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, comp > table;
+  table.add(1, "first");
+  table.add(2, "second");
+  size_t count = 0;
+  for (auto it = table.begin(); it != table.end(); ++it)
+    ++count;
+  BOOST_CHECK_EQUAL(count, table.getSize());
+}
+
+BOOST_AUTO_TEST_SUITE_END()

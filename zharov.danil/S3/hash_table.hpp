@@ -35,20 +35,20 @@ namespace zharov
   class Iter
   {
     friend class HashTable< Key, Value, Hash, Equal >;
+    State* states_;
+    Slot< Key, Value >* slots_;
+    size_t curr_;
+    size_t capacity_;
     Iter(State* states, Slot< Key, Value >* slots, size_t curr, size_t capacity):
       states_(states),
       slots_(slots),
       curr_(curr),
       capacity_(capacity)
     {}
-    State* states_;
-    Slot< Key, Value >* slots_;
-    size_t curr_;
-    size_t capacity_;
 
   public:
-    T& operator*() const;
-    T* operator->() const;
+    Slot< Key, Value >& operator*() const;
+    Slot< Key, Value >* operator->() const;
     Iter& operator++();
     Iter operator++(int);
     Iter& operator--();
@@ -61,20 +61,20 @@ namespace zharov
   class CIter
   {
     friend class HashTable< Key, Value, Hash, Equal >;
-    Iter(State* states, Slot< Key, Value >* slots, size_t curr, size_t capacity):
+    State* states_;
+    Slot< Key, Value >* slots_;
+    size_t curr_;
+    size_t capacity_;
+    CIter(State* states, Slot< Key, Value >* slots, size_t curr, size_t capacity):
       states_(states),
       slots_(slots),
       curr_(curr),
       capacity_(capacity)
     {}
-    State* states_;
-    Slot< Key, Value >* slots_;
-    size_t curr_;
-    size_t capacity_;
 
   public:
-    T& operator*() const;
-    T* operator->() const;
+    const Slot< Key, Value >& operator*() const;
+    const Slot< Key, Value >* operator->() const;
     CIter& operator++();
     CIter operator++(int);
     CIter& operator--();
@@ -366,6 +366,184 @@ const Value& zharov::HashTable< Key, Value, Hash, Equal >::at(Key k) const
     }
   }
   throw std::logic_error("Key not found");
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::Slot< Key, Value >& zharov::Iter< Key, Value, Hash, Equal >::operator*() const
+{
+  return slots_[curr_];
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::Slot< Key, Value >* zharov::Iter< Key, Value, Hash, Equal >::operator->() const
+{
+  return slots_ + curr_;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::Iter< Key, Value, Hash, Equal >& zharov::Iter< Key, Value, Hash, Equal >::operator++()
+{
+  ++curr_;
+  while (curr_ < capacity_ && states_[curr_] != State::OCCUPIED)
+  {
+    ++curr_;
+  }
+  return *this;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::Iter< Key, Value, Hash, Equal > zharov::Iter< Key, Value, Hash, Equal >::operator++(int)
+{
+  Iter< Key, Value, Hash, Equal > temp = *this;
+  ++(*this);
+  return temp;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::Iter< Key, Value, Hash, Equal >& zharov::Iter< Key, Value, Hash, Equal >::operator--()
+{
+  --curr_;
+  while (curr_ != 0 && states_[curr_] != State::OCCUPIED)
+  {
+    --curr_;
+  }
+  return *this;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::Iter< Key, Value, Hash, Equal > zharov::Iter< Key, Value, Hash, Equal >::operator--(int)
+{
+  Iter< Key, Value, Hash, Equal > temp = *this;
+  --(*this);
+  return temp;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+bool zharov::Iter< Key, Value, Hash, Equal >::operator==(const Iter& it) const
+{
+  return slots_ == it.slots_ && states_ == it.states_ && curr_ == it.curr_ &&
+    capacity_ == it.capacity_;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+bool zharov::Iter< Key, Value, Hash, Equal >::operator!=(const Iter& it) const
+{
+  return !(it == *this);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+const zharov::Slot< Key, Value >& zharov::CIter< Key, Value, Hash, Equal >::operator*() const
+{
+  return slots_[curr_];
+}
+
+template < class Key, class Value, class Hash, class Equal >
+const zharov::Slot< Key, Value >* zharov::CIter< Key, Value, Hash, Equal >::operator->() const
+{
+  return slots_ + curr_;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::CIter< Key, Value, Hash, Equal >& zharov::CIter< Key, Value, Hash, Equal >::operator++()
+{
+  ++curr_;
+  while (curr_ < capacity_ && states_[curr_] != State::OCCUPIED)
+  {
+    ++curr_;
+  }
+  return *this;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::CIter< Key, Value, Hash, Equal > zharov::CIter< Key, Value, Hash, Equal >::operator++(int)
+{
+  CIter< Key, Value, Hash, Equal > temp = *this;
+  ++(*this);
+  return temp;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::CIter< Key, Value, Hash, Equal >& zharov::CIter< Key, Value, Hash, Equal >::operator--()
+{
+  --curr_;
+  while (curr_ != 0 && states_[curr_] != State::OCCUPIED)
+  {
+    --curr_;
+  }
+  return *this;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::CIter< Key, Value, Hash, Equal > zharov::CIter< Key, Value, Hash, Equal >::operator--(int)
+{
+  CIter< Key, Value, Hash, Equal > temp = *this;
+  --(*this);
+  return temp;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+bool zharov::CIter< Key, Value, Hash, Equal >::operator==(const CIter& it) const
+{
+  return slots_ == it.slots_ && states_ == it.states_ && curr_ == it.curr_ &&
+    capacity_ == it.capacity_;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+bool zharov::CIter< Key, Value, Hash, Equal >::operator!=(const CIter& it) const
+{
+  return !(it == *this);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::Iter< Key, Value, Hash, Equal > zharov::HashTable< Key, Value, Hash, Equal >::begin()
+{
+  Iter< Key, Value, Hash, Equal > it(states_, slots_, 0, capacity_);
+  while (it.curr_ < it.capacity_ && it.states_[it.curr_] != State::OCCUPIED)
+  {
+    ++it.curr_;
+  }
+  return it;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::CIter< Key, Value, Hash, Equal > zharov::HashTable< Key, Value, Hash, Equal >::begin() const
+{
+  CIter< Key, Value, Hash, Equal > it(states_, slots_, 0, capacity_);
+  while (it.curr_ < it.capacity_ && it.states_[it.curr_] != State::OCCUPIED)
+  {
+    ++it.curr_;
+  }
+  return it;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::CIter< Key, Value, Hash, Equal >
+zharov::HashTable< Key, Value, Hash, Equal >::cbegin() const
+{
+  CIter< Key, Value, Hash, Equal > it(states_, slots_, 0, capacity_);
+  while (it.curr_ < it.capacity_ && it.states_[it.curr_] != State::OCCUPIED)
+  {
+    ++it.curr_;
+  }
+  return it;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::Iter< Key, Value, Hash, Equal > zharov::HashTable< Key, Value, Hash, Equal >::end()
+{
+  return Iter< Key, Value, Hash, Equal >(states_, slots_, capacity_, capacity_);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::CIter< Key, Value, Hash, Equal > zharov::HashTable< Key, Value, Hash, Equal >::end() const
+{
+  return CIter< Key, Value, Hash, Equal >(states_, slots_, capacity_, capacity_);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::CIter< Key, Value, Hash, Equal > zharov::HashTable< Key, Value, Hash, Equal >::cend() const
+{
+  return CIter< Key, Value, Hash, Equal >(states_, slots_, capacity_, capacity_);
 }
 
 #endif
