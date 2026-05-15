@@ -29,8 +29,66 @@ namespace zharov
   };
 
   template < class Key, class Value, class Hash, class Equal >
+  class HashTable;
+
+  template < class Key, class Value, class Hash, class Equal >
+  class Iter
+  {
+    friend class HashTable< Key, Value, Hash, Equal >;
+    Iter(State* states, Slot< Key, Value >* slots, size_t curr, size_t capacity):
+      states_(states),
+      slots_(slots),
+      curr_(curr),
+      capacity_(capacity)
+    {}
+    State* states_;
+    Slot< Key, Value >* slots_;
+    size_t curr_;
+    size_t capacity_;
+
+  public:
+    T& operator*() const;
+    T* operator->() const;
+    Iter& operator++();
+    Iter operator++(int);
+    Iter& operator--();
+    Iter operator--(int);
+    bool operator==(const Iter& it) const;
+    bool operator!=(const Iter& it) const;
+  };
+
+  template < class Key, class Value, class Hash, class Equal >
+  class CIter
+  {
+    friend class HashTable< Key, Value, Hash, Equal >;
+    Iter(State* states, Slot< Key, Value >* slots, size_t curr, size_t capacity):
+      states_(states),
+      slots_(slots),
+      curr_(curr),
+      capacity_(capacity)
+    {}
+    State* states_;
+    Slot< Key, Value >* slots_;
+    size_t curr_;
+    size_t capacity_;
+
+  public:
+    T& operator*() const;
+    T* operator->() const;
+    CIter& operator++();
+    CIter operator++(int);
+    CIter& operator--();
+    CIter operator--(int);
+    bool operator==(const CIter& it) const;
+    bool operator!=(const CIter& it) const;
+  };
+
+  template < class Key, class Value, class Hash, class Equal >
   class HashTable
   {
+    using iter = Iter< Key, Value, Hash, Equal >;
+    using citer = CIter< Key, Value, Hash, Equal >;
+
   public:
     HashTable();
     HashTable(size_t capacity);
@@ -50,6 +108,13 @@ namespace zharov
     size_t getCapacity() const;
     Value& at(Key k);
     const Value& at(Key k) const;
+
+    iter begin();
+    citer begin() const;
+    citer cbegin() const;
+    iter end();
+    citer end() const;
+    citer cend() const;
 
   private:
     Hash hasher_;
