@@ -32,7 +32,7 @@ namespace zharov
     HashTable& operator=(HashTable&& table) noexcept;
 
     void add(Key k, Value v);
-    Value drop(Key k);
+    void remove(Key k);
     bool has(Key k);
     void rehash(size_t slots);
     void swap(HashTable& table) noexcept;
@@ -183,7 +183,7 @@ bool zharov::HashTable< Key, Value, Hash, Equal >::has(Key k)
   for (; i < capacity_; ++i)
   {
     pos = (hash + (i + i * i) / 2) % capacity_;
-    if (states_[pos] == State::OCCUPIED && comparator_(slots_[pos].key, k))
+    if (states_[pos] == State::OCCUPIED && comparator_(slots_[pos].key_, k))
     {
       return true;
     }
@@ -224,6 +224,48 @@ void zharov::HashTable< Key, Value, Hash, Equal >::add(Key k, Value v)
 }
 
 template < class Key, class Value, class Hash, class Equal >
+void zharov::HashTable< Key, Value, Hash, Equal >::remove(Key k)
+{
+  size_t hash = hasher_(k);
+  size_t i = 0;
+  size_t pos = 0;
+  for (; i < capacity_; ++i)
+  {
+    pos = (hash + (i + i * i) / 2) % capacity_;
+    if (states_[pos] == State::EMPTY)
+    {
+      throw std::logic_error("Key not found");
+    }
+    else if (states_[pos] == State::OCCUPIED && comparator_(k, slots_[pos].key_))
+    {
+      (slots_ + pos)->~Slot();
+      states_[pos] = State::TOMBSTONE;
+      --size_;
+      return;
+    }
+  }
+}
+
+template < class Key, class Value, class Hash, class Equal >
+void zharov::HashTable< Key, Value, Hash, Equal >::rehash(size_t slots)
+{
+  if (slots < size_)
+  {
+    std::logic_error("Slots count must be more than elements count");
+  }
+  slots = std::pow(2, ceil(log2(slots)));
+  HashTable< Key, Value, Hash, Equal > new_table(slots);
+  for (size_t i = 0; i < capacity_; ++i)
+  {
+    if (states_[i] == State::OCCUPIED)
+    {
+      new_table.add(slots_[i].key_, slots_[i].value_);
+    }
+  }
+  swap(new_table);
+}
+
+template < class Key, class Value, class Hash, class Equal >
 Value& zharov::HashTable< Key, Value, Hash, Equal >::at(Key k)
 {
   const HashTable* const_table = this;
@@ -239,9 +281,9 @@ const Value& zharov::HashTable< Key, Value, Hash, Equal >::at(Key k) const
   for (; i < capacity_; ++i)
   {
     pos = (hash + (i + i * i) / 2) % capacity_;
-    if (states_[pos] == State::OCCUPIED && comparator_(slots_[pos].key, k))
+    if (states_[pos] == State::OCCUPIED && comparator_(slots_[pos].key_, k))
     {
-      return slots_[pos].value;
+      return slots_[pos].value_;
     }
     else if (states_[pos] == State::EMPTY)
     {
