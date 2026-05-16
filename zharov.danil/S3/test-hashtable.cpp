@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 #include <stdexcept>
 #include "hash_table.hpp"
+#include "hasher.hpp"
 
 struct comp
 {
@@ -14,7 +15,7 @@ struct comp
 BOOST_AUTO_TEST_SUITE(DefaultConstructorSuite)
 BOOST_AUTO_TEST_CASE(DefaultConstructor)
 {
-  zharov::HashTable< size_t, std::string, std::hash< size_t >, comp > table;
+  zharov::HashTable< size_t, std::string, zharov::Blake2Hasher< size_t >, comp > table;
   BOOST_CHECK_EQUAL(table.getSize(), 0);
   BOOST_CHECK_EQUAL(table.getCapacity(), 16);
 }
