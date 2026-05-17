@@ -28,22 +28,19 @@ namespace zharov
 }
 
 template < class T >
-zharov::Stack< T >::Stack()
-  : list_()
-{
-}
+zharov::Stack< T >::Stack():
+  list_()
+{}
 
 template < class T >
-zharov::Stack< T >::Stack(const Stack& s)
-  : list_(s.list_)
-{
-}
+zharov::Stack< T >::Stack(const Stack& s):
+  list_(s.list_)
+{}
 
 template < class T >
-zharov::Stack< T >::Stack(Stack&& s) noexcept
-  : list_(std::move(s.list_))
-{
-}
+zharov::Stack< T >::Stack(Stack&& s) noexcept:
+  list_(std::move(s.list_))
+{}
 
 template < class T >
 zharov::Stack< T >& zharov::Stack< T >::operator=(const Stack& s)

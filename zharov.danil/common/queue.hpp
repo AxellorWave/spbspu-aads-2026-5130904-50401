@@ -30,22 +30,19 @@ namespace zharov
 }
 
 template < class T >
-zharov::Queue< T >::Queue()
-  : list_()
-{
-}
+zharov::Queue< T >::Queue():
+  list_()
+{}
 
 template < class T >
-zharov::Queue< T >::Queue(const Queue& q)
-  : list_(q.list_)
-{
-}
+zharov::Queue< T >::Queue(const Queue& q):
+  list_(q.list_)
+{}
 
 template < class T >
-zharov::Queue< T >::Queue(Queue&& q) noexcept
-  : list_(std::move(q.list_))
-{
-}
+zharov::Queue< T >::Queue(Queue&& q) noexcept:
+  list_(std::move(q.list_))
+{}
 
 template < class T >
 zharov::Queue< T >& zharov::Queue< T >::operator=(const Queue& q)
