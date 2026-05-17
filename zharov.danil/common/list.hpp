@@ -88,10 +88,9 @@ namespace zharov
   };
 
   template < class T >
-  LIter< T >::LIter(Node< T >* node)
-    : curr_(node)
-  {
-  }
+  LIter< T >::LIter(Node< T >* node):
+    curr_(node)
+  {}
 
   template < class T >
   T& LIter< T >::operator*() const
@@ -148,10 +147,9 @@ namespace zharov
   }
 
   template < class T >
-  LCIter< T >::LCIter(const Node< T >* node)
-    : curr_(node)
-  {
-  }
+  LCIter< T >::LCIter(const Node< T >* node):
+    curr_(node)
+  {}
 
   template < class T >
   const T& LCIter< T >::operator*() const
@@ -208,16 +206,15 @@ namespace zharov
   }
 
   template < class T >
-  List< T >::List()
-    : head_(nullptr)
-    , tail_(nullptr)
-    , size_(0)
-  {
-  }
+  List< T >::List():
+    head_(nullptr),
+    tail_(nullptr),
+    size_(0)
+  {}
 
   template < class T >
-  List< T >::List(const List< T >& h)
-    : List()
+  List< T >::List(const List< T >& h):
+    List()
   {
     for (Node< T >* curr = h.head_; curr != nullptr; curr = curr->next_)
     {
@@ -226,10 +223,10 @@ namespace zharov
   }
 
   template < class T >
-  List< T >::List(List< T >&& h) noexcept
-    : head_(h.head_)
-    , tail_(h.tail_)
-    , size_(h.size_)
+  List< T >::List(List< T >&& h) noexcept:
+    head_(h.head_),
+    tail_(h.tail_),
+    size_(h.size_)
   {
     h.head_ = nullptr;
     h.tail_ = nullptr;
