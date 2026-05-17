@@ -108,10 +108,6 @@ void zharov::outbound(std::ostream& out, std::istream& in, const graphs_table& g
   }
 
   zharov::Vector< std::pair< std::string, size_t > > names;
-  if (names.isEmpty())
-  {
-    out << "\n";
-  }
   for (auto i = graphs.at(gr_name).edges_.cbegin(); i != graphs.at(gr_name).edges_.cend(); ++i)
   {
     if (i->key_.first == vert_name)
@@ -122,7 +118,10 @@ void zharov::outbound(std::ostream& out, std::istream& in, const graphs_table& g
       }
     }
   }
-
+  if (names.isEmpty())
+  {
+    out << "\n";
+  }
   sort(names, SortComparator< std::pair< std::string, size_t > >{});
   for (auto i = names.begin(); i != names.end();)
   {
@@ -153,10 +152,6 @@ void zharov::inbound(std::ostream& out, std::istream& in, const graphs_table& gr
   }
 
   zharov::Vector< std::pair< std::string, size_t > > names;
-  if (names.isEmpty())
-  {
-    out << "\n";
-  }
   for (auto i = graphs.at(gr_name).edges_.cbegin(); i != graphs.at(gr_name).edges_.cend(); ++i)
   {
     if (i->key_.second == vert_name)
@@ -167,7 +162,10 @@ void zharov::inbound(std::ostream& out, std::istream& in, const graphs_table& gr
       }
     }
   }
-
+  if (names.isEmpty())
+  {
+    out << "\n";
+  }
   sort(names, SortComparator< std::pair< std::string, size_t > >{});
   for (auto i = names.begin(); i != names.end();)
   {
