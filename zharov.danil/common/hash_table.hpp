@@ -102,7 +102,7 @@ namespace zharov
     void add(Key k, Value v);
     void remove(Key k);
     bool has(Key k);
-    void rehash(size_t slots);
+    void rehash(size_t slots = 0);
     void swap(HashTable& table) noexcept;
     size_t getSize() const;
     size_t getCapacity() const;
@@ -324,11 +324,7 @@ void zharov::HashTable< Key, Value, Hash, Equal >::remove(Key k)
 template < class Key, class Value, class Hash, class Equal >
 void zharov::HashTable< Key, Value, Hash, Equal >::rehash(size_t slots)
 {
-  if (slots < size_)
-  {
-    std::logic_error("Slots count must be more than elements count");
-  }
-  slots = std::pow(2, ceil(log2(slots)));
+  slots = slots ? std::pow(2, ceil(log2(slots))) : capacity_ * 2;
   HashTable< Key, Value, Hash, Equal > new_table(slots);
   for (size_t i = 0; i < capacity_; ++i)
   {
