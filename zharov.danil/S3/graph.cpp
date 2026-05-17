@@ -48,6 +48,18 @@ void zharov::Graph::addEdge(const std::string& v1, const std::string& v2, size_t
   {
     edges_.at(key).pushBack(w);
   }
+  else
+  {
+    try
+    {
+      edges_.add(key, Vector< size_t >{w});
+    }
+    catch (...)
+    {
+      edges_.rehash();
+      edges_.add(key, Vector< size_t >{w});
+    }
+  }
 }
 
 void zharov::Graph::rmEdge(const std::string& v1, const std::string& v2, size_t w)
@@ -56,13 +68,20 @@ void zharov::Graph::rmEdge(const std::string& v1, const std::string& v2, size_t 
   if (edges_.has(key))
   {
     auto v = edges_.at(key);
-    for (auto i = v.begin(); i != v.end(); ++i)
+    if (v.getSize() > 1)
     {
-      if (*i == w)
+      for (auto i = v.begin(); i != v.end(); ++i)
       {
-        v.erase(i);
-        return;
+        if (*i == w)
+        {
+          v.erase(i);
+          return;
+        }
       }
+    }
+    else
+    {
+      edges_.remove(key);
     }
   }
 }
