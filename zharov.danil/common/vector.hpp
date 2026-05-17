@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstddef>
 #include <initializer_list>
+#include <stdexcept>
 #include <utility>
 #include "vciter.hpp"
 #include "viter.hpp"
@@ -193,7 +194,7 @@ bool zharov::Vector< T >::has(const T& val) const
   {
     if (*i == val)
     {
-      return true
+      return true;
     };
   }
   return false;

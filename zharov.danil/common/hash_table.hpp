@@ -2,6 +2,7 @@
 #define HASH_TABLE_HPP
 #include <cmath>
 #include <cstddef>
+#include <stdexcept>
 
 namespace zharov
 {
