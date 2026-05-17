@@ -66,6 +66,7 @@ int main(int argc, char** argv)
     }
     catch (...)
     {
+      std::cin.clear();
       std::cout << "<INVALID COMMAND>\n";
       auto skip = std::numeric_limits< std::streamsize >::max();
       std::cin.ignore(skip, '\n');

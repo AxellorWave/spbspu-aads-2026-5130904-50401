@@ -83,6 +83,10 @@ void zharov::vertexes(std::ostream& out, std::istream& in, const graphs_table& g
   }
 
   sort(names, SortComparator< std::string >{});
+  if (names.isEmpty())
+  {
+    out << "\n";
+  }
   for (auto i = names.begin(); i != names.end(); ++i)
   {
     out << *i << "\n";
@@ -193,7 +197,7 @@ void zharov::cut(std::ostream&, std::istream& in, graphs_table& graphs)
   {
     throw std::logic_error("Graph not found");
   }
-  auto gr = graphs.at(gr_name);
+  auto& gr = graphs.at(gr_name);
   if (!gr.vertexes_.has(vert_name_1) || !gr.vertexes_.has(vert_name_2))
   {
     throw std::logic_error("Vertex not found");
@@ -209,13 +213,22 @@ void zharov::cut(std::ostream&, std::istream& in, graphs_table& graphs)
 
 void zharov::create(std::ostream&, std::istream& in, graphs_table& graphs)
 {
-  std::string gr_name;
-  in >> gr_name;
+  std::string gr_name, vertex;
+  size_t count;
+  if (!(in >> gr_name >> count))
+  {
+    throw std::invalid_argument("Invalid command");
+  }
   if (graphs.has(gr_name))
   {
     throw std::logic_error("Graph already exist");
   }
   Graph gr;
+  for (size_t i = 0; i < count; ++i)
+  {
+    in >> vertex;
+    gr.addVertex(vertex);
+  }
   graphs.add(gr_name, gr);
 }
 
@@ -257,11 +270,6 @@ void zharov::extract(std::ostream&, std::istream& in, graphs_table& graphs)
   size_t count;
   in >> gr_new >> gr_old >> count;
   Vector< std::string > vertexes;
-  for (size_t i = 0; i < count; ++i)
-  {
-    in >> vertex;
-    vertexes.pushBack(vertex);
-  }
   if (graphs.has(gr_new))
   {
     throw std::logic_error("Graph already exist");
@@ -269,6 +277,12 @@ void zharov::extract(std::ostream&, std::istream& in, graphs_table& graphs)
   if (!graphs.has(gr_old))
   {
     throw std::logic_error("Graph not found");
+  }
+
+  for (size_t i = 0; i < count; ++i)
+  {
+    in >> vertex;
+    vertexes.pushBack(vertex);
   }
   for (auto i = vertexes.cbegin(); i != vertexes.cend(); ++i)
   {
