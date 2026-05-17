@@ -33,7 +33,7 @@ ll_t zharov::mul(const ll_t& a, const ll_t& b)
     throw std::overflow_error("Overflow in mul");
   }
   if ((a > 0 && b > 0 && a > MAX / b) || (a > 0 && b < 0 && b < MIN / a) ||
-      (a < 0 && b > 0 && a < MIN / b) || (a < 0 && b < 0 && a < MAX / b))
+    (a < 0 && b > 0 && a < MIN / b) || (a < 0 && b < 0 && a < MAX / b))
   {
     throw std::overflow_error("Overflow in mul");
   }
