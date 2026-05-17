@@ -15,6 +15,8 @@ namespace zharov
 
   struct Graph
   {
+    Graph() = default;
+    Graph(size_t count);
     void addVertex(const std::string& v);
     void rmVertex(const std::string& v);
     void addEdge(const std::string& v1, const std::string& v2, size_t w);

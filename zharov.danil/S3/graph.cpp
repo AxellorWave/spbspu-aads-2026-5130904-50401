@@ -5,6 +5,11 @@ bool zharov::VertComp::operator()(const key_t& v1, const key_t& v2) const
   return v1.first == v2.first && v1.second == v2.second;
 }
 
+zharov::Graph::Graph(size_t count):
+  edges_(count),
+  vertexes_()
+{}
+
 void zharov::Graph::addVertex(const std::string& v)
 {
   if (vertexes_.has(v))
