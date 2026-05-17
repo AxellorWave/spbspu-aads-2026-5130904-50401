@@ -108,6 +108,10 @@ void zharov::outbound(std::ostream& out, std::istream& in, const graphs_table& g
   }
 
   zharov::Vector< std::pair< std::string, size_t > > names;
+  if (names.isEmpty())
+  {
+    out << "\n";
+  }
   for (auto i = graphs.at(gr_name).edges_.cbegin(); i != graphs.at(gr_name).edges_.cend(); ++i)
   {
     if (i->key_.first == vert_name)
@@ -149,6 +153,10 @@ void zharov::inbound(std::ostream& out, std::istream& in, const graphs_table& gr
   }
 
   zharov::Vector< std::pair< std::string, size_t > > names;
+  if (names.isEmpty())
+  {
+    out << "\n";
+  }
   for (auto i = graphs.at(gr_name).edges_.cbegin(); i != graphs.at(gr_name).edges_.cend(); ++i)
   {
     if (i->key_.second == vert_name)
@@ -215,21 +223,23 @@ void zharov::create(std::ostream&, std::istream& in, graphs_table& graphs)
 {
   std::string gr_name, vertex;
   size_t count;
-  if (!(in >> gr_name >> count))
-  {
-    throw std::invalid_argument("Invalid command");
-  }
+  in >> gr_name;
   if (graphs.has(gr_name))
   {
     throw std::logic_error("Graph already exist");
   }
-  Graph gr;
+  in >> count;
+  Graph gr(count);
   for (size_t i = 0; i < count; ++i)
   {
     in >> vertex;
     gr.addVertex(vertex);
   }
   graphs.add(gr_name, gr);
+  if (in.fail())
+  {
+    in.clear();
+  }
 }
 
 void zharov::merge(std::ostream&, std::istream& in, graphs_table& graphs)
