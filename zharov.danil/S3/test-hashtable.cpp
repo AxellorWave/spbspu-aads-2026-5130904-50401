@@ -1,7 +1,7 @@
 #include <string>
 #include <boost/test/unit_test.hpp>
+#include <hash_table.hpp>
 #include <stdexcept>
-#include "hash_table.hpp"
 #include "hasher.hpp"
 
 struct comp
