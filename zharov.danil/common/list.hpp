@@ -25,8 +25,8 @@ namespace zharov
     friend class List< T >;
 
   public:
-    T& operator*() const;
-    T* operator->() const;
+    T& operator*();
+    T* operator->();
     LIter& operator++();
     LIter operator++(int);
     LIter& operator--();
@@ -99,13 +99,13 @@ zharov::LIter< T >::LIter(detail::Node< T >* node):
 {}
 
 template < class T >
-T& zharov::LIter< T >::operator*() const
+T& zharov::LIter< T >::operator*()
 {
   return curr_->val_;
 }
 
 template < class T >
-T* zharov::LIter< T >::operator->() const
+T* zharov::LIter< T >::operator->()
 {
   return std::addressof(curr_->val_);
 }
