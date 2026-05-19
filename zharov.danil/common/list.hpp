@@ -67,15 +67,6 @@ namespace zharov
     List(const List& h);
     List(List&& h) noexcept;
     ~List() noexcept;
-    template < class T >
-    zharov::List< T >::List(const List< T >& h):
-      List()
-    {
-      for (detail::Node< T >* curr = h.head_; curr != nullptr; curr = curr->next_)
-      {
-        pushBack(curr->val_);
-      }
-    }
     List& operator=(const List& h);
     List& operator=(List&& h) noexcept;
     LIter< T > begin();
@@ -243,14 +234,10 @@ zharov::List< T >::List(const List< T >& h):
 
 template < class T >
 zharov::List< T >::List(List< T >&& h) noexcept:
-  head_(h.head_),
-  tail_(h.tail_),
-  size_(h.size_)
-{
-  h.head_ = nullptr;
-  h.tail_ = nullptr;
-  h.size_ = 0;
-}
+  head_(std::exchange(h.head_, nullptr)),
+  tail_(std::exchange(h.tail_, nullptr)),
+  size_(std::exchange(h.size_, 0))
+{}
 
 template < class T >
 zharov::List< T >::~List() noexcept
@@ -261,9 +248,9 @@ zharov::List< T >::~List() noexcept
 template < class T >
 void zharov::List< T >::swap(List< T >& h)
 {
-  std::swap(temp.head_, head_);
-  std::swap(temp.tail_, tail_);
-  std::swap(temp.size_, size_);
+  std::swap(h.head_, head_);
+  std::swap(h.tail_, tail_);
+  std::swap(h.size_, size_);
 }
 
 template < class T >
@@ -282,13 +269,8 @@ zharov::List< T >& zharov::List< T >::operator=(List< T >&& h) noexcept
 {
   if (this != std::addressof(h))
   {
-    clear();
-    head_ = h.head_;
-    tail_ = h.tail_;
-    size_ = h.size_;
-    h.head_ = nullptr;
-    h.tail_ = nullptr;
-    h.size_ = 0;
+    List tmp(std::move(h));
+    swap(tmp);
   }
   return *this;
 }
