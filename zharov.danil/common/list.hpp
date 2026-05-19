@@ -80,9 +80,9 @@ namespace zharov
     void pushFront(const T& v);
     void pushBack(const T& v);
     LIter< T > insert(LIter< T > pos, const T& v);
-    void pushFront(const T&& v) noexcept;
-    void pushBack(const T&& v) noexcept;
-    LIter< T > insert(LIter< T > pos, const T&& v) noexcept;
+    void pushFront(T&& v);
+    void pushBack(T&& v);
+    LIter< T > insert(LIter< T > pos, T&& v);
     void popFront();
     void popBack();
     LIter< T > erase(LIter< T > pos);
@@ -91,6 +91,12 @@ namespace zharov
     void swap(List< T >& h);
 
   private:
+    template < class U >
+    void pushFrontImpl(U&& v);
+    template < class U >
+    void pushBackImpl(U&& v);
+    template < class U >
+    LIter< T > insertImpl(LIter< T > pos, U&& v);
     detail::Node< T >* head_;
     detail::Node< T >* tail_;
     size_t size_;
@@ -324,9 +330,10 @@ const T& zharov::List< T >::back() const
 }
 
 template < class T >
-void zharov::List< T >::pushFront(const T& v)
+template < class U >
+void zharov::List< T >::pushFrontImpl(U&& v)
 {
-  detail::Node< T >* new_node = new detail::Node< T >{v, nullptr, nullptr};
+  detail::Node< T >* new_node = new detail::Node< T >{std::forward< U >(v), nullptr, nullptr};
   new_node->next_ = head_;
   if (head_)
   {
@@ -341,9 +348,10 @@ void zharov::List< T >::pushFront(const T& v)
 }
 
 template < class T >
-void zharov::List< T >::pushBack(const T& v)
+template < class U >
+void zharov::List< T >::pushBackImpl(U&& v)
 {
-  detail::Node< T >* new_node = new detail::Node< T >{v, nullptr, nullptr};
+  detail::Node< T >* new_node = new detail::Node< T >{std::forward< U >(v), nullptr, nullptr};
   new_node->prev_ = tail_;
   if (tail_)
   {
@@ -358,19 +366,20 @@ void zharov::List< T >::pushBack(const T& v)
 }
 
 template < class T >
-zharov::LIter< T > zharov::List< T >::insert(LIter< T > pos, const T& v)
+template < class U >
+zharov::LIter< T > zharov::List< T >::insertImpl(LIter< T > pos, U&& v)
 {
   if (!pos.curr_)
   {
-    pushBack(v);
+    pushBackImpl(std::forward< U >(v));
     return LIter< T >(tail_);
   }
-  else if (pos.curr_ == head_)
+  if (pos.curr_ == head_)
   {
-    pushFront(v);
+    pushFrontImpl(std::forward< U >(v));
     return LIter< T >(head_);
   }
-  detail::Node< T >* new_node = new detail::Node< T >{v, nullptr, nullptr};
+  detail::Node< T >* new_node = new detail::Node< T >{std::forward< U >(v), nullptr, nullptr};
   detail::Node< T >* next = pos.curr_;
   detail::Node< T >* prev = next->prev_;
   new_node->next_ = next;
@@ -379,6 +388,42 @@ zharov::LIter< T > zharov::List< T >::insert(LIter< T > pos, const T& v)
   next->prev_ = new_node;
   ++size_;
   return LIter< T >(new_node);
+}
+
+template < class T >
+void zharov::List< T >::pushFront(const T& v)
+{
+  pushFrontImpl(v);
+}
+
+template < class T >
+void zharov::List< T >::pushFront(T&& v)
+{
+  pushFrontImpl(std::move(v));
+}
+
+template < class T >
+void zharov::List< T >::pushBack(const T& v)
+{
+  pushBackImpl(v);
+}
+
+template < class T >
+void zharov::List< T >::pushBack(T&& v)
+{
+  pushBackImpl(std::move(v));
+}
+
+template < class T >
+zharov::LIter< T > zharov::List< T >::insert(LIter< T > pos, const T& v)
+{
+  return insertImpl(pos, v);
+}
+
+template < class T >
+zharov::LIter< T > zharov::List< T >::insert(LIter< T > pos, T&& v)
+{
+  return insertImpl(pos, std::move(v));
 }
 
 template < class T >
