@@ -90,6 +90,7 @@ namespace
   {
     auto it = data.cbegin();
     out << it->first;
+    ++it;
     for (; it != data.cend(); ++it)
     {
       std::cout << ' ';
@@ -156,6 +157,7 @@ namespace
   {
     auto it = sums.cbegin();
     out << *it;
+    ++it;
     for (; it != sums.cend(); ++it)
     {
       out << ' ';
