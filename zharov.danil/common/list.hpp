@@ -71,8 +71,8 @@ namespace zharov
     List& operator=(List&& h) noexcept;
     LIter< T > begin();
     LIter< T > end();
-    LCIter< T > constBegin() const;
-    LCIter< T > constEnd() const;
+    LCIter< T > cbegin() const;
+    LCIter< T > cend() const;
     T& front();
     const T& front() const;
     T& back();
@@ -287,13 +287,13 @@ zharov::LIter< T > zharov::List< T >::end()
 }
 
 template < class T >
-zharov::LCIter< T > zharov::List< T >::constBegin() const
+zharov::LCIter< T > zharov::List< T >::cbegin() const
 {
   return LCIter< T >(head_);
 }
 
 template < class T >
-zharov::LCIter< T > zharov::List< T >::constEnd() const
+zharov::LCIter< T > zharov::List< T >::cend() const
 {
   return LCIter< T >(nullptr);
 }

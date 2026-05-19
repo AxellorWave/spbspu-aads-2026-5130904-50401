@@ -19,7 +19,7 @@ int main()
 {
   zharov::List< std::pair< std::string, zharov::List< size_t > > > data;
   zharov::getData(std::cin, data);
-  if (data.constBegin() == data.constEnd())
+  if (data.cbegin() == data.cend())
   {
     std::cout << "0\n";
     return 0;
@@ -65,9 +65,9 @@ std::istream& zharov::getData(
 std::ostream& zharov::printNums(std::ostream& out, List< List< size_t > > nums)
 {
   bool first = true;
-  for (auto it = nums.constBegin(); it != nums.constEnd(); ++it)
+  for (auto it = nums.cbegin(); it != nums.cend(); ++it)
   {
-    for (auto inner_it = it->constBegin(); inner_it != it->constEnd(); ++inner_it)
+    for (auto inner_it = it->cbegin(); inner_it != it->cend(); ++inner_it)
     {
       if (!first)
       {
@@ -86,7 +86,7 @@ std::ostream& zharov::printNames(
   std::ostream& out, List< std::pair< std::string, List< size_t > > > data)
 {
   bool first = true;
-  for (auto it = data.constBegin(); it != data.constEnd(); ++it)
+  for (auto it = data.cbegin(); it != data.cend(); ++it)
   {
     if (!first)
     {
@@ -102,7 +102,7 @@ std::ostream& zharov::printNames(
 size_t zharov::getSize(List< std::pair< std::string, List< size_t > > > data)
 {
   size_t res = 0;
-  for (auto it = data.constBegin(); it != data.constEnd(); ++it)
+  for (auto it = data.cbegin(); it != data.cend(); ++it)
   {
     res = std::max(res, it->second.size());
   }
@@ -116,9 +116,9 @@ zharov::List< zharov::List< size_t > > zharov::transposeNums(
   for (size_t i = 0; i < getSize(data); ++i)
   {
     List< size_t > inner;
-    for (auto it = data.constBegin(); it != data.constEnd(); ++it)
+    for (auto it = data.cbegin(); it != data.cend(); ++it)
     {
-      auto num_it = it->second.constBegin();
+      auto num_it = it->second.cbegin();
       if (it->second.size() > i)
       {
         for (size_t j = 0; j < i; ++j)
@@ -137,10 +137,10 @@ zharov::List< size_t > zharov::getSums(List< List< size_t > > nums)
 {
   List< size_t > res;
   constexpr size_t MAX = std::numeric_limits< size_t >::max();
-  for (auto it = nums.constBegin(); it != nums.constEnd(); ++it)
+  for (auto it = nums.cbegin(); it != nums.cend(); ++it)
   {
     size_t sum = 0;
-    for (auto inner_it = it->constBegin(); inner_it != it->constEnd(); ++inner_it)
+    for (auto inner_it = it->cbegin(); inner_it != it->cend(); ++inner_it)
     {
       if (MAX - *inner_it < sum)
       {
@@ -156,7 +156,7 @@ zharov::List< size_t > zharov::getSums(List< List< size_t > > nums)
 std::ostream& zharov::printSums(std::ostream& out, List< size_t > sums)
 {
   bool first = true;
-  for (auto it = sums.constBegin(); it != sums.constEnd(); ++it)
+  for (auto it = sums.cbegin(); it != sums.cend(); ++it)
   {
     if (!first)
     {
