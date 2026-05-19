@@ -23,8 +23,6 @@ namespace zharov
   class LIter
   {
     friend class List< T >;
-    detail::Node< T >* curr_;
-    LIter(detail::Node< T >* node);
 
   public:
     T& operator*() const;
@@ -35,14 +33,16 @@ namespace zharov
     LIter operator--(int);
     bool operator==(const LIter& it) const;
     bool operator!=(const LIter& it) const;
+
+  private:
+    detail::Node< T >* curr_;
+    LIter(detail::Node< T >* node);
   };
 
   template < class T >
   class LCIter
   {
     friend class List< T >;
-    const detail::Node< T >* curr_;
-    LCIter(const detail::Node< T >* node);
 
   public:
     const T& operator*() const;
@@ -53,15 +53,15 @@ namespace zharov
     LCIter operator--(int);
     bool operator==(const LCIter& it) const;
     bool operator!=(const LCIter& it) const;
+
+  private:
+    const detail::Node< T >* curr_;
+    LCIter(const detail::Node< T >* node);
   };
 
   template < class T >
   class List
   {
-    detail::Node< T >* head_;
-    detail::Node< T >* tail_;
-    size_t size_;
-
   public:
     List();
     List(const List& h);
@@ -85,6 +85,11 @@ namespace zharov
     LIter< T > erase(LIter< T > pos);
     void clear();
     size_t size() const;
+
+  private:
+    detail::Node< T >* head_;
+    detail::Node< T >* tail_;
+    size_t size_;
   };
 }
 
