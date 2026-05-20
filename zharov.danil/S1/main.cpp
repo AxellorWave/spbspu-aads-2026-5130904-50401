@@ -71,8 +71,19 @@ namespace
 
   std::ostream& printNums(std::ostream& out, zharov::List< zharov::List< size_t > > nums)
   {
-    for (auto it = nums.cbegin(); it != nums.cend(); ++it)
+    auto it = nums.cbegin();
+    auto inner_it = it->cbegin();
+    out << *inner_it;
+    ++inner_it;
+    for (; inner_it != it->cend(); ++inner_it)
     {
+      out << ' ';
+      out << *inner_it;
+    }
+    ++it;
+    for (; it != nums.cend(); ++it)
+    {
+      out << "\n";
       auto inner_it = it->cbegin();
       out << *inner_it;
       ++inner_it;
@@ -90,6 +101,7 @@ namespace
   {
     auto it = data.cbegin();
     out << it->first;
+    ++it;
     for (; it != data.cend(); ++it)
     {
       std::cout << ' ';
@@ -156,6 +168,7 @@ namespace
   {
     auto it = sums.cbegin();
     out << *it;
+    ++it;
     for (; it != sums.cend(); ++it)
     {
       out << ' ';
