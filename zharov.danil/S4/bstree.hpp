@@ -7,13 +7,47 @@
 
 namespace zharov
 {
-  template < class Key, class Value >
-  class BSTIterator
-  {
-  };
+  template < class Key, class Value, class Compare >
+  class BSTree;
+
   template < class Key, class Value >
   class BSTConstIterator
   {
+  public:
+    friend class BSTree;
+
+    BSTConstIterator(Node< Key, Value >* node = nullptr);
+    std::pair< Key, Value >& operator*();
+    std::pair< Key, Value >* operator->();
+    BSTConstIterator& operator++();
+    BSTConstIterator operator++(int);
+    BSTConstIterator& operator--();
+    BSTConstIterator operator--(int);
+    bool operator==(const BSTConstIterator& other) const;
+    bool operator!=(const BSTConstIterator& other) const;
+
+  private:
+    detail::Node< Key, Value >* node_;
+  };
+
+  template < class Key, class Value >
+  class BSTIterator
+  {
+  public:
+    friend class BSTree;
+
+    BSTIterator(detail::Node< Key, Value >* node = nullptr);
+    const std::pair< Key, Value >& operator*() const;
+    const std::pair< Key, Value >* operator*() const;
+    BSTIterator& operator++();
+    BSTIterator operator++(int);
+    BSTIterator& operator--();
+    BSTIterator operator--(int);
+    bool operator==(const BSTIterator& other) const;
+    bool operator!=(const BSTIterator& other) const;
+
+  private:
+    detail::Node< Key, Value >* node_;
   };
 
   template < class Key, class Value, class Compare >
