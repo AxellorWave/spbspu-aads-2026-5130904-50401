@@ -1,6 +1,7 @@
 #ifndef BSTREE_HPP
 #define BSTREE_HPP
 #include <cstddef>
+#include <utility>
 #include "treenode.hpp"
 
 namespace zharov
@@ -147,6 +148,30 @@ zharov::detail::Node< Key, Value >* zharov::BSTree< Key, Value, Compare >::clone
   node->left_ = clone(root->left_, node);
   node->right_ = clone(root->right_, node);
   return node;
+}
+
+template < class Key, class Value, class Compare >
+zharov::BSTree< Key, Value, Compare >& zharov::BSTree< Key, Value, Compare >::operator=(
+  const BSTree& other)
+{
+  if (*this != std::addressof(other))
+  {
+    BSTree< Key, Value, Compare > copy(other);
+    swap(copy);
+  }
+  return *this;
+}
+
+template < class Key, class Value, class Compare >
+zharov::BSTree< Key, Value, Compare >& zharov::BSTree< Key, Value, Compare >::operator=(
+  BSTree&& other) noexcept
+{
+  if (*this != std::addressof(other))
+  {
+    BSTree< Key, Value, Compare > copy(std::move(other));
+    swap(copy);
+  }
+  return *this;
 }
 
 #endif
