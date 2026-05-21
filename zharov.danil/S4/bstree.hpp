@@ -17,8 +17,8 @@ namespace zharov
     friend class BSTree;
 
     BSTConstIterator(Node< Key, Value >* node = nullptr);
-    std::pair< Key, Value >& operator*();
-    std::pair< Key, Value >* operator->();
+    std::pair< const Key, Value >& operator*();
+    std::pair< const Key, Value >* operator->();
     BSTConstIterator& operator++();
     BSTConstIterator operator++(int);
     BSTConstIterator& operator--();
@@ -38,7 +38,7 @@ namespace zharov
 
     BSTIterator(detail::Node< Key, Value >* node = nullptr);
     const std::pair< Key, Value >& operator*() const;
-    const std::pair< Key, Value >* operator*() const;
+    const std::pair< Key, Value >* operator->() const;
     BSTIterator& operator++();
     BSTIterator operator++(int);
     BSTIterator& operator--();
