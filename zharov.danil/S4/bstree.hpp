@@ -51,7 +51,8 @@ namespace zharov
     detail::Node< Key, Value >* initFake();
     detail::Node< Key, Value >* BSTree< Key, Value, Compare >::clone(
       detail::Node< Key, Value >* root,
-      detail::Node< Key, Value >* parent)
+      detail::Node< Key, Value >* parent);
+    void BSTree< Key, Value, Compare >::deleteNodes(detail::Node< Key, Value >* node) noexcept
   };
 }
 
@@ -76,6 +77,12 @@ zharov::BSTree< Key, Value, Compare >::BSTree():
 {}
 
 template < class Key, class Value, class Compare >
+zharov::BSTree< Key, Value, Compare >::~BSTree() noexcept
+{
+  clear();
+}
+
+template < class Key, class Value, class Compare >
 zharov::BSTree< Key, Value, Compare >::BSTree(const BSTree& other):
   root_(initFake()),
   size_(0),
@@ -96,6 +103,34 @@ template < class Key, class Value, class Compare >
 size_t zharov::BSTree< Key, Value, Compare >::getSize() const
 {
   return size_;
+}
+
+template < class Key, class Value, class Compare >
+void zharov::BSTree< Key, Value, Compare >::deleteNodes(detail::Node< Key, Value >* node) noexcept
+{
+  if (node->isFake())
+  {
+    return;
+  }
+  deleteNodes(node->left_);
+  deleteNodes(node->right_);
+  delete node;
+}
+
+template < class Key, class Value, class Compare >
+void zharov::BSTree< Key, Value, Compare >::clear() noexcept
+{
+  deleteNodes(root_);
+  root_ = detail::Node< Key, Value >::fake;
+  size_ = 0;
+}
+
+template < class Key, class Value, class Compare >
+void zharov::BSTree< Key, Value, Compare >::swap(BSTree& other) noexcept
+{
+  std::swap(other.root_, root_);
+  std::swap(other.size_, size_);
+  std::swap(other.comp_, comp_);
 }
 
 template < class Key, class Value, class Compare >
