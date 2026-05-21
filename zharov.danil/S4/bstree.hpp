@@ -163,7 +163,7 @@ template < class Key, class Value, class Compare >
 zharov::BSTree< Key, Value, Compare >& zharov::BSTree< Key, Value, Compare >::operator=(
   const BSTree& other)
 {
-  if (*this != std::addressof(other))
+  if (this != std::addressof(other))
   {
     BSTree< Key, Value, Compare > copy(other);
     swap(copy);
@@ -175,7 +175,7 @@ template < class Key, class Value, class Compare >
 zharov::BSTree< Key, Value, Compare >& zharov::BSTree< Key, Value, Compare >::operator=(
   BSTree&& other) noexcept
 {
-  if (*this != std::addressof(other))
+  if (this != std::addressof(other))
   {
     BSTree< Key, Value, Compare > copy(std::move(other));
     swap(copy);
@@ -279,7 +279,7 @@ template < class Key, class Value, class Compare >
 const Value& zharov::BSTree< Key, Value, Compare >::at(const Key& k) const
 {
   const detail::Node< Key, Value >* node = findNode(k);
-  if (k == nullptr)
+  if (node == nullptr)
   {
     throw std::logic_error("Key no found");
   }
@@ -348,7 +348,7 @@ size_t zharov::BSTree< Key, Value, Compare >::getHight(detail::Node< Key, Value 
   }
   size_t left = getHight(node->left_);
   size_t right = getHight(node->right_);
-  return 1 + (left > right ? left : right)
+  return 1 + (left > right ? left : right);
 }
 
 template < class Key, class Value, class Compare >
