@@ -1,5 +1,6 @@
 #ifndef BSTREE_HPP
 #define BSTREE_HPP
+#include <cstddef>
 #include "treenode.hpp"
 
 namespace zharov
@@ -45,7 +46,33 @@ namespace zharov
     detail::Node< Key, Value >* root_;
     size_t size_;
     Compare comp_;
+    detail::Node< Key, Value >* initFake();
   };
+}
+
+template < class Key, class Value, class Compare >
+zharov::detail::Node< Key, Value >* zharov::BSTree< Key, Value, Compare >::initFake()
+{
+  if (detail::Node< Key, Value, Compare > == nullptr)
+  {
+    detail::Node< Key, Value >::fake = new detail::Node< Key, Value >(Key(), Value(), nullptr);
+    detail::Node< Key, Value >::fake->left_ = etail::Node< Key, Value >::fake;
+    detail::Node< Key, Value >::fake->right_ = etail::Node< Key, Value >::fake;
+    detail::Node< Key, Value >::fake->parent_ = etail::Node< Key, Value >::fake;
+  }
+}
+
+template < class Key, class Value, class Compare >
+zharov::BSTree< Key, Value, Compare >::BSTree():
+  root_(initFake()),
+  size_(0),
+  comp_()
+{}
+
+template < class Key, class Value, class Compare >
+size_t zharov::BSTree< Key, Value, Compare >::getSize() const
+{
+  return size_;
 }
 
 #endif
