@@ -22,6 +22,9 @@ namespace zharov
 
       bool isFake() const;
     };
+
+    template < class Key, class Value >
+    detail::Node< Key, Value >* detail::Node< Key, Value >::fake = nullptr;
   }
 }
 
