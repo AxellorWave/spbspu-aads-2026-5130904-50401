@@ -47,8 +47,8 @@ namespace zharov
     const_iterator rotateRight(const_iterator it);
     const_iterator rotateLargeLeft(const_iterator it);
     const_iterator rotateLargeRight(const_iterator it);
-    size_t height(const_iterator it);
-    size_t height();
+    size_t height(const_iterator it) const;
+    size_t height() const;
 
   private:
     detail::Node< Key, Value >* root_;
@@ -61,6 +61,7 @@ namespace zharov
     void deleteNodes(detail::Node< Key, Value >* node) noexcept;
     template < class K, class V >
     void pushImpl(K&& k, V&& v);
+    size_t getHight(detail::Node< Key, Value >* node) const;
   };
 }
 
@@ -336,6 +337,24 @@ Value zharov::BSTree< Key, Value, Compare >::drop(const Key& k)
   delete node;
   --size_;
   return res;
+}
+
+template < class Key, class Value, class Compare >
+size_t zharov::BSTree< Key, Value, Compare >::getHight(detail::Node< Key, Value >* node) const
+{
+  if (node->isFake())
+  {
+    return 0;
+  }
+  size_t left = getHight(node->left_);
+  size_t right = getHight(node->right_);
+  return 1 + (left > right ? left : right)
+}
+
+template < class Key, class Value, class Compare >
+size_t zharov::BSTree< Key, Value, Compare >::height() const
+{
+  return getHight(root_);
 }
 
 #endif
