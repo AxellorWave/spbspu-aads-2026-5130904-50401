@@ -1,6 +1,7 @@
 #ifndef BSTREE_HPP
 #define BSTREE_HPP
 #include <cstddef>
+#include <stdexcept>
 #include <utility>
 #include "treenode.hpp"
 
@@ -40,6 +41,7 @@ namespace zharov
     Value get(const Key& k) const;
     Value& at(const Key& k);
     const Value& at(const Key& k) const;
+    detail::Node< Key, Value >* fallLeft(detail::Node< Key, Value >* node) const;
     Value drop(const Key& k);
     const_iterator rotateLeft(const_iterator it);
     const_iterator rotateRight(const_iterator it);
@@ -54,10 +56,9 @@ namespace zharov
     Compare comp_;
 
     detail::Node< Key, Value >* initFake();
-    detail::Node< Key, Value >* BSTree< Key, Value, Compare >::clone(
-      detail::Node< Key, Value >* root,
+    detail::Node< Key, Value >* clone(detail::Node< Key, Value >* root,
       detail::Node< Key, Value >* parent);
-    void BSTree< Key, Value, Compare >::deleteNodes(detail::Node< Key, Value >* node) noexcept;
+    void deleteNodes(detail::Node< Key, Value >* node) noexcept;
     template < class K, class V >
     void pushImpl(K&& k, V&& v);
   };
@@ -70,9 +71,9 @@ zharov::detail::Node< Key, Value >* zharov::BSTree< Key, Value, Compare >::initF
   if (Node::fake == nullptr)
   {
     Node::fake = new detail::Node< Key, Value >(Key(), Value(), nullptr);
-    Node::fake->left_ = etail::Node< Key, Value >::fake;
-    Node::fake->right_ = etail::Node< Key, Value >::fake;
-    Node::fake->parent_ = etail::Node< Key, Value >::fake;
+    Node::fake->left_ = detail::Node< Key, Value >::fake;
+    Node::fake->right_ = detail::Node< Key, Value >::fake;
+    Node::fake->parent_ = detail::Node< Key, Value >::fake;
   }
   return detail::Node< Key, Value >::fake;
 }
@@ -282,6 +283,59 @@ const Value& zharov::BSTree< Key, Value, Compare >::at(const Key& k) const
     throw std::logic_error("Key no found");
   }
   return node->value_;
+}
+
+template < class Key, class Value, class Compare >
+zharov::detail::Node< Key, Value >* zharov::BSTree< Key, Value, Compare >::fallLeft(
+  detail::Node< Key, Value >* node) const
+{
+  while (!node->left_->isFake())
+  {
+    node = node->left_;
+  }
+  return node;
+}
+
+template < class Key, class Value, class Compare >
+Value zharov::BSTree< Key, Value, Compare >::drop(const Key& k)
+{
+  detail::Node< Key, Value >* node = findNode(k);
+  if (node == nullptr)
+  {
+    throw std::out_of_range("Key not found");
+  }
+
+  Value res = std::move(node->value_);
+  if (!node->left_->isFake() && !node->right_->isFake())
+  {
+    detail::Node< Key, Value >* n = fallLeft(node->right_);
+    node->key_ = std::move(n->key_);
+    node->value_ = std::move(n->value_);
+    node = n;
+  }
+
+  detail::Node< Key, Value >* child = (!node->left_->isFake()) ? node->left_ : node->right_;
+  if (!child->isFake())
+  {
+    child->parent_ = node->parent_;
+  }
+
+  if (node->parent_->isFake())
+  {
+    root_ = child;
+  }
+  else if (node->parent_->left_ == node)
+  {
+    node->parent_->left_ = child;
+  }
+  else
+  {
+    node->parent_->right_ = child;
+  }
+
+  delete node;
+  --size_;
+  return res;
 }
 
 #endif
