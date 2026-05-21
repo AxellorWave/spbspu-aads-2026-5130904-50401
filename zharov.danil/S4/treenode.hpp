@@ -5,7 +5,6 @@ namespace zharov
 {
   namespace detail
   {
-
     template < class Key, class Value >
     struct Node
     {

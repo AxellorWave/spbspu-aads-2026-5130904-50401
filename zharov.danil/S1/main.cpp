@@ -7,8 +7,8 @@ namespace zharov
 {
   std::istream& getData(std::istream& in, List< std::pair< std::string, List< size_t > > >& data);
   std::ostream& printNums(std::ostream& out, List< List< size_t > > nums);
-  std::ostream& printNames(
-    std::ostream& out, List< std::pair< std::string, List< size_t > > > data);
+  std::ostream& printNames(std::ostream& out,
+    List< std::pair< std::string, List< size_t > > > data);
   List< List< size_t > > transposeNums(List< std::pair< std::string, List< size_t > > > data);
   size_t getSize(List< std::pair< std::string, List< size_t > > > data);
   List< size_t > getSums(List< List< size_t > > nums);
@@ -44,8 +44,8 @@ int main()
   }
 }
 
-std::istream& zharov::getData(
-  std::istream& in, List< std::pair< std::string, List< size_t > > >& data)
+std::istream& zharov::getData(std::istream& in,
+  List< std::pair< std::string, List< size_t > > >& data)
 {
   std::string name;
   while (in >> name)
@@ -82,8 +82,8 @@ std::ostream& zharov::printNums(std::ostream& out, List< List< size_t > > nums)
   return out;
 }
 
-std::ostream& zharov::printNames(
-  std::ostream& out, List< std::pair< std::string, List< size_t > > > data)
+std::ostream& zharov::printNames(std::ostream& out,
+  List< std::pair< std::string, List< size_t > > > data)
 {
   bool first = true;
   for (auto it = data.constBegin(); it != data.constEnd(); ++it)
