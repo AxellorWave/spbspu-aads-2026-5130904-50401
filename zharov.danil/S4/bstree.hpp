@@ -36,7 +36,8 @@ namespace zharov
 
     void push(const Key& k, const Value& v);
     void push(Key&& k, Value&& v);
-    Value get(const Key& k);
+    detail::Node< Key, Value >* findNode(const Key& k) const;
+    Value get(const Key& k) const;
     Value& at(const Key& k);
     const Value& at(const Key& k) const;
     Value drop(const Key& k);
@@ -193,32 +194,32 @@ void zharov::BSTree< Key, Value, Compare >::pushImpl(K&& k, V&& v)
     return;
   }
 
-  Node* cur = root_;
+  Node* curr = root_;
   while (true)
   {
-    if (comp_(k, cur->key_))
+    if (comp_(k, curr->key_))
     {
-      if (cur->left_->isFake())
+      if (curr->left_->isFake())
       {
-        cur->left_ = new Node(std::forward< K >(k), std::forward< V >(v), cur);
+        curr->left_ = new Node(std::forward< K >(k), std::forward< V >(v), curr);
         ++size_;
         return;
       }
-      cur = cur->left_;
+      curr = curr->left_;
     }
-    else if (comp_(cur->key_, k))
+    else if (comp_(curr->key_, k))
     {
-      if (cur->right_->isFake())
+      if (curr->right_->isFake())
       {
-        cur->right_ = new Node(std::forward< K >(k), std::forward< V >(v), cur);
+        curr->right_ = new Node(std::forward< K >(k), std::forward< V >(v), curr);
         ++size_;
         return;
       }
-      cur = cur->right_;
+      curr = curr->right_;
     }
     else
     {
-      cur->value_ = std::forward< V >(v);
+      curr->value_ = std::forward< V >(v);
       return;
     }
   }
@@ -234,6 +235,53 @@ template < class Key, class Value, class Compare >
 void zharov::BSTree< Key, Value, Compare >::push(Key&& k, Value&& v)
 {
   pushImpl(std::move(k), std::move(v));
+}
+
+template < class Key, class Value, class Compare >
+zharov::detail::Node< Key, Value >* zharov::BSTree< Key, Value, Compare >::findNode(
+  const Key& k) const
+{
+  detail::Node< Key, Value >* curr = root_;
+  while (!curr->isFake())
+  {
+    if (comp_(k, curr->key_))
+    {
+      curr = curr->left_;
+    }
+    else if (comp_(curr->key_, k))
+    {
+      curr = curr->right_;
+    }
+    else
+    {
+      return curr;
+    }
+  }
+  return nullptr;
+}
+
+template < class Key, class Value, class Compare >
+Value zharov::BSTree< Key, Value, Compare >::get(const Key& k) const
+{
+  return at(k);
+}
+
+template < class Key, class Value, class Compare >
+Value& zharov::BSTree< Key, Value, Compare >::at(const Key& k)
+{
+  const BSTree< Key, Value, Compare >* const_tree = this;
+  return const_cast< Value& >((*const_tree).at(k));
+}
+
+template < class Key, class Value, class Compare >
+const Value& zharov::BSTree< Key, Value, Compare >::at(const Key& k) const
+{
+  const detail::Node< Key, Value >* node = findNode(k);
+  if (k == nullptr)
+  {
+    throw std::logic_error("Key no found");
+  }
+  return node->value_;
 }
 
 #endif
