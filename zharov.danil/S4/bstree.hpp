@@ -408,30 +408,98 @@ zharov::BSTIterator< Key, Value >::BSTIterator(detail::Node< Key, Value >* node)
 template < class Key, class Value >
 std::pair< const Key, Value >& zharov::BSTIterator< Key, Value >::operator*()
 {
-  return curr_.data_;
+  return curr_->data_;
 }
 
 template < class Key, class Value >
 std::pair< const Key, Value >* zharov::BSTIterator< Key, Value >::operator->()
 {
-  return std::addressof(curr_.data_);
+  return std::addressof(curr_->data_);
 }
 
 template < class Key, class Value >
 zharov::BSTIterator< Key, Value >& zharov::BSTIterator< Key, Value >::operator++()
-{}
+{
+  if (!curr_)
+  {
+    return *this;
+  }
+  detail::Node< Key, Value >* next = curr_;
+  if (!next->right_->isFake())
+  {
+    next = next->right_;
+    while (!next->left_->isFake())
+    {
+      next = next->left_;
+    }
+  }
+  else
+  {
+    detail::Node< Key, Value >* parent = next->parent_;
+    while (!parent->isFake() && parent->left_ != next)
+    {
+      next = parent;
+      parent = next->parent_;
+    }
+    next = parent;
+    if (next->isFake())
+    {
+      next = nullptr;
+    }
+  }
+  curr_ = next;
+  return *this;
+}
 
 template < class Key, class Value >
 zharov::BSTIterator< Key, Value > zharov::BSTIterator< Key, Value >::operator++(int)
-{}
+{
+  BSTIterator< Key, Value > temp = *this;
+  ++(*this);
+  return temp;
+}
 
 template < class Key, class Value >
 zharov::BSTIterator< Key, Value >& zharov::BSTIterator< Key, Value >::operator--()
-{}
+{
+  if (!curr_)
+  {
+    return *this;
+  }
+  detail::Node< Key, Value >* next = curr_;
+  if (!next->left_->isFake())
+  {
+    next = next->left_;
+    while (!next->right_->isFake())
+    {
+      next = next->right_;
+    }
+  }
+  else
+  {
+    detail::Node< Key, Value >* parent = next->parent_;
+    while (!parent->isFake() && parent->right_ != next)
+    {
+      next = parent;
+      parent = next->parent_;
+    }
+    next = parent;
+    if (next->isFake())
+    {
+      next = nullptr;
+    }
+  }
+  curr_ = next;
+  return *this;
+}
 
 template < class Key, class Value >
 zharov::BSTIterator< Key, Value > zharov::BSTIterator< Key, Value >::operator--(int)
-{}
+{
+  BSTIterator< Key, Value > temp = *this;
+  --(*this);
+  return temp;
+}
 
 template < class Key, class Value >
 bool zharov::BSTIterator< Key, Value >::operator==(const BSTIterator& other) const
@@ -443,6 +511,167 @@ template < class Key, class Value >
 bool zharov::BSTIterator< Key, Value >::operator!=(const BSTIterator& other) const
 {
   return curr_ != other.curr_;
+}
+
+template < class Key, class Value >
+zharov::BSTConstIterator< Key, Value >::BSTConstIterator(detail::Node< Key, Value >* node):
+  curr_(node)
+{}
+
+template < class Key, class Value >
+const std::pair< Key, Value >& zharov::BSTConstIterator< Key, Value >::operator*() const
+{
+  return curr_->data_;
+}
+
+template < class Key, class Value >
+const std::pair< Key, Value >* zharov::BSTConstIterator< Key, Value >::operator->() const
+{
+  return std::addressof(curr_->data_);
+}
+
+template < class Key, class Value >
+zharov::BSTConstIterator< Key, Value >& zharov::BSTConstIterator< Key, Value >::operator++()
+{
+  if (!curr_)
+  {
+    return *this;
+  }
+  detail::Node< Key, Value >* next = curr_;
+  if (!next->right_->isFake())
+  {
+    next = next->right_;
+    while (!next->left_->isFake())
+    {
+      next = next->left_;
+    }
+  }
+  else
+  {
+    detail::Node< Key, Value >* parent = next->parent_;
+    while (!parent->isFake() && parent->left_ != next)
+    {
+      next = parent;
+      parent = next->parent_;
+    }
+    next = parent;
+    if (next->isFake())
+    {
+      next = nullptr;
+    }
+  }
+  curr_ = next;
+  return *this;
+}
+
+template < class Key, class Value >
+zharov::BSTConstIterator< Key, Value > zharov::BSTConstIterator< Key, Value >::operator++(int)
+{
+  BSTConstIterator temp = *this;
+  ++(*this);
+  return temp;
+}
+
+template < class Key, class Value >
+zharov::BSTConstIterator< Key, Value >& zharov::BSTConstIterator< Key, Value >::operator--()
+{
+  if (!curr_)
+  {
+    return *this;
+  }
+  detail::Node< Key, Value >* next = curr_;
+  if (!next->left_->isFake())
+  {
+    next = next->left_;
+    while (!next->right_->isFake())
+    {
+      next = next->right_;
+    }
+  }
+  else
+  {
+    detail::Node< Key, Value >* parent = next->parent_;
+    while (!parent->isFake() && parent->right_ != next)
+    {
+      next = parent;
+      parent = next->parent_;
+    }
+    next = parent;
+    if (next->isFake())
+    {
+      next = nullptr;
+    }
+  }
+  curr_ = next;
+  return *this;
+}
+
+template < class Key, class Value >
+zharov::BSTConstIterator< Key, Value > zharov::BSTConstIterator< Key, Value >::operator--(int)
+{
+  BSTConstIterator temp = *this;
+  --(*this);
+  return temp;
+}
+
+template < class Key, class Value >
+bool zharov::BSTConstIterator< Key, Value >::operator==(const BSTConstIterator& other) const
+{
+  return curr_ == other.curr_;
+}
+
+template < class Key, class Value >
+bool zharov::BSTConstIterator< Key, Value >::operator!=(const BSTConstIterator& other) const
+{
+  return curr_ != other.curr_;
+}
+
+template < class Key, class Value, class Compare >
+zharov::BSTIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::begin()
+{
+  if (root_->isFake())
+  {
+    return iterator(nullptr);
+  }
+  return iterator(fallLeft(root_));
+}
+
+template < class Key, class Value, class Compare >
+zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::begin() const
+{
+  if (root_->isFake())
+  {
+    return const_iterator(nullptr);
+  }
+  return const_iterator(fallLeft(root_));
+}
+
+template < class Key, class Value, class Compare >
+zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::cbegin() const
+{
+  if (root_->isFake())
+  {
+    return const_iterator(nullptr);
+  }
+  return const_iterator(fallLeft(root_));
+}
+
+template < class Key, class Value, class Compare >
+zharov::BSTIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::end()
+{
+  return iterator(nullptr);
+}
+
+template < class Key, class Value, class Compare >
+zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::end() const
+{
+  return const_iterator(nullptr);
+}
+
+template < class Key, class Value, class Compare >
+zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::cend() const
+{
+  return const_iterator(nullptr);
 }
 
 #endif
