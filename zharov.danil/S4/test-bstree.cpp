@@ -1,6 +1,7 @@
 #include <string>
 #include <boost/test/unit_test.hpp>
 #include <stdexcept>
+#include <vector.hpp>
 #include "bstree.hpp"
 
 struct comp
@@ -279,4 +280,129 @@ BOOST_AUTO_TEST_CASE(BalancedTreeHeight)
   tree.push(7, "RR");
   BOOST_CHECK_EQUAL(tree.height(), 3);
 }
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(IteratorSuite)
+
+BOOST_AUTO_TEST_CASE(EmptyTreeBeginEnd)
+{
+  zharov::BSTree< int, std::string, comp > tree;
+  BOOST_CHECK(tree.begin() == tree.end());
+  BOOST_CHECK(tree.cbegin() == tree.cend());
+}
+
+BOOST_AUTO_TEST_CASE(EmptyTreeCbeginCend)
+{
+  zharov::BSTree< int, std::string, comp > tree;
+  auto it = tree.cbegin();
+  auto end = tree.cend();
+  BOOST_CHECK(it == end);
+}
+
+BOOST_AUTO_TEST_CASE(NonEmptyTreeBeginEnd)
+{
+  zharov::BSTree< int, std::string, comp > tree;
+  tree.push(5, "five");
+  tree.push(3, "three");
+  tree.push(7, "seven");
+  BOOST_CHECK(tree.begin() != tree.end());
+
+  auto it = tree.begin();
+  BOOST_CHECK_EQUAL(it->first, 3);
+  BOOST_CHECK_EQUAL(it->second, "three");
+}
+
+BOOST_AUTO_TEST_CASE(Travers)
+{
+  zharov::BSTree< int, std::string, comp > tree;
+  tree.push(3, "three");
+  tree.push(7, "seven");
+  tree.push(2, "two");
+
+  auto it = tree.begin();
+  BOOST_CHECK_EQUAL(it->first, 2);
+  ++it;
+  BOOST_CHECK_EQUAL(it->first, 3);
+  --it;
+  BOOST_CHECK_EQUAL(it->first, 2);
+}
+
+BOOST_AUTO_TEST_CASE(PostIncrement)
+{
+  zharov::BSTree< int, std::string, comp > tree;
+  tree.push(10, "ten");
+  tree.push(20, "twenty");
+
+  auto it = tree.begin();
+  auto old = it++;
+  BOOST_CHECK_EQUAL(old->first, 10);
+  BOOST_CHECK_EQUAL(it->first, 20);
+
+  auto end = tree.end();
+  auto oldEnd = end++;
+  BOOST_CHECK(oldEnd == tree.end());
+}
+
+BOOST_AUTO_TEST_CASE(DereferenceAndModify)
+{
+  zharov::BSTree< int, std::string, comp > tree;
+  tree.push(1, "one");
+  auto it = tree.begin();
+  std::pair< const int, std::string >& p = *it;
+  BOOST_CHECK_EQUAL(p.first, 1);
+  BOOST_CHECK_EQUAL(p.second, "one");
+  p.second = "modified";
+  BOOST_CHECK_EQUAL(tree.at(1), "modified");
+}
+
+BOOST_AUTO_TEST_CASE(ArrowOperator)
+{
+  zharov::BSTree< int, std::string, comp > tree;
+  tree.push(1, "one");
+  auto it = tree.begin();
+  BOOST_CHECK_EQUAL(it->first, 1);
+  BOOST_CHECK_EQUAL(it->second, "one");
+}
+
+BOOST_AUTO_TEST_CASE(EqualityComparison)
+{
+  zharov::BSTree< int, std::string, comp > tree;
+  tree.push(1, "a");
+  tree.push(2, "b");
+
+  auto it1 = tree.begin();
+  auto it2 = tree.begin();
+  BOOST_CHECK(it1 == it2);
+  ++it1;
+  BOOST_CHECK(it1 != it2);
+  it1 = tree.end();
+  BOOST_CHECK(it1 == tree.end());
+}
+
+BOOST_AUTO_TEST_CASE(ConstIteratorReadOnly)
+{
+  zharov::BSTree< int, std::string, comp > tree;
+  tree.push(1, "one");
+  tree.push(2, "two");
+
+  const auto& ctree = tree;
+  auto cit = ctree.cbegin();
+  BOOST_CHECK_EQUAL(cit->first, 1);
+  BOOST_CHECK_EQUAL(cit->second, "one");
+  ++cit;
+  BOOST_CHECK_EQUAL(cit->first, 2);
+}
+
+BOOST_AUTO_TEST_CASE(IncrementEnd)
+{
+  zharov::BSTree< int, std::string, comp > tree;
+  tree.push(42, "answer");
+  auto it = tree.end();
+  auto copy = it;
+  ++it;
+  BOOST_CHECK(it == copy);
+  ++copy;
+  BOOST_CHECK(copy == tree.end());
+}
+
 BOOST_AUTO_TEST_SUITE_END()
