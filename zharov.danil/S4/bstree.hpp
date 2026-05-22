@@ -395,6 +395,12 @@ size_t zharov::BSTree< Key, Value, Compare >::getHight(detail::Node< Key, Value 
 }
 
 template < class Key, class Value, class Compare >
+size_t zharov::BSTree< Key, Value, Compare >::height(const_iterator it) const
+{
+  return getHight(it.curr_);
+}
+
+template < class Key, class Value, class Compare >
 size_t zharov::BSTree< Key, Value, Compare >::height() const
 {
   return getHight(root_);
@@ -673,5 +679,25 @@ zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::ce
 {
   return const_iterator(nullptr);
 }
+
+template < class Key, class Value, class Compare >
+zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::rotateLeft(
+  const_iterator it)
+{}
+
+template < class Key, class Value, class Compare >
+zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::rotateRight(
+  const_iterator it)
+{}
+
+template < class Key, class Value, class Compare >
+zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::rotateLargeLeft(
+  const_iterator it)
+{}
+
+template < class Key, class Value, class Compare >
+zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::rotateLargeRight(
+  const_iterator it)
+{}
 
 #endif

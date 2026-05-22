@@ -191,6 +191,30 @@ BOOST_AUTO_TEST_CASE(AtThrowsOnMissingKey)
 }
 BOOST_AUTO_TEST_SUITE_END()
 
+BOOST_AUTO_TEST_SUITE(HightSuite)
+BOOST_AUTO_TEST_CASE(HeightFromIterator)
+{
+  zharov::BSTree< int, std::string, comp > tree;
+  tree.push(5, "five");
+  tree.push(3, "three");
+  tree.push(7, "seven");
+  tree.push(2, "two");
+  tree.push(4, "four");
+  tree.push(6, "six");
+  tree.push(8, "eight");
+
+  auto it = tree.cbegin();
+  while (it != tree.cend() && it->first != 3)
+  {
+    ++it;
+  }
+  BOOST_REQUIRE(it != tree.cend());
+  BOOST_CHECK_EQUAL(tree.height(it), 2);
+  auto leaf = tree.cbegin();
+  BOOST_CHECK_EQUAL(tree.height(leaf), 1);
+}
+BOOST_AUTO_TEST_SUITE_END()
+
 BOOST_AUTO_TEST_SUITE(DropSuite)
 BOOST_AUTO_TEST_CASE(DropLeafNode)
 {
