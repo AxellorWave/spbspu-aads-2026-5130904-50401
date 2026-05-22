@@ -14,11 +14,12 @@ namespace zharov
   class BSTConstIterator
   {
   public:
+    template < class, class, class >
     friend class BSTree;
 
-    BSTConstIterator(Node< Key, Value >* node = nullptr);
-    std::pair< const Key, Value >& operator*();
-    std::pair< const Key, Value >* operator->();
+    BSTConstIterator(detail::Node< Key, Value >* node = nullptr);
+    const std::pair< Key, Value >& operator*() const;
+    const std::pair< Key, Value >* operator->() const;
     BSTConstIterator& operator++();
     BSTConstIterator operator++(int);
     BSTConstIterator& operator--();
@@ -27,18 +28,19 @@ namespace zharov
     bool operator!=(const BSTConstIterator& other) const;
 
   private:
-    detail::Node< Key, Value >* node_;
+    detail::Node< Key, Value >* curr_;
   };
 
   template < class Key, class Value >
   class BSTIterator
   {
   public:
+    template < class, class, class >
     friend class BSTree;
 
     BSTIterator(detail::Node< Key, Value >* node = nullptr);
-    const std::pair< Key, Value >& operator*() const;
-    const std::pair< Key, Value >* operator->() const;
+    std::pair< const Key, Value >& operator*();
+    std::pair< const Key, Value >* operator->();
     BSTIterator& operator++();
     BSTIterator operator++(int);
     BSTIterator& operator--();
@@ -47,7 +49,7 @@ namespace zharov
     bool operator!=(const BSTIterator& other) const;
 
   private:
-    detail::Node< Key, Value >* node_;
+    detail::Node< Key, Value >* curr_;
   };
 
   template < class Key, class Value, class Compare >
@@ -83,6 +85,13 @@ namespace zharov
     const_iterator rotateLargeRight(const_iterator it);
     size_t height(const_iterator it) const;
     size_t height() const;
+
+    iterator begin();
+    const_iterator begin() const;
+    const_iterator cbegin() const;
+    iterator end();
+    const_iterator end() const;
+    const_iterator cend() const;
 
   private:
     detail::Node< Key, Value >* root_;
@@ -187,7 +196,7 @@ zharov::detail::Node< Key, Value >* zharov::BSTree< Key, Value, Compare >::clone
   {
     return Node::fake;
   }
-  Node* node = new Node(root->key_, root->value_, parent);
+  Node* node = new Node(root->data_.first, root->data_.second, parent);
   node->left_ = clone(root->left_, node);
   node->right_ = clone(root->right_, node);
   return node;
@@ -233,7 +242,7 @@ void zharov::BSTree< Key, Value, Compare >::pushImpl(K&& k, V&& v)
   Node* curr = root_;
   while (true)
   {
-    if (comp_(k, curr->key_))
+    if (comp_(k, curr->data_.first))
     {
       if (curr->left_->isFake())
       {
@@ -243,7 +252,7 @@ void zharov::BSTree< Key, Value, Compare >::pushImpl(K&& k, V&& v)
       }
       curr = curr->left_;
     }
-    else if (comp_(curr->key_, k))
+    else if (comp_(curr->data_.first, k))
     {
       if (curr->right_->isFake())
       {
@@ -255,7 +264,7 @@ void zharov::BSTree< Key, Value, Compare >::pushImpl(K&& k, V&& v)
     }
     else
     {
-      curr->value_ = std::forward< V >(v);
+      curr->data_.second = std::forward< V >(v);
       return;
     }
   }
@@ -280,11 +289,11 @@ zharov::detail::Node< Key, Value >* zharov::BSTree< Key, Value, Compare >::findN
   detail::Node< Key, Value >* curr = root_;
   while (!curr->isFake())
   {
-    if (comp_(k, curr->key_))
+    if (comp_(k, curr->data_.first))
     {
       curr = curr->left_;
     }
-    else if (comp_(curr->key_, k))
+    else if (comp_(curr->data_.first, k))
     {
       curr = curr->right_;
     }
@@ -317,7 +326,7 @@ const Value& zharov::BSTree< Key, Value, Compare >::at(const Key& k) const
   {
     throw std::logic_error("Key no found");
   }
-  return node->value_;
+  return node->data_.second;
 }
 
 template < class Key, class Value, class Compare >
@@ -340,12 +349,12 @@ Value zharov::BSTree< Key, Value, Compare >::drop(const Key& k)
     throw std::out_of_range("Key not found");
   }
 
-  Value res = std::move(node->value_);
+  Value res = std::move(node->data_.second);
   if (!node->left_->isFake() && !node->right_->isFake())
   {
     detail::Node< Key, Value >* n = fallLeft(node->right_);
-    node->key_ = std::move(n->key_);
-    node->value_ = std::move(n->value_);
+    const_cast< Key& >(node->data_.first) = std::move(const_cast< Key& >(n->data_.first));
+    node->data_.second = std::move(n->data_.second);
     node = n;
   }
 
@@ -389,6 +398,51 @@ template < class Key, class Value, class Compare >
 size_t zharov::BSTree< Key, Value, Compare >::height() const
 {
   return getHight(root_);
+}
+
+template < class Key, class Value >
+zharov::BSTIterator< Key, Value >::BSTIterator(detail::Node< Key, Value >* node):
+  curr_(node)
+{}
+
+template < class Key, class Value >
+std::pair< const Key, Value >& zharov::BSTIterator< Key, Value >::operator*()
+{
+  return curr_.data_;
+}
+
+template < class Key, class Value >
+std::pair< const Key, Value >* zharov::BSTIterator< Key, Value >::operator->()
+{
+  return std::addressof(curr_.data_);
+}
+
+template < class Key, class Value >
+zharov::BSTIterator< Key, Value >& zharov::BSTIterator< Key, Value >::operator++()
+{}
+
+template < class Key, class Value >
+zharov::BSTIterator< Key, Value > zharov::BSTIterator< Key, Value >::operator++(int)
+{}
+
+template < class Key, class Value >
+zharov::BSTIterator< Key, Value >& zharov::BSTIterator< Key, Value >::operator--()
+{}
+
+template < class Key, class Value >
+zharov::BSTIterator< Key, Value > zharov::BSTIterator< Key, Value >::operator--(int)
+{}
+
+template < class Key, class Value >
+bool zharov::BSTIterator< Key, Value >::operator==(const BSTIterator& other) const
+{
+  return curr_ == other.curr_;
+}
+
+template < class Key, class Value >
+bool zharov::BSTIterator< Key, Value >::operator!=(const BSTIterator& other) const
+{
+  return curr_ != other.curr_;
 }
 
 #endif
