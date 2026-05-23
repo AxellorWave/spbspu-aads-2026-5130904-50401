@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(ConstBeginTest)
   list.pushBack(1);
   list.pushBack(3);
   const zharov::List< int > const_list(list);
-  zharov::LCIter< int > it = const_list.constBegin();
+  zharov::LCIter< int > it = const_list.cbegin();
   BOOST_CHECK_EQUAL(*it, 1);
   ++it;
   BOOST_CHECK_EQUAL(*it, 3);
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(EndTest)
 BOOST_AUTO_TEST_CASE(ConstEndTest)
 {
   const zharov::List< int > list;
-  BOOST_CHECK(list.constBegin() == list.constBegin());
+  BOOST_CHECK(list.cbegin() == list.cbegin());
 }
 
 BOOST_AUTO_TEST_CASE(FrontTest)

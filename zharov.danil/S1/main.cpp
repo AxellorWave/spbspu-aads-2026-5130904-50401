@@ -3,39 +3,44 @@
 #include <limits>
 #include <list.hpp>
 
-namespace zharov
+namespace
 {
-  std::istream& getData(std::istream& in, List< std::pair< std::string, List< size_t > > >& data);
-  std::ostream& printNums(std::ostream& out, List< List< size_t > > nums);
-  std::ostream& printNames(
-    std::ostream& out, List< std::pair< std::string, List< size_t > > > data);
-  List< List< size_t > > transposeNums(List< std::pair< std::string, List< size_t > > > data);
-  size_t getSize(List< std::pair< std::string, List< size_t > > > data);
-  List< size_t > getSums(List< List< size_t > > nums);
-  std::ostream& printSums(std::ostream& out, List< size_t > sums);
+  std::istream& getData(std::istream& in,
+    zharov::List< std::pair< std::string, zharov::List< size_t > > >& data);
+  std::ostream& printNums(std::ostream& out, zharov::List< zharov::List< size_t > > nums);
+  std::ostream& printNames(std::ostream& out,
+    zharov::List< std::pair< std::string, zharov::List< size_t > > > data);
+  zharov::List< zharov::List< size_t > > transposeNums(
+    zharov::List< std::pair< std::string, zharov::List< size_t > > > data);
+  size_t getSize(zharov::List< std::pair< std::string, zharov::List< size_t > > > data);
+  zharov::List< size_t > getSums(zharov::List< zharov::List< size_t > > nums);
+  std::ostream& printSums(std::ostream& out, zharov::List< size_t > sums);
 }
 
 int main()
 {
   zharov::List< std::pair< std::string, zharov::List< size_t > > > data;
-  zharov::getData(std::cin, data);
-  if (data.constBegin() == data.constEnd())
+  getData(std::cin, data);
+  if (data.cbegin() == data.cend())
   {
     std::cout << "0\n";
     return 0;
   }
-  zharov::printNames(std::cout, data);
-  if (zharov::getSize(data) == 0)
+  printNames(std::cout, data);
+  std::cout << "\n";
+  if (getSize(data) == 0)
   {
     std::cout << "0\n";
     return 0;
   }
-  auto transpose_nums = zharov::transposeNums(data);
-  zharov::printNums(std::cout, transpose_nums);
+  auto transpose_nums = transposeNums(data);
+  printNums(std::cout, transpose_nums);
+  std::cout << "\n";
   try
   {
-    auto sums_list = zharov::getSums(transpose_nums);
-    zharov::printSums(std::cout, sums_list);
+    auto sums_list = getSums(transpose_nums);
+    printSums(std::cout, sums_list);
+    std::cout << "\n";
   }
   catch (const std::overflow_error& e)
   {
@@ -44,127 +49,131 @@ int main()
   }
 }
 
-std::istream& zharov::getData(
-  std::istream& in, List< std::pair< std::string, List< size_t > > >& data)
+namespace
 {
-  std::string name;
-  while (in >> name)
+  std::istream& getData(std::istream& in,
+    zharov::List< std::pair< std::string, zharov::List< size_t > > >& data)
   {
-    size_t num;
-    List< size_t > nums;
-    while (in >> num)
+    std::string name;
+    while (in >> name)
     {
-      nums.pushBack(num);
-    }
-    data.pushBack(make_pair(name, nums));
-    in.clear();
-  }
-  return in;
-}
-
-std::ostream& zharov::printNums(std::ostream& out, List< List< size_t > > nums)
-{
-  bool first = true;
-  for (auto it = nums.constBegin(); it != nums.constEnd(); ++it)
-  {
-    for (auto inner_it = it->constBegin(); inner_it != it->constEnd(); ++inner_it)
-    {
-      if (!first)
+      size_t num;
+      zharov::List< size_t > nums;
+      while (in >> num)
       {
-        std::cout << ' ';
+        nums.pushBack(num);
       }
-      out << *inner_it;
-      first = false;
+      data.pushBack(make_pair(name, nums));
+      in.clear();
     }
-    first = true;
-    out << "\n";
+    return in;
   }
-  return out;
-}
 
-std::ostream& zharov::printNames(
-  std::ostream& out, List< std::pair< std::string, List< size_t > > > data)
-{
-  bool first = true;
-  for (auto it = data.constBegin(); it != data.constEnd(); ++it)
+  std::ostream& printNums(std::ostream& out, zharov::List< zharov::List< size_t > > nums)
   {
-    if (!first)
-    {
-      std::cout << ' ';
-    }
-    out << it->first;
-    first = false;
-  }
-  out << "\n";
-  return out;
-}
-
-size_t zharov::getSize(List< std::pair< std::string, List< size_t > > > data)
-{
-  size_t res = 0;
-  for (auto it = data.constBegin(); it != data.constEnd(); ++it)
-  {
-    res = std::max(res, it->second.size());
-  }
-  return res;
-}
-
-zharov::List< zharov::List< size_t > > zharov::transposeNums(
-  List< std::pair< std::string, List< size_t > > > data)
-{
-  List< List< size_t > > res;
-  for (size_t i = 0; i < getSize(data); ++i)
-  {
-    List< size_t > inner;
-    for (auto it = data.constBegin(); it != data.constEnd(); ++it)
-    {
-      auto num_it = it->second.constBegin();
-      if (it->second.size() > i)
-      {
-        for (size_t j = 0; j < i; ++j)
-        {
-          ++num_it;
-        }
-        inner.pushBack(*num_it);
-      }
-    }
-    res.pushBack(inner);
-  }
-  return res;
-}
-
-zharov::List< size_t > zharov::getSums(List< List< size_t > > nums)
-{
-  List< size_t > res;
-  constexpr size_t MAX = std::numeric_limits< size_t >::max();
-  for (auto it = nums.constBegin(); it != nums.constEnd(); ++it)
-  {
-    size_t sum = 0;
-    for (auto inner_it = it->constBegin(); inner_it != it->constEnd(); ++inner_it)
-    {
-      if (MAX - *inner_it < sum)
-      {
-        throw std::overflow_error("Overflow");
-      }
-      sum += *inner_it;
-    }
-    res.pushBack(sum);
-  }
-  return res;
-}
-
-std::ostream& zharov::printSums(std::ostream& out, List< size_t > sums)
-{
-  bool first = true;
-  for (auto it = sums.constBegin(); it != sums.constEnd(); ++it)
-  {
-    if (!first)
+    auto it = nums.cbegin();
+    auto inner_it = it->cbegin();
+    out << *inner_it;
+    ++inner_it;
+    for (; inner_it != it->cend(); ++inner_it)
     {
       out << ' ';
+      out << *inner_it;
     }
-    out << *it;
-    first = false;
+    ++it;
+    for (; it != nums.cend(); ++it)
+    {
+      out << "\n";
+      auto inner_it = it->cbegin();
+      out << *inner_it;
+      ++inner_it;
+      for (; inner_it != it->cend(); ++inner_it)
+      {
+        out << ' ';
+        out << *inner_it;
+      }
+    }
+    return out;
   }
-  out << '\n';
-  return out;
+
+  std::ostream& printNames(std::ostream& out,
+    zharov::List< std::pair< std::string, zharov::List< size_t > > > data)
+  {
+    auto it = data.cbegin();
+    out << it->first;
+    ++it;
+    for (; it != data.cend(); ++it)
+    {
+      std::cout << ' ';
+      out << it->first;
+    }
+    return out;
+  }
+
+  size_t getSize(zharov::List< std::pair< std::string, zharov::List< size_t > > > data)
+  {
+    size_t res = 0;
+    for (auto it = data.cbegin(); it != data.cend(); ++it)
+    {
+      res = std::max(res, it->second.size());
+    }
+    return res;
+  }
+
+  zharov::List< zharov::List< size_t > > transposeNums(
+    zharov::List< std::pair< std::string, zharov::List< size_t > > > data)
+  {
+    zharov::List< zharov::List< size_t > > res;
+    for (size_t i = 0; i < getSize(data); ++i)
+    {
+      zharov::List< size_t > inner;
+      for (auto it = data.cbegin(); it != data.cend(); ++it)
+      {
+        auto num_it = it->second.cbegin();
+        if (it->second.size() > i)
+        {
+          for (size_t j = 0; j < i; ++j)
+          {
+            ++num_it;
+          }
+          inner.pushBack(*num_it);
+        }
+      }
+      res.pushBack(inner);
+    }
+    return res;
+  }
+
+  zharov::List< size_t > getSums(zharov::List< zharov::List< size_t > > nums)
+  {
+    zharov::List< size_t > res;
+    constexpr size_t MAX = std::numeric_limits< size_t >::max();
+    for (auto it = nums.cbegin(); it != nums.cend(); ++it)
+    {
+      size_t sum = 0;
+      for (auto inner_it = it->cbegin(); inner_it != it->cend(); ++inner_it)
+      {
+        if (MAX - *inner_it < sum)
+        {
+          throw std::overflow_error("Overflow");
+        }
+        sum += *inner_it;
+      }
+      res.pushBack(sum);
+    }
+    return res;
+  }
+
+  std::ostream& printSums(std::ostream& out, zharov::List< size_t > sums)
+  {
+    auto it = sums.cbegin();
+    out << *it;
+    ++it;
+    for (; it != sums.cend(); ++it)
+    {
+      out << ' ';
+      out << *it;
+    }
+    return out;
+  }
 }
