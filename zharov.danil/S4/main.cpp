@@ -37,6 +37,7 @@ int main(int argc, char** argv)
     {
       dict_name += dict_str[i];
     }
+    ++i;
     for (; i < dict_str.size(); ++i)
     {
       std::string key;
@@ -44,6 +45,7 @@ int main(int argc, char** argv)
       {
         key += dict_str[i];
       }
+      ++i;
       std::string value;
       for (; i < dict_str.size() && dict_str[i] != ' '; ++i)
       {
