@@ -6,15 +6,16 @@
 
 namespace zharov
 {
-
-  template < class T >
-  struct Node
+  namespace detail
   {
-    T val_;
-    Node< T >* next_;
-    Node< T >* prev_;
-  };
-
+    template < class T >
+    struct Node
+    {
+      T val_;
+      Node< T >* next_;
+      Node< T >* prev_;
+    };
+  }
   template < class T >
   class List;
 
@@ -22,26 +23,26 @@ namespace zharov
   class LIter
   {
     friend class List< T >;
-    Node< T >* curr_;
-    LIter(Node< T >* node);
 
   public:
-    T& operator*() const;
-    T* operator->() const;
+    T& operator*();
+    T* operator->();
     LIter& operator++();
     LIter operator++(int);
     LIter& operator--();
     LIter operator--(int);
     bool operator==(const LIter& it) const;
     bool operator!=(const LIter& it) const;
+
+  private:
+    detail::Node< T >* curr_;
+    LIter(detail::Node< T >* node) noexcept;
   };
 
   template < class T >
   class LCIter
   {
     friend class List< T >;
-    const Node< T >* curr_;
-    LCIter(const Node< T >* node);
 
   public:
     const T& operator*() const;
@@ -52,26 +53,26 @@ namespace zharov
     LCIter operator--(int);
     bool operator==(const LCIter& it) const;
     bool operator!=(const LCIter& it) const;
+
+  private:
+    const detail::Node< T >* curr_;
+    LCIter(const detail::Node< T >* node) noexcept;
   };
 
   template < class T >
   class List
   {
-    Node< T >* head_;
-    Node< T >* tail_;
-    size_t size_;
-
   public:
-    List();
+    List() noexcept;
     List(const List& h);
     List(List&& h) noexcept;
-    ~List();
+    ~List() noexcept;
     List& operator=(const List& h);
     List& operator=(List&& h) noexcept;
     LIter< T > begin();
     LIter< T > end();
-    LCIter< T > constBegin() const;
-    LCIter< T > constEnd() const;
+    LCIter< T > cbegin() const;
+    LCIter< T > cend() const;
     T& front();
     const T& front() const;
     T& back();
@@ -79,397 +80,441 @@ namespace zharov
     void pushFront(const T& v);
     void pushBack(const T& v);
     LIter< T > insert(LIter< T > pos, const T& v);
+    void pushFront(T&& v);
+    void pushBack(T&& v);
+    LIter< T > insert(LIter< T > pos, T&& v);
     void popFront();
     void popBack();
     LIter< T > erase(LIter< T > pos);
     void clear();
     size_t size() const;
-    void swap(List& h) noexcept;
+    void swap(List< T >& h);
+
+  private:
+    template < class U >
+    void pushFrontImpl(U&& v);
+    template < class U >
+    void pushBackImpl(U&& v);
+    template < class U >
+    LIter< T > insertImpl(LIter< T > pos, U&& v);
+    detail::Node< T >* head_;
+    detail::Node< T >* tail_;
+    size_t size_;
   };
+}
 
-  template < class T >
-  LIter< T >::LIter(Node< T >* node):
-    curr_(node)
-  {}
+template < class T >
+zharov::LIter< T >::LIter(detail::Node< T >* node) noexcept:
+  curr_(node)
+{}
 
-  template < class T >
-  T& LIter< T >::operator*() const
+template < class T >
+T& zharov::LIter< T >::operator*()
+{
+  return curr_->val_;
+}
+
+template < class T >
+T* zharov::LIter< T >::operator->()
+{
+  return std::addressof(curr_->val_);
+}
+
+template < class T >
+zharov::LIter< T >& zharov::LIter< T >::operator++()
+{
+  curr_ = curr_->next_;
+  return *this;
+}
+
+template < class T >
+zharov::LIter< T > zharov::LIter< T >::operator++(int)
+{
+  LIter< T > temp = *this;
+  curr_ = curr_->next_;
+  return temp;
+}
+
+template < class T >
+zharov::LIter< T >& zharov::LIter< T >::operator--()
+{
+  curr_ = curr_->prev_;
+  return *this;
+}
+
+template < class T >
+zharov::LIter< T > zharov::LIter< T >::operator--(int)
+{
+  LIter< T > temp = *this;
+  curr_ = curr_->prev_;
+  return temp;
+}
+
+template < class T >
+bool zharov::LIter< T >::operator==(const LIter& it) const
+{
+  return curr_ == it.curr_;
+}
+
+template < class T >
+bool zharov::LIter< T >::operator!=(const LIter& it) const
+{
+  return curr_ != it.curr_;
+}
+
+template < class T >
+zharov::LCIter< T >::LCIter(const detail::Node< T >* node) noexcept:
+  curr_(node)
+{}
+
+template < class T >
+const T& zharov::LCIter< T >::operator*() const
+{
+  return curr_->val_;
+}
+
+template < class T >
+const T* zharov::LCIter< T >::operator->() const
+{
+  return std::addressof(curr_->val_);
+}
+
+template < class T >
+zharov::LCIter< T >& zharov::LCIter< T >::operator++()
+{
+  curr_ = curr_->next_;
+  return *this;
+}
+
+template < class T >
+zharov::LCIter< T > zharov::LCIter< T >::operator++(int)
+{
+  LCIter< T > temp = *this;
+  curr_ = curr_->next_;
+  return temp;
+}
+
+template < class T >
+zharov::LCIter< T >& zharov::LCIter< T >::operator--()
+{
+  curr_ = curr_->prev_;
+  return *this;
+}
+
+template < class T >
+zharov::LCIter< T > zharov::LCIter< T >::operator--(int)
+{
+  LCIter< T > temp = *this;
+  curr_ = curr_->prev_;
+  return temp;
+}
+
+template < class T >
+bool zharov::LCIter< T >::operator==(const LCIter& it) const
+{
+  return curr_ == it.curr_;
+}
+
+template < class T >
+bool zharov::LCIter< T >::operator!=(const LCIter& it) const
+{
+  return curr_ != it.curr_;
+}
+
+template < class T >
+zharov::List< T >::List() noexcept:
+  head_(nullptr),
+  tail_(nullptr),
+  size_(0)
+{}
+
+template < class T >
+zharov::List< T >::List(const List< T >& h):
+  List()
+{
+  for (detail::Node< T >* curr = h.head_; curr != nullptr; curr = curr->next_)
   {
-    return curr_->val_;
+    pushBack(curr->val_);
   }
+}
 
-  template < class T >
-  T* LIter< T >::operator->() const
+template < class T >
+zharov::List< T >::List(List< T >&& h) noexcept:
+  head_(std::exchange(h.head_, nullptr)),
+  tail_(std::exchange(h.tail_, nullptr)),
+  size_(std::exchange(h.size_, 0))
+{}
+
+template < class T >
+zharov::List< T >::~List() noexcept
+{
+  clear();
+}
+
+template < class T >
+void zharov::List< T >::swap(List< T >& h)
+{
+  std::swap(h.head_, head_);
+  std::swap(h.tail_, tail_);
+  std::swap(h.size_, size_);
+}
+
+template < class T >
+zharov::List< T >& zharov::List< T >::operator=(const List< T >& h)
+{
+  if (this != std::addressof(h))
   {
-    return std::addressof(curr_->val_);
+    List< T > temp(h);
+    swap(temp);
   }
+  return *this;
+}
 
-  template < class T >
-  LIter< T >& LIter< T >::operator++()
+template < class T >
+zharov::List< T >& zharov::List< T >::operator=(List< T >&& h) noexcept
+{
+  if (this != std::addressof(h))
   {
-    curr_ = curr_->next_;
-    return *this;
+    List tmp(std::move(h));
+    swap(tmp);
   }
+  return *this;
+}
 
-  template < class T >
-  LIter< T > LIter< T >::operator++(int)
+template < class T >
+zharov::LIter< T > zharov::List< T >::begin()
+{
+  return LIter< T >(head_);
+}
+
+template < class T >
+zharov::LIter< T > zharov::List< T >::end()
+{
+  return LIter< T >(nullptr);
+}
+
+template < class T >
+zharov::LCIter< T > zharov::List< T >::cbegin() const
+{
+  return LCIter< T >(head_);
+}
+
+template < class T >
+zharov::LCIter< T > zharov::List< T >::cend() const
+{
+  return LCIter< T >(nullptr);
+}
+
+template < class T >
+T& zharov::List< T >::front()
+{
+  return head_->val_;
+}
+
+template < class T >
+const T& zharov::List< T >::front() const
+{
+  return head_->val_;
+}
+
+template < class T >
+T& zharov::List< T >::back()
+{
+  return tail_->val_;
+}
+
+template < class T >
+const T& zharov::List< T >::back() const
+{
+  return tail_->val_;
+}
+
+template < class T >
+template < class U >
+void zharov::List< T >::pushFrontImpl(U&& v)
+{
+  detail::Node< T >* new_node = new detail::Node< T >{std::forward< U >(v), nullptr, nullptr};
+  new_node->next_ = head_;
+  if (head_)
   {
-    LIter< T > temp = *this;
-    curr_ = curr_->next_;
-    return temp;
+    head_->prev_ = new_node;
   }
-
-  template < class T >
-  LIter< T >& LIter< T >::operator--()
+  else
   {
-    curr_ = curr_->prev_;
-    return *this;
+    tail_ = new_node;
   }
+  head_ = new_node;
+  ++size_;
+}
 
-  template < class T >
-  LIter< T > LIter< T >::operator--(int)
+template < class T >
+template < class U >
+void zharov::List< T >::pushBackImpl(U&& v)
+{
+  detail::Node< T >* new_node = new detail::Node< T >{std::forward< U >(v), nullptr, nullptr};
+  new_node->prev_ = tail_;
+  if (tail_)
   {
-    LIter< T > temp = *this;
-    curr_ = curr_->prev_;
-    return temp;
+    tail_->next_ = new_node;
   }
-
-  template < class T >
-  bool LIter< T >::operator==(const LIter& it) const
+  else
   {
-    return curr_ == it.curr_;
+    head_ = new_node;
   }
+  tail_ = new_node;
+  ++size_;
+}
 
-  template < class T >
-  bool LIter< T >::operator!=(const LIter& it) const
+template < class T >
+template < class U >
+zharov::LIter< T > zharov::List< T >::insertImpl(LIter< T > pos, U&& v)
+{
+  if (!pos.curr_)
   {
-    return curr_ != it.curr_;
+    pushBackImpl(std::forward< U >(v));
+    return LIter< T >(tail_);
   }
-
-  template < class T >
-  LCIter< T >::LCIter(const Node< T >* node):
-    curr_(node)
-  {}
-
-  template < class T >
-  const T& LCIter< T >::operator*() const
+  if (pos.curr_ == head_)
   {
-    return curr_->val_;
-  }
-
-  template < class T >
-  const T* LCIter< T >::operator->() const
-  {
-    return std::addressof(curr_->val_);
-  }
-
-  template < class T >
-  LCIter< T >& LCIter< T >::operator++()
-  {
-    curr_ = curr_->next_;
-    return *this;
-  }
-
-  template < class T >
-  LCIter< T > LCIter< T >::operator++(int)
-  {
-    LCIter< T > temp = *this;
-    curr_ = curr_->next_;
-    return temp;
-  }
-
-  template < class T >
-  LCIter< T >& LCIter< T >::operator--()
-  {
-    curr_ = curr_->prev_;
-    return *this;
-  }
-
-  template < class T >
-  LCIter< T > LCIter< T >::operator--(int)
-  {
-    LCIter< T > temp = *this;
-    curr_ = curr_->prev_;
-    return temp;
-  }
-
-  template < class T >
-  bool LCIter< T >::operator==(const LCIter& it) const
-  {
-    return curr_ == it.curr_;
-  }
-
-  template < class T >
-  bool LCIter< T >::operator!=(const LCIter& it) const
-  {
-    return curr_ != it.curr_;
-  }
-
-  template < class T >
-  List< T >::List():
-    head_(nullptr),
-    tail_(nullptr),
-    size_(0)
-  {}
-
-  template < class T >
-  List< T >::List(const List< T >& h):
-    List()
-  {
-    for (Node< T >* curr = h.head_; curr != nullptr; curr = curr->next_)
-    {
-      pushBack(curr->val_);
-    }
-  }
-
-  template < class T >
-  List< T >::List(List< T >&& h) noexcept:
-    head_(h.head_),
-    tail_(h.tail_),
-    size_(h.size_)
-  {
-    h.head_ = nullptr;
-    h.tail_ = nullptr;
-    h.size_ = 0;
-  }
-
-  template < class T >
-  List< T >::~List()
-  {
-    clear();
-  }
-
-  template < class T >
-  List< T >& List< T >::operator=(const List< T >& h)
-  {
-    if (this != std::addressof(h))
-    {
-      List< T > temp(h);
-      swap(temp);
-    }
-    return *this;
-  }
-
-  template < class T >
-  List< T >& List< T >::operator=(List< T >&& h) noexcept
-  {
-    if (this != std::addressof(h))
-    {
-      clear();
-      head_ = h.head_;
-      tail_ = h.tail_;
-      size_ = h.size_;
-      h.head_ = nullptr;
-      h.tail_ = nullptr;
-      h.size_ = 0;
-    }
-    return *this;
-  }
-
-  template < class T >
-  LIter< T > List< T >::begin()
-  {
+    pushFrontImpl(std::forward< U >(v));
     return LIter< T >(head_);
   }
+  detail::Node< T >* new_node = new detail::Node< T >{std::forward< U >(v), nullptr, nullptr};
+  detail::Node< T >* next = pos.curr_;
+  detail::Node< T >* prev = next->prev_;
+  new_node->next_ = next;
+  new_node->prev_ = prev;
+  prev->next_ = new_node;
+  next->prev_ = new_node;
+  ++size_;
+  return LIter< T >(new_node);
+}
 
-  template < class T >
-  LIter< T > List< T >::end()
+template < class T >
+void zharov::List< T >::pushFront(const T& v)
+{
+  pushFrontImpl(v);
+}
+
+template < class T >
+void zharov::List< T >::pushFront(T&& v)
+{
+  pushFrontImpl(std::move(v));
+}
+
+template < class T >
+void zharov::List< T >::pushBack(const T& v)
+{
+  pushBackImpl(v);
+}
+
+template < class T >
+void zharov::List< T >::pushBack(T&& v)
+{
+  pushBackImpl(std::move(v));
+}
+
+template < class T >
+zharov::LIter< T > zharov::List< T >::insert(LIter< T > pos, const T& v)
+{
+  return insertImpl(pos, v);
+}
+
+template < class T >
+zharov::LIter< T > zharov::List< T >::insert(LIter< T > pos, T&& v)
+{
+  return insertImpl(pos, std::move(v));
+}
+
+template < class T >
+void zharov::List< T >::popFront()
+{
+  if (!head_)
   {
-    return LIter< T >(nullptr);
+    return;
   }
-
-  template < class T >
-  LCIter< T > List< T >::constBegin() const
+  detail::Node< T >* next = head_->next_;
+  if (next)
   {
-    return LCIter< T >(head_);
+    next->prev_ = nullptr;
   }
-
-  template < class T >
-  LCIter< T > List< T >::constEnd() const
+  else
   {
-    return LCIter< T >(nullptr);
+    tail_ = nullptr;
   }
+  delete head_;
+  head_ = next;
+  --size_;
+}
 
-  template < class T >
-  T& List< T >::front()
+template < class T >
+void zharov::List< T >::popBack()
+{
+  if (!tail_)
   {
-    return head_->val_;
+    return;
   }
-
-  template < class T >
-  const T& List< T >::front() const
+  detail::Node< T >* prev = tail_->prev_;
+  if (prev)
   {
-    return head_->val_;
+    prev->next_ = nullptr;
   }
-
-  template < class T >
-  T& List< T >::back()
+  else
   {
-    return tail_->val_;
+    head_ = nullptr;
   }
+  delete tail_;
+  tail_ = prev;
+  --size_;
+}
 
-  template < class T >
-  const T& List< T >::back() const
+template < class T >
+zharov::LIter< T > zharov::List< T >::erase(LIter< T > pos)
+{
+  if (!pos.curr_)
   {
-    return tail_->val_;
+    return end();
   }
-
-  template < class T >
-  void List< T >::pushFront(const T& v)
+  detail::Node< T >* next = pos.curr_->next_;
+  detail::Node< T >* prev = pos.curr_->prev_;
+  if (next)
   {
-    Node< T >* new_node = new Node< T >{v, nullptr, nullptr};
-    new_node->next_ = head_;
-    if (head_)
-    {
-      head_->prev_ = new_node;
-    }
-    else
-    {
-      tail_ = new_node;
-    }
-    head_ = new_node;
-    ++size_;
+    next->prev_ = prev;
   }
-
-  template < class T >
-  void List< T >::pushBack(const T& v)
+  else
   {
-    Node< T >* new_node = new Node< T >{v, nullptr, nullptr};
-    new_node->prev_ = tail_;
-    if (tail_)
-    {
-      tail_->next_ = new_node;
-    }
-    else
-    {
-      head_ = new_node;
-    }
-    tail_ = new_node;
-    ++size_;
+    tail_ = prev;
   }
-
-  template < class T >
-  LIter< T > List< T >::insert(LIter< T > pos, const T& v)
+  if (prev)
   {
-    if (!pos.curr_)
-    {
-      pushBack(v);
-      return LIter< T >(tail_);
-    }
-    else if (pos.curr_ == head_)
-    {
-      pushFront(v);
-      return LIter< T >(head_);
-    }
-    Node< T >* new_node = new Node< T >{v, nullptr, nullptr};
-    Node< T >* next = pos.curr_;
-    Node< T >* prev = next->prev_;
-    new_node->next_ = next;
-    new_node->prev_ = prev;
-    prev->next_ = new_node;
-    next->prev_ = new_node;
-    ++size_;
-    return LIter< T >(new_node);
+    prev->next_ = next;
   }
-
-  template < class T >
-  void List< T >::popFront()
+  else
   {
-    if (!head_)
-    {
-      return;
-    }
-    Node< T >* next = head_->next_;
-    if (next)
-    {
-      next->prev_ = nullptr;
-    }
-    else
-    {
-      tail_ = nullptr;
-    }
+    head_ = next;
+  }
+  delete pos.curr_;
+  --size_;
+  return LIter< T >(next);
+}
+
+template < class T >
+void zharov::List< T >::clear()
+{
+  while (head_)
+  {
+    detail::Node< T >* next = head_->next_;
     delete head_;
     head_ = next;
     --size_;
   }
+  tail_ = nullptr;
+}
 
-  template < class T >
-  void List< T >::popBack()
-  {
-    if (!tail_)
-    {
-      return;
-    }
-    Node< T >* prev = tail_->prev_;
-    if (prev)
-    {
-      prev->next_ = nullptr;
-    }
-    else
-    {
-      head_ = nullptr;
-    }
-    delete tail_;
-    tail_ = prev;
-    --size_;
-  }
-
-  template < class T >
-  LIter< T > List< T >::erase(LIter< T > pos)
-  {
-    if (!pos.curr_)
-    {
-      return end();
-    }
-    Node< T >* next = pos.curr_->next_;
-    Node< T >* prev = pos.curr_->prev_;
-    if (next)
-    {
-      next->prev_ = prev;
-    }
-    else
-    {
-      tail_ = prev;
-    }
-    if (prev)
-    {
-      prev->next_ = next;
-    }
-    else
-    {
-      head_ = next;
-    }
-    delete pos.curr_;
-    --size_;
-    return LIter< T >(next);
-  }
-
-  template < class T >
-  void List< T >::clear()
-  {
-    while (head_)
-    {
-      Node< T >* next = head_->next_;
-      delete head_;
-      head_ = next;
-      --size_;
-    }
-    tail_ = nullptr;
-  }
-
-  template < class T >
-  size_t List< T >::size() const
-  {
-    return size_;
-  }
-
-  template < class T >
-  void List< T >::swap(List& h) noexcept
-  {
-    std::swap(h.head_, head_);
-    std::swap(h.tail_, tail_);
-    std::swap(h.size_, size_);
-  }
+template < class T >
+size_t zharov::List< T >::size() const
+{
+  return size_;
 }
 
 #endif
