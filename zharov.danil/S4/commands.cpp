@@ -11,7 +11,7 @@ void zharov::print(std::ostream& out, std::istream& in, dictionaries_t& dicts)
 
   if (dicts.at(dict_name).getSize() == 0)
   {
-    out << "\n";
+    out << "<EMPTY>\n";
     return;
   }
   out << dict_name;
