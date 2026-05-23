@@ -1,8 +1,8 @@
 #include <string>
 #include <boost/test/unit_test.hpp>
+#include <bstree.hpp>
 #include <stdexcept>
 #include <vector.hpp>
-#include "bstree.hpp"
 
 struct comp
 {
