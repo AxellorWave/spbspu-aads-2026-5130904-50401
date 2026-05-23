@@ -95,6 +95,7 @@ namespace zharov
     void push(const Key& k, const Value& v);
     void push(Key&& k, Value&& v);
     detail::Node< Key, Value >* findNode(const Key& k) const;
+    bool has(const Key& k) const;
     Value get(const Key& k) const;
     Value& at(const Key& k);
     const Value& at(const Key& k) const;
@@ -351,6 +352,12 @@ zharov::detail::Node< Key, Value >* zharov::BSTree< Key, Value, Compare >::findN
     }
   }
   return nullptr;
+}
+
+template < class Key, class Value, class Compare >
+bool zharov::BSTree< Key, Value, Compare >::has(const Key& k) const
+{
+  return findNode(k) != nullptr;
 }
 
 template < class Key, class Value, class Compare >
