@@ -430,3 +430,109 @@ BOOST_AUTO_TEST_CASE(IncrementEnd)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(RotationSuite)
+
+BOOST_AUTO_TEST_CASE(SimpleRotateLeft)
+{
+  zharov::BSTree< int, std::string, comp > tree;
+  tree.push(5, "five");
+  tree.push(3, "three");
+  tree.push(7, "seven");
+  tree.push(6, "six");
+  tree.push(8, "eight");
+
+  auto it = tree.cbegin();
+  while (it->first != 5)
+  {
+    ++it;
+  }
+  tree.rotateLeft(it);
+  zharov::BSTree< int, std::string, comp > expected;
+  expected.push(7, "seven");
+  expected.push(5, "five");
+  expected.push(8, "eight");
+  expected.push(3, "three");
+  expected.push(6, "six");
+
+  BOOST_CHECK(tree.isStructEqual(expected));
+}
+
+BOOST_AUTO_TEST_CASE(SimpleRotateRight)
+{
+  zharov::BSTree< int, std::string, comp > tree;
+  tree.push(7, "seven");
+  tree.push(5, "five");
+  tree.push(9, "nine");
+  tree.push(3, "three");
+  tree.push(6, "six");
+
+  auto it = tree.cbegin();
+  while (it != tree.cend() && it->first != 7)
+  {
+    ++it;
+  }
+  BOOST_REQUIRE(it != tree.cend());
+
+  tree.rotateRight(it);
+  zharov::BSTree< int, std::string, comp > expected;
+  expected.push(5, "five");
+  expected.push(3, "three");
+  expected.push(7, "seven");
+  expected.push(6, "six");
+  expected.push(9, "nine");
+
+  BOOST_CHECK(tree.isStructEqual(expected));
+}
+
+BOOST_AUTO_TEST_CASE(RotateLargeLeft)
+{
+  zharov::BSTree< int, std::string, comp > tree;
+  tree.push(5, "five");
+  tree.push(3, "three");
+  tree.push(8, "eight");
+  tree.push(7, "seven");
+
+  auto it = tree.cbegin();
+  while (it != tree.cend() && it->first != 5)
+  {
+    ++it;
+  }
+  BOOST_REQUIRE(it != tree.cend());
+
+  tree.rotateLargeLeft(it);
+  zharov::BSTree< int, std::string, comp > expected;
+  expected.push(7, "seven");
+  expected.push(5, "five");
+  expected.push(8, "eight");
+  expected.push(3, "three");
+
+  BOOST_CHECK(tree.isStructEqual(expected));
+}
+
+BOOST_AUTO_TEST_CASE(RotateLargeRight)
+{
+  zharov::BSTree< int, std::string, comp > tree;
+  tree.push(9, "nine");
+  tree.push(6, "six");
+  tree.push(12, "twelve");
+  tree.push(7, "seven");
+
+  auto it = tree.cbegin();
+  while (it != tree.cend() && it->first != 9)
+  {
+    ++it;
+  }
+  BOOST_REQUIRE(it != tree.cend());
+
+  tree.rotateLargeRight(it);
+  zharov::BSTree< int, std::string, comp > expected;
+  expected.push(7, "seven");
+  expected.push(6, "six");
+  expected.push(9, "nine");
+  expected.push(12, "twelve");
+
+  BOOST_CHECK(tree.isStructEqual(expected));
+}
+
+BOOST_AUTO_TEST_SUITE_END()

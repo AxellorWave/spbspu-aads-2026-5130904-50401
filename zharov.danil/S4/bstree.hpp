@@ -79,6 +79,7 @@ namespace zharov
     const Value& at(const Key& k) const;
     detail::Node< Key, Value >* fallLeft(detail::Node< Key, Value >* node) const;
     Value drop(const Key& k);
+    bool isStructEqual(const BSTree& other) const;
     const_iterator rotateLeft(const_iterator it);
     const_iterator rotateRight(const_iterator it);
     const_iterator rotateLargeLeft(const_iterator it);
@@ -105,6 +106,8 @@ namespace zharov
     template < class K, class V >
     void pushImpl(K&& k, V&& v);
     size_t getHight(detail::Node< Key, Value >* node) const;
+    bool isStructEqualImpl(const detail::Node< Key, Value >* a,
+      const detail::Node< Key, Value >* b) const;
   };
 }
 
@@ -774,6 +777,32 @@ zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::ro
   }
   rotateLeft(const_iterator(x->left_));
   return rotateRight(it);
+}
+
+template < class Key, class Value, class Compare >
+bool zharov::BSTree< Key, Value, Compare >::isStructEqualImpl(const detail::Node< Key, Value >* a,
+  const detail::Node< Key, Value >* b) const
+{
+  if (a->isFake() && b->isFake())
+  {
+    return true;
+  }
+  if (a->isFake() || b->isFake())
+  {
+    return false;
+  }
+  if (a->data_.first != b->data_.first || a->data_.second != b->data_.second)
+  {
+    return false;
+  }
+  return isStructEqualImpl(a->left_, b->left_) && isStructEqualImpl(a->right_, b->right_);
+}
+
+template < class Key, class Value, class Compare >
+bool zharov::BSTree< Key, Value, Compare >::isStructEqual(
+  const BSTree< Key, Value, Compare >& other) const
+{
+  return isStructEqualImpl(root_, other.root_);
 }
 
 #endif
