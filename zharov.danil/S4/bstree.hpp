@@ -683,21 +683,97 @@ zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::ce
 template < class Key, class Value, class Compare >
 zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::rotateLeft(
   const_iterator it)
-{}
+{
+  using Node = detail::Node< Key, Value >;
+  Node* x = it.curr_;
+  if (!x || x->right_->isFake())
+  {
+    return it;
+  }
+  Node* y = x->right_;
+  x->right_ = y->left_;
+  if (!y->left_->isFake())
+  {
+    y->left_->parent_ = x;
+  }
+  y->parent_ = x->parent_;
+  if (x->parent_->isFake())
+  {
+    root_ = y;
+  }
+  else if (x == x->parent_->left_)
+  {
+    x->parent_->left_ = y;
+  }
+  else
+  {
+    x->parent_->right_ = y;
+  }
+  y->left_ = x;
+  x->parent_ = y;
+  return const_iterator(y);
+}
 
 template < class Key, class Value, class Compare >
 zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::rotateRight(
   const_iterator it)
-{}
+{
+  using Node = detail::Node< Key, Value >;
+  Node* y = it.curr_;
+  if (!y || y->left_->isFake())
+  {
+    return it;
+  }
+  Node* x = y->left_;
+  y->left_ = x->right_;
+  if (!x->right_->isFake())
+  {
+    x->right_->parent_ = y;
+  }
+  x->parent_ = y->parent_;
+  if (y->parent_->isFake())
+  {
+    root_ = x;
+  }
+  else if (y == y->parent_->left_)
+  {
+    y->parent_->left_ = x;
+  }
+  else
+  {
+    y->parent_->right_ = x;
+  }
+  x->right_ = y;
+  y->parent_ = x;
+  return const_iterator(x);
+}
 
 template < class Key, class Value, class Compare >
 zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::rotateLargeLeft(
   const_iterator it)
-{}
+{
+  using Node = detail::Node< Key, Value >;
+  Node* x = it.curr_;
+  if (!x || x->right_->isFake() || x->right_->left_->isFake())
+  {
+    return it;
+  }
+  rotateRight(const_iterator(x->right_));
+  return rotateLeft(it);
+}
 
 template < class Key, class Value, class Compare >
 zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::rotateLargeRight(
   const_iterator it)
-{}
+{
+  using Node = detail::Node< Key, Value >;
+  Node* x = it.curr_;
+  if (!x || x->left_->isFake() || x->left_->right_->isFake())
+  {
+    return it;
+  }
+  rotateLeft(const_iterator(x->left_));
+  return rotateRight(it);
+}
 
 #endif
