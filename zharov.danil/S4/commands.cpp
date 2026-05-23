@@ -6,7 +6,7 @@ void zharov::print(std::ostream& out, std::istream& in, dictionaries_t& dicts)
   in >> dict_name;
   if (!dicts.has(dict_name))
   {
-    throw std::logic_error("Graph not found");
+    throw std::logic_error("Dict not found");
   }
 
   out << dict_name;
@@ -17,11 +17,82 @@ void zharov::print(std::ostream& out, std::istream& in, dictionaries_t& dicts)
   out << "\n";
 }
 
-void zharov::complement(std::ostream&, std::istream&, dictionaries_t&)
-{}
+void zharov::complement(std::ostream&, std::istream& in, dictionaries_t& dicts)
+{
+  std::string dict_name_new, dict_name_old_1, dict_name_old_2;
+  in >> dict_name_new >> dict_name_old_1 >> dict_name_old_2;
+  if (!dicts.has(dict_name_old_1) || !dicts.has(dict_name_old_2))
+  {
+    throw std::logic_error("Dict not found");
+  }
+  if (dicts.has(dict_name_new))
+  {
+    throw std::logic_error("Dict already exist");
+  }
 
-void zharov::intersect(std::ostream&, std::istream&, dictionaries_t&)
-{}
+  dictionary_t new_dict;
+  for (auto i = dicts.at(dict_name_old_1).cbegin(); i != dicts.at(dict_name_old_1).cend(); ++i)
+  {
+    if (!dicts.at(dict_name_old_2).has(i->first))
+    {
+      new_dict.push(i->first, i->second);
+    }
+  }
+  for (auto i = dicts.at(dict_name_old_2).cbegin(); i != dicts.at(dict_name_old_2).cend(); ++i)
+  {
+    if (!dicts.at(dict_name_old_1).has(i->first))
+    {
+      new_dict.push(i->first, i->second);
+    }
+  }
+  dicts.push(dict_name_new, new_dict);
+}
 
-void zharov::makeUnion(std::ostream&, std::istream&, dictionaries_t&)
-{}
+void zharov::intersect(std::ostream&, std::istream& in, dictionaries_t& dicts)
+{
+  std::string dict_name_new, dict_name_old_1, dict_name_old_2;
+  in >> dict_name_new >> dict_name_old_1 >> dict_name_old_2;
+  if (!dicts.has(dict_name_old_1) || !dicts.has(dict_name_old_2))
+  {
+    throw std::logic_error("Dict not found");
+  }
+  if (dicts.has(dict_name_new))
+  {
+    throw std::logic_error("Dict already exist");
+  }
+
+  dictionary_t new_dict;
+  for (auto i = dicts.at(dict_name_old_1).cbegin(); i != dicts.at(dict_name_old_1).cend(); ++i)
+  {
+    if (dicts.at(dict_name_old_2).has(i->first))
+    {
+      new_dict.push(i->first, i->second);
+    }
+  }
+  dicts.push(dict_name_new, new_dict);
+}
+
+void zharov::makeUnion(std::ostream&, std::istream& in, dictionaries_t& dicts)
+{
+  std::string dict_name_new, dict_name_old_1, dict_name_old_2;
+  in >> dict_name_new >> dict_name_old_1 >> dict_name_old_2;
+  if (!dicts.has(dict_name_old_1) || !dicts.has(dict_name_old_2))
+  {
+    throw std::logic_error("Dict not found");
+  }
+  if (dicts.has(dict_name_new))
+  {
+    throw std::logic_error("Dict already exist");
+  }
+
+  dictionary_t new_dict;
+  for (auto i = dicts.at(dict_name_old_2).cbegin(); i != dicts.at(dict_name_old_2).cend(); ++i)
+  {
+    new_dict.push(i->first, i->second);
+  }
+  for (auto i = dicts.at(dict_name_old_1).cbegin(); i != dicts.at(dict_name_old_1).cend(); ++i)
+  {
+    new_dict.push(i->first, i->second);
+  }
+  dicts.push(dict_name_new, new_dict);
+}
