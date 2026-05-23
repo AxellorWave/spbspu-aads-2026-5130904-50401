@@ -25,10 +25,6 @@ void zharov::complement(std::ostream&, std::istream& in, dictionaries_t& dicts)
   {
     throw std::logic_error("Dict not found");
   }
-  if (dicts.has(dict_name_new))
-  {
-    throw std::logic_error("Dict already exist");
-  }
 
   dictionary_t new_dict;
   for (auto i = dicts.at(dict_name_old_1).cbegin(); i != dicts.at(dict_name_old_1).cend(); ++i)
@@ -56,10 +52,6 @@ void zharov::intersect(std::ostream&, std::istream& in, dictionaries_t& dicts)
   {
     throw std::logic_error("Dict not found");
   }
-  if (dicts.has(dict_name_new))
-  {
-    throw std::logic_error("Dict already exist");
-  }
 
   dictionary_t new_dict;
   for (auto i = dicts.at(dict_name_old_1).cbegin(); i != dicts.at(dict_name_old_1).cend(); ++i)
@@ -79,10 +71,6 @@ void zharov::makeUnion(std::ostream&, std::istream& in, dictionaries_t& dicts)
   if (!dicts.has(dict_name_old_1) || !dicts.has(dict_name_old_2))
   {
     throw std::logic_error("Dict not found");
-  }
-  if (dicts.has(dict_name_new))
-  {
-    throw std::logic_error("Dict already exist");
   }
 
   dictionary_t new_dict;
