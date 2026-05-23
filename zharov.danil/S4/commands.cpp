@@ -9,6 +9,11 @@ void zharov::print(std::ostream& out, std::istream& in, dictionaries_t& dicts)
     throw std::logic_error("Dict not found");
   }
 
+  if (dicts.at(dict_name).getSize() == 0)
+  {
+    out << "\n";
+    return;
+  }
   out << dict_name;
   for (auto i = dicts.at(dict_name).cbegin(); i != dicts.at(dict_name).cend(); ++i)
   {
