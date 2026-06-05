@@ -7,15 +7,7 @@ namespace zharov
   template < class T >
   class Queue
   {
-    List< T > list_;
-
   public:
-    Queue();
-    Queue(const Queue& q);
-    Queue(Queue&& q) noexcept;
-    ~Queue() = default;
-    Queue& operator=(const Queue& q);
-    Queue& operator=(Queue&& q) noexcept;
     T& front();
     const T& front() const;
     T& back();
@@ -26,44 +18,10 @@ namespace zharov
     void push(T rhs);
     T drop();
     void swap(Queue& q);
+
+  private:
+    List< T > list_;
   };
-}
-
-template < class T >
-zharov::Queue< T >::Queue():
-  list_()
-{}
-
-template < class T >
-zharov::Queue< T >::Queue(const Queue& q):
-  list_(q.list_)
-{}
-
-template < class T >
-zharov::Queue< T >::Queue(Queue&& q) noexcept:
-  list_(std::move(q.list_))
-{}
-
-template < class T >
-zharov::Queue< T >& zharov::Queue< T >::operator=(const Queue& q)
-{
-  if (this != std::addressof(q))
-  {
-    Queue< T > temp(q);
-    swap(temp);
-  }
-  return *this;
-}
-
-template < class T >
-zharov::Queue< T >& zharov::Queue< T >::operator=(Queue&& q) noexcept
-{
-  if (this != std::addressof(q))
-  {
-    clear();
-    list_ = std::move(q.list_);
-  }
-  return *this;
 }
 
 template < class T >

@@ -7,15 +7,7 @@ namespace zharov
   template < class T >
   class Stack
   {
-    List< T > list_;
-
   public:
-    Stack();
-    Stack(const Stack& s);
-    Stack(Stack&& s) noexcept;
-    ~Stack() = default;
-    Stack& operator=(const Stack& s);
-    Stack& operator=(Stack&& s) noexcept;
     T& top();
     const T& top() const;
     bool empty() const;
@@ -24,44 +16,10 @@ namespace zharov
     void push(T rhs);
     T drop();
     void swap(Stack& s);
+
+  private:
+    List< T > list_;
   };
-}
-
-template < class T >
-zharov::Stack< T >::Stack():
-  list_()
-{}
-
-template < class T >
-zharov::Stack< T >::Stack(const Stack& s):
-  list_(s.list_)
-{}
-
-template < class T >
-zharov::Stack< T >::Stack(Stack&& s) noexcept:
-  list_(std::move(s.list_))
-{}
-
-template < class T >
-zharov::Stack< T >& zharov::Stack< T >::operator=(const Stack& s)
-{
-  if (this != std::addressof(s))
-  {
-    Stack< T > temp(s);
-    swap(temp);
-  }
-  return *this;
-}
-
-template < class T >
-zharov::Stack< T >& zharov::Stack< T >::operator=(Stack&& s) noexcept
-{
-  if (this != std::addressof(s))
-  {
-    clear();
-    list_ = std::move(s.list_);
-  }
-  return *this;
 }
 
 template < class T >
