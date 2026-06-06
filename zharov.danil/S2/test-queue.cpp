@@ -1,4 +1,5 @@
 #include <boost/test/unit_test.hpp>
+#include <utility>
 #include <queue.hpp>
 
 BOOST_AUTO_TEST_CASE(QueueDefaultConstructorTest)
@@ -155,4 +156,24 @@ BOOST_AUTO_TEST_CASE(QueueSwapTest)
   BOOST_CHECK_EQUAL(queue1.front(), 100);
   BOOST_CHECK_EQUAL(queue2.size(), 3);
   BOOST_CHECK_EQUAL(queue2.front(), 10);
+}
+
+BOOST_AUTO_TEST_CASE(QueueEmplaceSingleArgTest)
+{
+  zharov::Queue< int > queue;
+  queue.emplace(1);
+  queue.emplace(2);
+  queue.emplace(3);
+  BOOST_CHECK_EQUAL(queue.size(), 3);
+  BOOST_CHECK_EQUAL(queue.front(), 1);
+}
+
+BOOST_AUTO_TEST_CASE(QueueEmplaceMultiArgTest)
+{
+  zharov::Queue< std::pair< int, int > > queue;
+  queue.emplace(1, 2);
+  queue.emplace(3, 4);
+  BOOST_CHECK_EQUAL(queue.size(), 2);
+  BOOST_CHECK_EQUAL(queue.front().first, 1);
+  BOOST_CHECK_EQUAL(queue.front().second, 2);
 }

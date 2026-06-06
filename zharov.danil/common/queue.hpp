@@ -15,6 +15,8 @@ namespace zharov
     void clear() noexcept;
     void push(const T& rhs);
     void push(T&& rhs);
+    template < class... Args >
+    void emplace(Args&&... args);
     void pop() noexcept;
     void swap(Queue& q) noexcept;
 
@@ -63,6 +65,13 @@ template < class T >
 void zharov::Queue< T >::push(T&& rhs)
 {
   list_.pushBack(std::move(rhs));
+}
+
+template < class T >
+template < class... Args >
+void zharov::Queue< T >::emplace(Args&&... args)
+{
+  list_.emplaceBack(std::forward< Args >(args)...);
 }
 
 template < class T >
