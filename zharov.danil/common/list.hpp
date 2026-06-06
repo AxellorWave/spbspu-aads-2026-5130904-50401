@@ -122,6 +122,7 @@ namespace zharov
     void pushBackImpl(U&& v);
     template < class U >
     LIter< T > insertImpl(LIter< T > pos, U&& v);
+    LIter< T > linkBefore(LIter< T > pos, detail::Node< T >* node) noexcept;
     void spliceRange(detail::Node< T >* first, detail::Node< T >* last,
       size_t count, List< T >& src, detail::Node< T >* pos) noexcept;
     detail::Node< T >* head_;
@@ -393,28 +394,67 @@ void zharov::List< T >::pushBackImpl(U&& v)
 }
 
 template < class T >
-template < class U >
-zharov::LIter< T > zharov::List< T >::insertImpl(LIter< T > pos, U&& v)
+zharov::LIter< T > zharov::List< T >::linkBefore(LIter< T > pos, detail::Node< T >* node) noexcept
 {
   if (!pos.curr_)
   {
-    pushBackImpl(std::forward< U >(v));
+    node->prev_ = tail_;
+    if (tail_)
+    {
+      tail_->next_ = node;
+    }
+    else
+    {
+      head_ = node;
+    }
+    tail_ = node;
+    ++size_;
     return LIter< T >(tail_);
   }
   if (pos.curr_ == head_)
   {
-    pushFrontImpl(std::forward< U >(v));
+    node->next_ = head_;
+    head_->prev_ = node;
+    head_ = node;
+    ++size_;
     return LIter< T >(head_);
   }
-  detail::Node< T >* new_node = new detail::Node< T >(std::forward< U >(v));
   detail::Node< T >* next = pos.curr_;
   detail::Node< T >* prev = next->prev_;
-  new_node->next_ = next;
-  new_node->prev_ = prev;
-  prev->next_ = new_node;
-  next->prev_ = new_node;
+  node->next_ = next;
+  node->prev_ = prev;
+  prev->next_ = node;
+  next->prev_ = node;
   ++size_;
-  return LIter< T >(new_node);
+  return LIter< T >(node);
+}
+
+template < class T >
+template < class U >
+zharov::LIter< T > zharov::List< T >::insertImpl(LIter< T > pos, U&& v)
+{
+  return linkBefore(pos, new detail::Node< T >(std::forward< U >(v)));
+}
+
+template < class T >
+template < class... Args >
+zharov::LIter< T > zharov::List< T >::emplace(LIter< T > pos, Args&&... args)
+{
+  return linkBefore(pos, new detail::Node< T >(std::forward< Args >(args)...));
+}
+
+template < class T >
+template < class... Args >
+zharov::LIter< T > zharov::List< T >::emplaceFront(Args&&... args)
+{
+  return emplace(begin(), std::forward< Args >(args)...);
+}
+
+template < class T >
+template < class... Args >
+zharov::LIter< T > zharov::List< T >::emplaceBack(Args&&... args)
+{
+  return emplace(end(), std::forward< Args >(args)...);
 }
 
 template < class T >
