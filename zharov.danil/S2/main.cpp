@@ -3,11 +3,9 @@
 #include <string>
 #include "general_functions.hpp"
 
-using ll_t = long long;
-
 int main(int argc, char** argv)
 {
-  zharov::Stack< ll_t > results;
+  zharov::Stack< long long > results;
   try
   {
     std::ifstream file;
