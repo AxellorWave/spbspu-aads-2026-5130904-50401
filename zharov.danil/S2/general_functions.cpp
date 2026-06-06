@@ -57,7 +57,8 @@ zharov::Queue< std::string > zharov::getPostfix(Queue< std::string >& infix)
   Queue< std::string > res;
   while (!infix.empty())
   {
-    std::string curr = infix.drop();
+    std::string curr = infix.front();
+    infix.pop();
     if (isOperand(curr))
     {
       res.push(curr);
@@ -70,11 +71,12 @@ zharov::Queue< std::string > zharov::getPostfix(Queue< std::string >& infix)
     {
       while (!stack.empty() && stack.top() != "(")
       {
-        res.push(stack.drop());
+        res.push(stack.top());
+        stack.pop();
       }
       if (!stack.empty())
       {
-        stack.drop();
+        stack.pop();
       }
       else
       {
@@ -87,7 +89,8 @@ zharov::Queue< std::string > zharov::getPostfix(Queue< std::string >& infix)
       {
         if (getPriority(curr) >= getPriority(stack.top()))
         {
-          res.push(stack.drop());
+          res.push(stack.top());
+          stack.pop();
         }
         else
         {
@@ -101,7 +104,8 @@ zharov::Queue< std::string > zharov::getPostfix(Queue< std::string >& infix)
   {
     if (stack.top() != "(")
     {
-      res.push(stack.drop());
+      res.push(stack.top());
+      stack.pop();
     }
     else
     {
@@ -116,7 +120,8 @@ zharov::ll_t zharov::calculate(Queue< std::string >& postfix)
   Stack< ll_t > temp;
   while (!postfix.empty())
   {
-    std::string curr = postfix.drop();
+    std::string curr = postfix.front();
+    postfix.pop();
     if (!isOperand(curr))
     {
       if (temp.size() < 2)
@@ -125,8 +130,10 @@ zharov::ll_t zharov::calculate(Queue< std::string >& postfix)
       }
       else
       {
-        ll_t b = temp.drop();
-        ll_t a = temp.drop();
+        ll_t b = temp.top();
+        temp.pop();
+        ll_t a = temp.top();
+        temp.pop();
         if (curr == "+")
         {
           temp.push(add(a, b));
@@ -166,7 +173,9 @@ zharov::ll_t zharov::calculate(Queue< std::string >& postfix)
   {
     throw std::logic_error("Not enough operators");
   }
-  return temp.drop();
+  ll_t result = temp.top();
+  temp.pop();
+  return result;
 }
 
 std::istream& zharov::getResults(std::istream& in, Stack< ll_t >& results)

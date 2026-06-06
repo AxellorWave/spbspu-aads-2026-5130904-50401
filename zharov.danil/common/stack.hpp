@@ -13,8 +13,9 @@ namespace zharov
     bool empty() const noexcept;
     size_t size() const noexcept;
     void clear() noexcept;
-    void push(T rhs);
-    T drop();
+    void push(const T& rhs);
+    void push(T&& rhs);
+    void pop() noexcept;
     void swap(Stack& s) noexcept;
 
   private:
@@ -53,17 +54,21 @@ void zharov::Stack< T >::clear() noexcept
 }
 
 template < class T >
-void zharov::Stack< T >::push(T rhs)
+void zharov::Stack< T >::push(const T& rhs)
 {
   list_.pushBack(rhs);
 }
 
 template < class T >
-T zharov::Stack< T >::drop()
+void zharov::Stack< T >::push(T&& rhs)
 {
-  T tp = top();
+  list_.pushBack(std::move(rhs));
+}
+
+template < class T >
+void zharov::Stack< T >::pop() noexcept
+{
   list_.popBack();
-  return tp;
 }
 
 template < class T >

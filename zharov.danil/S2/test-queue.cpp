@@ -98,13 +98,14 @@ BOOST_AUTO_TEST_CASE(QueuePushTest)
   BOOST_CHECK_EQUAL(queue.front(), 1);
 }
 
-BOOST_AUTO_TEST_CASE(QueueDropTest)
+BOOST_AUTO_TEST_CASE(QueuePopTest)
 {
   zharov::Queue< int > queue;
   queue.push(1);
   queue.push(2);
   queue.push(3);
-  int n = queue.drop();
+  int n = queue.front();
+  queue.pop();
   BOOST_CHECK_EQUAL(n, 1);
   BOOST_CHECK_EQUAL(queue.front(), 2);
   BOOST_CHECK_EQUAL(queue.size(), 2);
