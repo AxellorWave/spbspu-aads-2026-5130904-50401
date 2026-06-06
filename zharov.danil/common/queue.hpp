@@ -10,8 +10,6 @@ namespace zharov
   public:
     T& front();
     const T& front() const;
-    T& back();
-    const T& back() const;
     bool empty() const;
     size_t size() const;
     void clear();
@@ -34,18 +32,6 @@ template < class T >
 const T& zharov::Queue< T >::front() const
 {
   return list_.front();
-}
-
-template < class T >
-T& zharov::Queue< T >::back()
-{
-  return list_.back();
-}
-
-template < class T >
-const T& zharov::Queue< T >::back() const
-{
-  return list_.back();
 }
 
 template < class T >
