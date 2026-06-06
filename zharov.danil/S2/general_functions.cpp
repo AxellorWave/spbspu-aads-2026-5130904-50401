@@ -4,17 +4,17 @@
 
 namespace
 {
-  bool isOperand(const std::string& str)
+  bool isOperator(const std::string& str)
   {
     std::string signs[] = {"+", "-", "/", "*", "%", "<<", "(", ")"};
     for (size_t i = 0; i < 8; ++i)
     {
       if (str == signs[i])
       {
-        return false;
+        return true;
       }
     }
-    return true;
+    return false;
   }
 
   zharov::Queue< std::string > getQueue(const std::string& line)
@@ -61,7 +61,7 @@ namespace
     {
       std::string curr = infix.front();
       infix.pop();
-      if (isOperand(curr))
+      if (!isOperator(curr))
       {
         res.push(curr);
       }
@@ -124,7 +124,7 @@ namespace
     {
       std::string curr = postfix.front();
       postfix.pop();
-      if (!isOperand(curr))
+      if (isOperator(curr))
       {
         if (temp.size() < 2)
         {
