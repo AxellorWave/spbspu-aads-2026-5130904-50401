@@ -277,3 +277,28 @@ BOOST_AUTO_TEST_CASE(SpliceAllEmptySrcTest)
   BOOST_CHECK_EQUAL(dest.size(), 1);
   BOOST_CHECK_EQUAL(src.size(), 0);
 }
+
+BOOST_AUTO_TEST_CASE(SpliceSingleTest)
+{
+  zharov::List< int > dest;
+  dest.pushBack(1);
+  dest.pushBack(5);
+  zharov::List< int > src;
+  src.pushBack(10);
+  src.pushBack(3);
+  src.pushBack(20);
+  zharov::LIter< int > it = src.begin();
+  ++it;
+  zharov::LIter< int > pos = dest.begin();
+  ++pos;
+  dest.splice(pos, src, it);
+  BOOST_CHECK_EQUAL(dest.size(), 3);
+  BOOST_CHECK_EQUAL(src.size(), 2);
+  zharov::LIter< int > d = dest.begin();
+  BOOST_CHECK_EQUAL(*d++, 1);
+  BOOST_CHECK_EQUAL(*d++, 3);
+  BOOST_CHECK_EQUAL(*d++, 5);
+  zharov::LIter< int > s = src.begin();
+  BOOST_CHECK_EQUAL(*s++, 10);
+  BOOST_CHECK_EQUAL(*s++, 20);
+}

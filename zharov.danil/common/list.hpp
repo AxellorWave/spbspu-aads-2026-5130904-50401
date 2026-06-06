@@ -576,4 +576,10 @@ void zharov::List< T >::splice(LIter< T > pos, List< T >& other) noexcept
   spliceRange(other.head_, other.tail_, other.size_, other, pos.curr_);
 }
 
+template < class T >
+void zharov::List< T >::splice(LIter< T > pos, List< T >& other, LIter< T > it) noexcept
+{
+  spliceRange(it.curr_, it.curr_, 1, other, pos.curr_);
+}
+
 #endif
