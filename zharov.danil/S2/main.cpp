@@ -1,5 +1,7 @@
+#include <exception>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
 #include "general_functions.hpp"
 
@@ -9,11 +11,11 @@ int main(int argc, char** argv)
   try
   {
     std::ifstream file;
-    std::istream* in = &std::cin;
+    std::istream* in = std::addressof(std::cin);
     if (argc > 1)
     {
       file.open(argv[1]);
-      in = &file;
+      in = std::addressof(file);
     }
     std::string line;
     while (!std::getline(*in, line).eof())
@@ -27,12 +29,7 @@ int main(int argc, char** argv)
       results.push(zharov::calculate(queue));
     }
   }
-  catch (const std::overflow_error& e)
-  {
-    std::cerr << e.what() << "\n";
-    return 1;
-  }
-  catch (const std::logic_error& e)
+  catch (const std::exception& e)
   {
     std::cerr << e.what() << "\n";
     return 1;
