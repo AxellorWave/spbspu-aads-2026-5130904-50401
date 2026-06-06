@@ -6,7 +6,9 @@
 
 namespace zharov
 {
-  std::istream& getResults(std::istream& in, Stack< long long >& results);
+  Queue< std::string > getQueue(const std::string& line);
+  Queue< std::string > getPostfix(Queue< std::string >& infix);
+  long long calculate(Queue< std::string >& postfix);
 }
 
 #endif

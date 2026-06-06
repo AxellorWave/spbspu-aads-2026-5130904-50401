@@ -10,14 +10,23 @@ int main(int argc, char** argv)
   zharov::Stack< ll_t > results;
   try
   {
+    std::ifstream file;
+    std::istream* in = &std::cin;
     if (argc > 1)
     {
-      std::ifstream d(argv[1]);
-      zharov::getResults(d, results);
+      file.open(argv[1]);
+      in = &file;
     }
-    else
+    std::string line;
+    while (!std::getline(*in, line).eof())
     {
-      zharov::getResults(std::cin, results);
+      if (line.empty())
+      {
+        continue;
+      }
+      zharov::Queue< std::string > queue = zharov::getQueue(line);
+      queue = zharov::getPostfix(queue);
+      results.push(zharov::calculate(queue));
     }
   }
   catch (const std::overflow_error& e)
