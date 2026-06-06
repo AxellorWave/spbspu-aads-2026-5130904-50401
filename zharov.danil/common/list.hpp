@@ -3,6 +3,7 @@
 #include <memory>
 #include <cstddef>
 #include <utility>
+#include <functional>
 
 namespace zharov
 {
@@ -92,6 +93,9 @@ namespace zharov
     void splice(LIter< T > pos, List< T >& other) noexcept;
     void splice(LIter< T > pos, List< T >& other, LIter< T > it) noexcept;
     void splice(LIter< T > pos, List< T >& other, LIter< T > first, LIter< T > last) noexcept;
+    template< class Compare >
+    void sort(Compare comp);
+    void sort();
 
   private:
     template < class U >
@@ -596,6 +600,38 @@ void zharov::List< T >::splice(LIter< T > pos, List< T >& other, LIter< T > firs
     ++count;
   }
   spliceRange(first.curr_, last_node, count, other, pos.curr_);
+}
+
+template < class T >
+template < class Compare >
+void zharov::List< T >::sort(Compare comp)
+{
+  LIter< T > sorted_end = begin();
+  while (sorted_end != end())
+  {
+    LIter< T > min_it = sorted_end;
+    for (LIter< T > it = sorted_end; it != end(); ++it)
+    {
+      if (comp(*it, *min_it))
+      {
+        min_it = it;
+      }
+    }
+    if (min_it != sorted_end)
+    {
+      splice(sorted_end, *this, min_it);
+    }
+    else
+    {
+      ++sorted_end;
+    }
+  }
+}
+
+template < class T >
+void zharov::List< T >::sort()
+{
+  sort(std::less< T >{});
 }
 
 #endif

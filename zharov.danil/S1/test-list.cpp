@@ -1,5 +1,6 @@
 #define BOOST_TEST_MODULE S1
 #include <boost/test/included/unit_test.hpp>
+#include <functional>
 #include <list.hpp>
 
 BOOST_AUTO_TEST_CASE(DefaultListConstructorTest)
@@ -276,6 +277,55 @@ BOOST_AUTO_TEST_CASE(SpliceAllEmptySrcTest)
   dest.splice(dest.end(), src);
   BOOST_CHECK_EQUAL(dest.size(), 1);
   BOOST_CHECK_EQUAL(src.size(), 0);
+}
+
+BOOST_AUTO_TEST_CASE(SortTest)
+{
+  zharov::List< int > list;
+  list.pushBack(3);
+  list.pushBack(1);
+  list.pushBack(4);
+  list.pushBack(2);
+  list.sort();
+  zharov::LIter< int > it = list.begin();
+  BOOST_CHECK_EQUAL(*it++, 1);
+  BOOST_CHECK_EQUAL(*it++, 2);
+  BOOST_CHECK_EQUAL(*it++, 3);
+  BOOST_CHECK_EQUAL(*it++, 4);
+}
+
+BOOST_AUTO_TEST_CASE(SortAlreadySortedTest)
+{
+  zharov::List< int > list;
+  list.pushBack(1);
+  list.pushBack(2);
+  list.pushBack(3);
+  list.sort();
+  zharov::LIter< int > it = list.begin();
+  BOOST_CHECK_EQUAL(*it++, 1);
+  BOOST_CHECK_EQUAL(*it++, 2);
+  BOOST_CHECK_EQUAL(*it++, 3);
+}
+
+BOOST_AUTO_TEST_CASE(SortSingleTest)
+{
+  zharov::List< int > list;
+  list.pushBack(42);
+  list.sort();
+  BOOST_CHECK_EQUAL(list.front(), 42);
+}
+
+BOOST_AUTO_TEST_CASE(SortWithCompTest)
+{
+  zharov::List< int > list;
+  list.pushBack(1);
+  list.pushBack(3);
+  list.pushBack(2);
+  list.sort(std::greater< int >{});
+  zharov::LIter< int > it = list.begin();
+  BOOST_CHECK_EQUAL(*it++, 3);
+  BOOST_CHECK_EQUAL(*it++, 2);
+  BOOST_CHECK_EQUAL(*it++, 1);
 }
 
 BOOST_AUTO_TEST_CASE(SpliceRangeTest)
