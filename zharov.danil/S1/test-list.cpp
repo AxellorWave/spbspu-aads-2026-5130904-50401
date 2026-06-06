@@ -315,6 +315,41 @@ BOOST_AUTO_TEST_CASE(SortSingleTest)
   BOOST_CHECK_EQUAL(list.front(), 42);
 }
 
+BOOST_AUTO_TEST_CASE(MergeTest)
+{
+  zharov::List< int > a;
+  a.pushBack(1);
+  a.pushBack(3);
+  zharov::List< int > b;
+  b.pushBack(2);
+  b.pushBack(4);
+  a.merge(b);
+  BOOST_CHECK_EQUAL(b.size(), 0);
+  BOOST_CHECK_EQUAL(a.size(), 4);
+  zharov::LIter< int > it = a.begin();
+  BOOST_CHECK_EQUAL(*it++, 1);
+  BOOST_CHECK_EQUAL(*it++, 2);
+  BOOST_CHECK_EQUAL(*it++, 3);
+  BOOST_CHECK_EQUAL(*it++, 4);
+}
+
+BOOST_AUTO_TEST_CASE(MergeWithCompTest)
+{
+  zharov::List< int > a;
+  a.pushBack(3);
+  a.pushBack(1);
+  zharov::List< int > b;
+  b.pushBack(4);
+  b.pushBack(2);
+  a.merge(b, std::greater< int >{});
+  BOOST_CHECK_EQUAL(a.size(), 4);
+  zharov::LIter< int > it = a.begin();
+  BOOST_CHECK_EQUAL(*it++, 4);
+  BOOST_CHECK_EQUAL(*it++, 3);
+  BOOST_CHECK_EQUAL(*it++, 2);
+  BOOST_CHECK_EQUAL(*it++, 1);
+}
+
 BOOST_AUTO_TEST_CASE(SortWithCompTest)
 {
   zharov::List< int > list;

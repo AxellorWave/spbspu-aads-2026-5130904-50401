@@ -96,6 +96,9 @@ namespace zharov
     template< class Compare >
     void sort(Compare comp);
     void sort();
+    template< class Compare >
+    void merge(List< T >& other, Compare comp);
+    void merge(List< T >& other);
 
   private:
     template < class U >
@@ -632,6 +635,20 @@ template < class T >
 void zharov::List< T >::sort()
 {
   sort(std::less< T >{});
+}
+
+template < class T >
+template < class Compare >
+void zharov::List< T >::merge(List< T >& other, Compare comp)
+{
+  splice(end(), other);
+  sort(comp);
+}
+
+template < class T >
+void zharov::List< T >::merge(List< T >& other)
+{
+  merge(other, std::less< T >{});
 }
 
 #endif
