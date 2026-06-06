@@ -315,6 +315,47 @@ BOOST_AUTO_TEST_CASE(SortSingleTest)
   BOOST_CHECK_EQUAL(list.front(), 42);
 }
 
+BOOST_AUTO_TEST_CASE(PartitionTest)
+{
+  zharov::List< int > list;
+  list.pushBack(1);
+  list.pushBack(4);
+  list.pushBack(2);
+  list.pushBack(5);
+  list.pushBack(3);
+  zharov::LIter< int > mid = list.partition([](int x) { return x < 4; });
+  BOOST_CHECK_EQUAL(list.size(), 5);
+  BOOST_CHECK_EQUAL(*mid, 4);
+  zharov::LIter< int > it = list.begin();
+  BOOST_CHECK_EQUAL(*it++, 1);
+  BOOST_CHECK_EQUAL(*it++, 2);
+  BOOST_CHECK_EQUAL(*it++, 3);
+  BOOST_CHECK_EQUAL(*it++, 4);
+  BOOST_CHECK_EQUAL(*it++, 5);
+}
+
+BOOST_AUTO_TEST_CASE(PartitionAllTrueTest)
+{
+  zharov::List< int > list;
+  list.pushBack(1);
+  list.pushBack(2);
+  list.pushBack(3);
+  zharov::LIter< int > mid = list.partition([](int x) { return x > 0; });
+  BOOST_CHECK(mid == list.end());
+  BOOST_CHECK_EQUAL(list.size(), 3);
+}
+
+BOOST_AUTO_TEST_CASE(PartitionAllFalseTest)
+{
+  zharov::List< int > list;
+  list.pushBack(1);
+  list.pushBack(2);
+  list.pushBack(3);
+  zharov::LIter< int > mid = list.partition([](int x) { return x > 10; });
+  BOOST_CHECK(mid == list.begin());
+  BOOST_CHECK_EQUAL(list.size(), 3);
+}
+
 BOOST_AUTO_TEST_CASE(MergeTest)
 {
   zharov::List< int > a;

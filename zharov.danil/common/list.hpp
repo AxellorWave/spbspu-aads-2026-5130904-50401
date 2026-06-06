@@ -99,6 +99,8 @@ namespace zharov
     template< class Compare >
     void merge(List< T >& other, Compare comp);
     void merge(List< T >& other);
+    template< class Predicate >
+    LIter< T > partition(Predicate pred);
 
   private:
     template < class U >
@@ -649,6 +651,30 @@ template < class T >
 void zharov::List< T >::merge(List< T >& other)
 {
   merge(other, std::less< T >{});
+}
+
+template < class T >
+template < class Predicate >
+zharov::LIter< T > zharov::List< T >::partition(Predicate pred)
+{
+  List< T > yes;
+  List< T > no;
+  while (head_)
+  {
+    detail::Node< T >* curr = head_;
+    if (pred(curr->val_))
+    {
+      yes.spliceRange(curr, curr, 1, *this, nullptr);
+    }
+    else
+    {
+      no.spliceRange(curr, curr, 1, *this, nullptr);
+    }
+  }
+  LIter< T > partition_point(no.head_);
+  splice(end(), yes);
+  splice(end(), no);
+  return partition_point;
 }
 
 #endif
