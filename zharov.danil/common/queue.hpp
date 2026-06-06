@@ -10,12 +10,12 @@ namespace zharov
   public:
     T& front();
     const T& front() const;
-    bool empty() const;
-    size_t size() const;
-    void clear();
+    bool empty() const noexcept;
+    size_t size() const noexcept;
+    void clear() noexcept;
     void push(T rhs);
     T drop();
-    void swap(Queue& q);
+    void swap(Queue& q) noexcept;
 
   private:
     List< T > list_;
@@ -35,19 +35,19 @@ const T& zharov::Queue< T >::front() const
 }
 
 template < class T >
-bool zharov::Queue< T >::empty() const
+bool zharov::Queue< T >::empty() const noexcept
 {
   return !list_.size();
 }
 
 template < class T >
-size_t zharov::Queue< T >::size() const
+size_t zharov::Queue< T >::size() const noexcept
 {
   return list_.size();
 }
 
 template < class T >
-void zharov::Queue< T >::clear()
+void zharov::Queue< T >::clear() noexcept
 {
   list_.clear();
 }
@@ -67,7 +67,7 @@ T zharov::Queue< T >::drop()
 }
 
 template < class T >
-void zharov::Queue< T >::swap(Queue& q)
+void zharov::Queue< T >::swap(Queue& q) noexcept
 {
   list_.swap(q.list_);
 }
