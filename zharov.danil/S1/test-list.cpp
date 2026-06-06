@@ -227,3 +227,53 @@ BOOST_AUTO_TEST_CASE(SizeTest)
   list.pushBack(3);
   BOOST_CHECK_EQUAL(list.size(), 3);
 }
+
+BOOST_AUTO_TEST_CASE(SpliceAllBeforeEndTest)
+{
+  zharov::List< int > dest;
+  dest.pushBack(1);
+  dest.pushBack(5);
+  zharov::List< int > src;
+  src.pushBack(2);
+  src.pushBack(3);
+  src.pushBack(4);
+  dest.splice(dest.end(), src);
+  BOOST_CHECK_EQUAL(src.size(), 0);
+  BOOST_CHECK_EQUAL(dest.size(), 5);
+  zharov::LIter< int > it = dest.begin();
+  BOOST_CHECK_EQUAL(*it++, 1);
+  BOOST_CHECK_EQUAL(*it++, 5);
+  BOOST_CHECK_EQUAL(*it++, 2);
+  BOOST_CHECK_EQUAL(*it++, 3);
+  BOOST_CHECK_EQUAL(*it++, 4);
+}
+
+BOOST_AUTO_TEST_CASE(SpliceAllBeforePosTest)
+{
+  zharov::List< int > dest;
+  dest.pushBack(1);
+  dest.pushBack(5);
+  zharov::List< int > src;
+  src.pushBack(2);
+  src.pushBack(3);
+  zharov::LIter< int > pos = dest.begin();
+  ++pos;
+  dest.splice(pos, src);
+  BOOST_CHECK_EQUAL(src.size(), 0);
+  BOOST_CHECK_EQUAL(dest.size(), 4);
+  zharov::LIter< int > it = dest.begin();
+  BOOST_CHECK_EQUAL(*it++, 1);
+  BOOST_CHECK_EQUAL(*it++, 2);
+  BOOST_CHECK_EQUAL(*it++, 3);
+  BOOST_CHECK_EQUAL(*it++, 5);
+}
+
+BOOST_AUTO_TEST_CASE(SpliceAllEmptySrcTest)
+{
+  zharov::List< int > dest;
+  dest.pushBack(1);
+  zharov::List< int > src;
+  dest.splice(dest.end(), src);
+  BOOST_CHECK_EQUAL(dest.size(), 1);
+  BOOST_CHECK_EQUAL(src.size(), 0);
+}
