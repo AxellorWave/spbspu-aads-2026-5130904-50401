@@ -15,6 +15,13 @@ namespace zharov
       T val_;
       Node< T >* next_;
       Node< T >* prev_;
+
+      template < class... Args >
+      Node(Args&&... args) :
+        val_(std::forward< Args >(args)...),
+        next_(nullptr),
+        prev_(nullptr)
+      {}
     };
   }
   template < class T >
@@ -101,6 +108,12 @@ namespace zharov
     void merge(List< T >& other);
     template< class Predicate >
     LIter< T > partition(Predicate pred);
+    template < class... Args >
+    LIter< T > emplaceFront(Args&&... args);
+    template < class... Args >
+    LIter< T > emplaceBack(Args&&... args);
+    template < class... Args >
+    LIter< T > emplace(LIter< T > pos, Args&&... args);
 
   private:
     template < class U >
@@ -347,7 +360,7 @@ template < class T >
 template < class U >
 void zharov::List< T >::pushFrontImpl(U&& v)
 {
-  detail::Node< T >* new_node = new detail::Node< T >{std::forward< U >(v), nullptr, nullptr};
+  detail::Node< T >* new_node = new detail::Node< T >(std::forward< U >(v));
   new_node->next_ = head_;
   if (head_)
   {
@@ -365,7 +378,7 @@ template < class T >
 template < class U >
 void zharov::List< T >::pushBackImpl(U&& v)
 {
-  detail::Node< T >* new_node = new detail::Node< T >{std::forward< U >(v), nullptr, nullptr};
+  detail::Node< T >* new_node = new detail::Node< T >(std::forward< U >(v));
   new_node->prev_ = tail_;
   if (tail_)
   {
@@ -393,7 +406,7 @@ zharov::LIter< T > zharov::List< T >::insertImpl(LIter< T > pos, U&& v)
     pushFrontImpl(std::forward< U >(v));
     return LIter< T >(head_);
   }
-  detail::Node< T >* new_node = new detail::Node< T >{std::forward< U >(v), nullptr, nullptr};
+  detail::Node< T >* new_node = new detail::Node< T >(std::forward< U >(v));
   detail::Node< T >* next = pos.curr_;
   detail::Node< T >* prev = next->prev_;
   new_node->next_ = next;
