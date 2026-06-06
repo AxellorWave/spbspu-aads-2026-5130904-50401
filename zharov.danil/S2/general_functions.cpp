@@ -33,7 +33,7 @@ namespace
         curr.push_back(line[i]);
       }
     }
-    if (curr != "")
+    if (!curr.empty())
     {
       res.push(curr);
     }
@@ -186,7 +186,7 @@ std::istream& zharov::getResults(std::istream& in, Stack< ll_t >& results)
   std::string line;
   while (!std::getline(in, line).eof())
   {
-    if (line == "")
+    if (line.empty())
     {
       continue;
     }
