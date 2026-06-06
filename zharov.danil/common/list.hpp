@@ -582,4 +582,20 @@ void zharov::List< T >::splice(LIter< T > pos, List< T >& other, LIter< T > it) 
   spliceRange(it.curr_, it.curr_, 1, other, pos.curr_);
 }
 
+template < class T >
+void zharov::List< T >::splice(LIter< T > pos, List< T >& other, LIter< T > first, LIter< T > last) noexcept
+{
+  if (first.curr_ == last.curr_)
+  {
+    return;
+  }
+  detail::Node< T >* last_node = (last.curr_ != nullptr) ? last.curr_->prev_ : other.tail_;
+  size_t count = 0;
+  for (detail::Node< T >* curr = first.curr_; curr != last.curr_; curr = curr->next_)
+  {
+    ++count;
+  }
+  spliceRange(first.curr_, last_node, count, other, pos.curr_);
+}
+
 #endif
