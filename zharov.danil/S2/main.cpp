@@ -34,18 +34,14 @@ int main(int argc, char** argv)
     std::cerr << e.what() << "\n";
     return 1;
   }
-  bool is_first = true;
+  if (!results.empty())
+  {
+    std::cout << results.top();
+    results.pop();
+  }
   while (!results.empty())
   {
-    if (!is_first)
-    {
-      std::cout << " ";
-    }
-    else
-    {
-      is_first = false;
-    }
-    std::cout << results.top();
+    std::cout << " " << results.top();
     results.pop();
   }
   std::cout << "\n";
