@@ -25,14 +25,14 @@ namespace zharov
     friend class List< T >;
 
   public:
-    T& operator*();
-    T* operator->();
-    LIter& operator++();
-    LIter operator++(int);
-    LIter& operator--();
-    LIter operator--(int);
-    bool operator==(const LIter& it) const;
-    bool operator!=(const LIter& it) const;
+    T& operator*() noexcept;
+    T* operator->() noexcept;
+    LIter& operator++() noexcept;
+    LIter operator++(int) noexcept;
+    LIter& operator--() noexcept;
+    LIter operator--(int) noexcept;
+    bool operator==(const LIter& it) const noexcept;
+    bool operator!=(const LIter& it) const noexcept;
 
   private:
     detail::Node< T >* curr_;
@@ -45,14 +45,14 @@ namespace zharov
     friend class List< T >;
 
   public:
-    const T& operator*() const;
-    const T* operator->() const;
-    LCIter& operator++();
-    LCIter operator++(int);
-    LCIter& operator--();
-    LCIter operator--(int);
-    bool operator==(const LCIter& it) const;
-    bool operator!=(const LCIter& it) const;
+    const T& operator*() const noexcept;
+    const T* operator->() const noexcept;
+    LCIter& operator++() noexcept;
+    LCIter operator++(int) noexcept;
+    LCIter& operator--() noexcept;
+    LCIter operator--(int) noexcept;
+    bool operator==(const LCIter& it) const noexcept;
+    bool operator!=(const LCIter& it) const noexcept;
 
   private:
     const detail::Node< T >* curr_;
@@ -69,26 +69,29 @@ namespace zharov
     ~List() noexcept;
     List& operator=(const List& h);
     List& operator=(List&& h) noexcept;
-    LIter< T > begin();
-    LIter< T > end();
-    LCIter< T > cbegin() const;
-    LCIter< T > cend() const;
-    T& front();
-    const T& front() const;
-    T& back();
-    const T& back() const;
+    LIter< T > begin() noexcept;
+    LIter< T > end() noexcept;
+    LCIter< T > cbegin() const noexcept;
+    LCIter< T > cend() const noexcept;
+    T& front() noexcept;
+    const T& front() const noexcept;
+    T& back() noexcept;
+    const T& back() const noexcept;
     void pushFront(const T& v);
     void pushBack(const T& v);
     LIter< T > insert(LIter< T > pos, const T& v);
     void pushFront(T&& v);
     void pushBack(T&& v);
     LIter< T > insert(LIter< T > pos, T&& v);
-    void popFront();
-    void popBack();
-    LIter< T > erase(LIter< T > pos);
-    void clear();
-    size_t size() const;
-    void swap(List< T >& h);
+    void popFront() noexcept;
+    void popBack() noexcept;
+    LIter< T > erase(LIter< T > pos) noexcept;
+    void clear() noexcept;
+    size_t size() const noexcept;
+    void swap(List< T >& h) noexcept;
+    void splice(LIter< T > pos, List< T >& other) noexcept;
+    void splice(LIter< T > pos, List< T >& other, LIter< T > it) noexcept;
+    void splice(LIter< T > pos, List< T >& other, LIter< T > first, LIter< T > last) noexcept;
 
   private:
     template < class U >
@@ -97,6 +100,8 @@ namespace zharov
     void pushBackImpl(U&& v);
     template < class U >
     LIter< T > insertImpl(LIter< T > pos, U&& v);
+    void spliceRange(detail::Node< T >* first, detail::Node< T >* last,
+      size_t count, List< T >& src, detail::Node< T >* pos) noexcept;
     detail::Node< T >* head_;
     detail::Node< T >* tail_;
     size_t size_;
@@ -109,26 +114,26 @@ zharov::LIter< T >::LIter(detail::Node< T >* node) noexcept:
 {}
 
 template < class T >
-T& zharov::LIter< T >::operator*()
+T& zharov::LIter< T >::operator*() noexcept
 {
   return curr_->val_;
 }
 
 template < class T >
-T* zharov::LIter< T >::operator->()
+T* zharov::LIter< T >::operator->() noexcept
 {
   return std::addressof(curr_->val_);
 }
 
 template < class T >
-zharov::LIter< T >& zharov::LIter< T >::operator++()
+zharov::LIter< T >& zharov::LIter< T >::operator++() noexcept
 {
   curr_ = curr_->next_;
   return *this;
 }
 
 template < class T >
-zharov::LIter< T > zharov::LIter< T >::operator++(int)
+zharov::LIter< T > zharov::LIter< T >::operator++(int) noexcept
 {
   LIter< T > temp = *this;
   curr_ = curr_->next_;
@@ -136,14 +141,14 @@ zharov::LIter< T > zharov::LIter< T >::operator++(int)
 }
 
 template < class T >
-zharov::LIter< T >& zharov::LIter< T >::operator--()
+zharov::LIter< T >& zharov::LIter< T >::operator--() noexcept
 {
   curr_ = curr_->prev_;
   return *this;
 }
 
 template < class T >
-zharov::LIter< T > zharov::LIter< T >::operator--(int)
+zharov::LIter< T > zharov::LIter< T >::operator--(int) noexcept
 {
   LIter< T > temp = *this;
   curr_ = curr_->prev_;
@@ -151,13 +156,13 @@ zharov::LIter< T > zharov::LIter< T >::operator--(int)
 }
 
 template < class T >
-bool zharov::LIter< T >::operator==(const LIter& it) const
+bool zharov::LIter< T >::operator==(const LIter& it) const noexcept
 {
   return curr_ == it.curr_;
 }
 
 template < class T >
-bool zharov::LIter< T >::operator!=(const LIter& it) const
+bool zharov::LIter< T >::operator!=(const LIter& it) const noexcept
 {
   return curr_ != it.curr_;
 }
@@ -168,26 +173,26 @@ zharov::LCIter< T >::LCIter(const detail::Node< T >* node) noexcept:
 {}
 
 template < class T >
-const T& zharov::LCIter< T >::operator*() const
+const T& zharov::LCIter< T >::operator*() const noexcept
 {
   return curr_->val_;
 }
 
 template < class T >
-const T* zharov::LCIter< T >::operator->() const
+const T* zharov::LCIter< T >::operator->() const noexcept
 {
   return std::addressof(curr_->val_);
 }
 
 template < class T >
-zharov::LCIter< T >& zharov::LCIter< T >::operator++()
+zharov::LCIter< T >& zharov::LCIter< T >::operator++() noexcept
 {
   curr_ = curr_->next_;
   return *this;
 }
 
 template < class T >
-zharov::LCIter< T > zharov::LCIter< T >::operator++(int)
+zharov::LCIter< T > zharov::LCIter< T >::operator++(int) noexcept
 {
   LCIter< T > temp = *this;
   curr_ = curr_->next_;
@@ -195,14 +200,14 @@ zharov::LCIter< T > zharov::LCIter< T >::operator++(int)
 }
 
 template < class T >
-zharov::LCIter< T >& zharov::LCIter< T >::operator--()
+zharov::LCIter< T >& zharov::LCIter< T >::operator--() noexcept
 {
   curr_ = curr_->prev_;
   return *this;
 }
 
 template < class T >
-zharov::LCIter< T > zharov::LCIter< T >::operator--(int)
+zharov::LCIter< T > zharov::LCIter< T >::operator--(int) noexcept
 {
   LCIter< T > temp = *this;
   curr_ = curr_->prev_;
@@ -210,13 +215,13 @@ zharov::LCIter< T > zharov::LCIter< T >::operator--(int)
 }
 
 template < class T >
-bool zharov::LCIter< T >::operator==(const LCIter& it) const
+bool zharov::LCIter< T >::operator==(const LCIter& it) const noexcept
 {
   return curr_ == it.curr_;
 }
 
 template < class T >
-bool zharov::LCIter< T >::operator!=(const LCIter& it) const
+bool zharov::LCIter< T >::operator!=(const LCIter& it) const noexcept
 {
   return curr_ != it.curr_;
 }
@@ -252,7 +257,7 @@ zharov::List< T >::~List() noexcept
 }
 
 template < class T >
-void zharov::List< T >::swap(List< T >& h)
+void zharov::List< T >::swap(List< T >& h) noexcept
 {
   std::swap(h.head_, head_);
   std::swap(h.tail_, tail_);
@@ -282,49 +287,49 @@ zharov::List< T >& zharov::List< T >::operator=(List< T >&& h) noexcept
 }
 
 template < class T >
-zharov::LIter< T > zharov::List< T >::begin()
+zharov::LIter< T > zharov::List< T >::begin() noexcept
 {
   return LIter< T >(head_);
 }
 
 template < class T >
-zharov::LIter< T > zharov::List< T >::end()
+zharov::LIter< T > zharov::List< T >::end() noexcept
 {
   return LIter< T >(nullptr);
 }
 
 template < class T >
-zharov::LCIter< T > zharov::List< T >::cbegin() const
+zharov::LCIter< T > zharov::List< T >::cbegin() const noexcept
 {
   return LCIter< T >(head_);
 }
 
 template < class T >
-zharov::LCIter< T > zharov::List< T >::cend() const
+zharov::LCIter< T > zharov::List< T >::cend() const noexcept
 {
   return LCIter< T >(nullptr);
 }
 
 template < class T >
-T& zharov::List< T >::front()
+T& zharov::List< T >::front() noexcept
 {
   return head_->val_;
 }
 
 template < class T >
-const T& zharov::List< T >::front() const
+const T& zharov::List< T >::front() const noexcept
 {
   return head_->val_;
 }
 
 template < class T >
-T& zharov::List< T >::back()
+T& zharov::List< T >::back() noexcept
 {
   return tail_->val_;
 }
 
 template < class T >
-const T& zharov::List< T >::back() const
+const T& zharov::List< T >::back() const noexcept
 {
   return tail_->val_;
 }
@@ -427,7 +432,7 @@ zharov::LIter< T > zharov::List< T >::insert(LIter< T > pos, T&& v)
 }
 
 template < class T >
-void zharov::List< T >::popFront()
+void zharov::List< T >::popFront() noexcept
 {
   if (!head_)
   {
@@ -448,7 +453,7 @@ void zharov::List< T >::popFront()
 }
 
 template < class T >
-void zharov::List< T >::popBack()
+void zharov::List< T >::popBack() noexcept
 {
   if (!tail_)
   {
@@ -469,7 +474,7 @@ void zharov::List< T >::popBack()
 }
 
 template < class T >
-zharov::LIter< T > zharov::List< T >::erase(LIter< T > pos)
+zharov::LIter< T > zharov::List< T >::erase(LIter< T > pos) noexcept
 {
   if (!pos.curr_)
   {
@@ -499,7 +504,7 @@ zharov::LIter< T > zharov::List< T >::erase(LIter< T > pos)
 }
 
 template < class T >
-void zharov::List< T >::clear()
+void zharov::List< T >::clear() noexcept
 {
   while (head_)
   {
@@ -512,9 +517,63 @@ void zharov::List< T >::clear()
 }
 
 template < class T >
-size_t zharov::List< T >::size() const
+size_t zharov::List< T >::size() const noexcept
 {
   return size_;
+}
+
+template < class T >
+void zharov::List< T >::spliceRange(detail::Node< T >* first, detail::Node< T >* last,
+  size_t count, List< T >& src, detail::Node< T >* pos) noexcept
+{
+  detail::Node< T >* before_first = first->prev_;
+  detail::Node< T >* after_last = last->next_;
+  if (before_first)
+  {
+    before_first->next_ = after_last;
+  }
+  else
+  {
+    src.head_ = after_last;
+  }
+  if (after_last)
+  {
+    after_last->prev_ = before_first;
+  }
+  else
+  {
+    src.tail_ = before_first;
+  }
+  src.size_ -= count;
+  first->prev_ = (pos != nullptr) ? pos->prev_ : tail_;
+  last->next_ = pos;
+  if (first->prev_)
+  {
+    first->prev_->next_ = first;
+  }
+  else
+  {
+    head_ = first;
+  }
+  if (last->next_)
+  {
+    last->next_->prev_ = last;
+  }
+  else
+  {
+    tail_ = last;
+  }
+  size_ += count;
+}
+
+template < class T >
+void zharov::List< T >::splice(LIter< T > pos, List< T >& other) noexcept
+{
+  if (!other.head_)
+  {
+    return;
+  }
+  spliceRange(other.head_, other.tail_, other.size_, other, pos.curr_);
 }
 
 #endif
