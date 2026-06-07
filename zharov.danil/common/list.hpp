@@ -414,7 +414,7 @@ void zharov::List< T >::pushFront(const T& v)
 template < class T >
 void zharov::List< T >::pushFront(T&& v)
 {
-  emplaceFront(std::move(v));
+  emplaceFront(std::forward< T >(v));
 }
 
 template < class T >
@@ -426,7 +426,7 @@ void zharov::List< T >::pushBack(const T& v)
 template < class T >
 void zharov::List< T >::pushBack(T&& v)
 {
-  emplaceBack(std::move(v));
+  emplaceBack(std::forward< T >(v));
 }
 
 template < class T >
@@ -438,7 +438,7 @@ zharov::LIter< T > zharov::List< T >::insert(LIter< T > pos, const T& v)
 template < class T >
 zharov::LIter< T > zharov::List< T >::insert(LIter< T > pos, T&& v)
 {
-  return emplace(pos, std::move(v));
+  return emplace(pos, std::forward< T >(v));
 }
 
 template < class T >
