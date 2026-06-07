@@ -444,43 +444,13 @@ zharov::LIter< T > zharov::List< T >::insert(LIter< T > pos, T&& v)
 template < class T >
 void zharov::List< T >::popFront() noexcept
 {
-  if (!head_)
-  {
-    return;
-  }
-  detail::Node< T >* next = head_->next;
-  if (next)
-  {
-    next->prev = nullptr;
-  }
-  else
-  {
-    tail_ = nullptr;
-  }
-  delete head_;
-  head_ = next;
-  --size_;
+  erase(begin());
 }
 
 template < class T >
 void zharov::List< T >::popBack() noexcept
 {
-  if (!tail_)
-  {
-    return;
-  }
-  detail::Node< T >* prev = tail_->prev;
-  if (prev)
-  {
-    prev->next = nullptr;
-  }
-  else
-  {
-    head_ = nullptr;
-  }
-  delete tail_;
-  tail_ = prev;
-  --size_;
+  erase(LIter< T >(tail_));
 }
 
 template < class T >
