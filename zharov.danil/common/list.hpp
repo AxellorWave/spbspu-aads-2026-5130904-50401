@@ -116,6 +116,9 @@ namespace zharov
     LIter< T > emplace(LIter< T > pos, Args&&... args);
 
   private:
+    detail::Node< T >* head_;
+    detail::Node< T >* tail_;
+    size_t size_;
     template < class U >
     void pushFrontImpl(U&& v);
     template < class U >
@@ -125,9 +128,6 @@ namespace zharov
     LIter< T > linkBefore(LIter< T > pos, detail::Node< T >* node) noexcept;
     void spliceRange(detail::Node< T >* first, detail::Node< T >* last,
       size_t count, List< T >& src, detail::Node< T >* pos) noexcept;
-    detail::Node< T >* head_;
-    detail::Node< T >* tail_;
-    size_t size_;
   };
 }
 
