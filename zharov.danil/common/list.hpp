@@ -1,9 +1,9 @@
 #ifndef LIST_HPP
 #define LIST_HPP
-#include <memory>
 #include <cstddef>
-#include <utility>
 #include <functional>
+#include <memory>
+#include <utility>
 
 namespace zharov
 {
@@ -17,7 +17,7 @@ namespace zharov
       Node< T >* prev;
 
       template < class... Args >
-      Node(Args&&... args) :
+      Node(Args&&... args):
         val(std::forward< Args >(args)...),
         next(nullptr),
         prev(nullptr)
@@ -100,13 +100,13 @@ namespace zharov
     void splice(LIter< T > pos, List< T >& other) noexcept;
     void splice(LIter< T > pos, List< T >& other, LIter< T > it) noexcept;
     void splice(LIter< T > pos, List< T >& other, LIter< T > first, LIter< T > last) noexcept;
-    template< class Compare >
+    template < class Compare >
     void sort(Compare comp);
     void sort();
-    template< class Compare >
+    template < class Compare >
     void merge(List< T >& other, Compare comp);
     void merge(List< T >& other);
-    template< class Predicate >
+    template < class Predicate >
     LIter< T > partition(Predicate pred);
     template < class... Args >
     LIter< T > emplaceFront(Args&&... args);
@@ -119,15 +119,11 @@ namespace zharov
     detail::Node< T >* head_;
     detail::Node< T >* tail_;
     size_t size_;
-    template < class U >
-    void pushFrontImpl(U&& v);
-    template < class U >
-    void pushBackImpl(U&& v);
-    template < class U >
-    LIter< T > insertImpl(LIter< T > pos, U&& v);
-    LIter< T > linkBefore(LIter< T > pos, detail::Node< T >* node) noexcept;
-    void spliceRange(detail::Node< T >* first, detail::Node< T >* last,
-      size_t count, List< T >& src, detail::Node< T >* pos) noexcept;
+    void spliceRange(detail::Node< T >* first,
+      detail::Node< T >* last,
+      size_t count,
+      List< T >& src,
+      detail::Node< T >* pos) noexcept;
   };
 }
 
@@ -358,44 +354,10 @@ const T& zharov::List< T >::back() const noexcept
 }
 
 template < class T >
-template < class U >
-void zharov::List< T >::pushFrontImpl(U&& v)
+template < class... Args >
+zharov::LIter< T > zharov::List< T >::emplace(LIter< T > pos, Args&&... args)
 {
-  detail::Node< T >* new_node = new detail::Node< T >(std::forward< U >(v));
-  new_node->next = head_;
-  if (head_)
-  {
-    head_->prev = new_node;
-  }
-  else
-  {
-    tail_ = new_node;
-  }
-  head_ = new_node;
-  ++size_;
-}
-
-template < class T >
-template < class U >
-void zharov::List< T >::pushBackImpl(U&& v)
-{
-  detail::Node< T >* new_node = new detail::Node< T >(std::forward< U >(v));
-  new_node->prev = tail_;
-  if (tail_)
-  {
-    tail_->next = new_node;
-  }
-  else
-  {
-    head_ = new_node;
-  }
-  tail_ = new_node;
-  ++size_;
-}
-
-template < class T >
-zharov::LIter< T > zharov::List< T >::linkBefore(LIter< T > pos, detail::Node< T >* node) noexcept
-{
+  detail::Node< T >* node = new detail::Node< T >(std::forward< Args >(args)...);
   if (!pos.curr_)
   {
     node->prev = tail_;
@@ -430,20 +392,6 @@ zharov::LIter< T > zharov::List< T >::linkBefore(LIter< T > pos, detail::Node< T
 }
 
 template < class T >
-template < class U >
-zharov::LIter< T > zharov::List< T >::insertImpl(LIter< T > pos, U&& v)
-{
-  return linkBefore(pos, new detail::Node< T >(std::forward< U >(v)));
-}
-
-template < class T >
-template < class... Args >
-zharov::LIter< T > zharov::List< T >::emplace(LIter< T > pos, Args&&... args)
-{
-  return linkBefore(pos, new detail::Node< T >(std::forward< Args >(args)...));
-}
-
-template < class T >
 template < class... Args >
 zharov::LIter< T > zharov::List< T >::emplaceFront(Args&&... args)
 {
@@ -460,37 +408,37 @@ zharov::LIter< T > zharov::List< T >::emplaceBack(Args&&... args)
 template < class T >
 void zharov::List< T >::pushFront(const T& v)
 {
-  pushFrontImpl(v);
+  emplaceFront(v);
 }
 
 template < class T >
 void zharov::List< T >::pushFront(T&& v)
 {
-  pushFrontImpl(std::move(v));
+  emplaceFront(std::move(v));
 }
 
 template < class T >
 void zharov::List< T >::pushBack(const T& v)
 {
-  pushBackImpl(v);
+  emplaceBack(v);
 }
 
 template < class T >
 void zharov::List< T >::pushBack(T&& v)
 {
-  pushBackImpl(std::move(v));
+  emplaceBack(std::move(v));
 }
 
 template < class T >
 zharov::LIter< T > zharov::List< T >::insert(LIter< T > pos, const T& v)
 {
-  return insertImpl(pos, v);
+  return emplace(pos, v);
 }
 
 template < class T >
 zharov::LIter< T > zharov::List< T >::insert(LIter< T > pos, T&& v)
 {
-  return insertImpl(pos, std::move(v));
+  return emplace(pos, std::move(v));
 }
 
 template < class T >
@@ -585,8 +533,11 @@ size_t zharov::List< T >::size() const noexcept
 }
 
 template < class T >
-void zharov::List< T >::spliceRange(detail::Node< T >* first, detail::Node< T >* last,
-  size_t count, List< T >& src, detail::Node< T >* pos) noexcept
+void zharov::List< T >::spliceRange(detail::Node< T >* first,
+  detail::Node< T >* last,
+  size_t count,
+  List< T >& src,
+  detail::Node< T >* pos) noexcept
 {
   detail::Node< T >* before_first = first->prev;
   detail::Node< T >* after_last = last->next;
@@ -645,7 +596,10 @@ void zharov::List< T >::splice(LIter< T > pos, List< T >& other, LIter< T > it) 
 }
 
 template < class T >
-void zharov::List< T >::splice(LIter< T > pos, List< T >& other, LIter< T > first, LIter< T > last) noexcept
+void zharov::List< T >::splice(LIter< T > pos,
+  List< T >& other,
+  LIter< T > first,
+  LIter< T > last) noexcept
 {
   if (first.curr_ == last.curr_)
   {
