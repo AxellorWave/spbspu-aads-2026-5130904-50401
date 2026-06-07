@@ -35,12 +35,12 @@ int main()
     std::cout << "0\n";
     return 0;
   }
-  auto transpose_nums = transposeNums(data);
+  NumMatrix transpose_nums = transposeNums(data);
   printNums(std::cout, transpose_nums);
   std::cout << "\n";
   try
   {
-    auto sums_list = getSums(transpose_nums);
+    NumList sums_list = getSums(transpose_nums);
     printSums(std::cout, sums_list);
     std::cout << "\n";
   }
