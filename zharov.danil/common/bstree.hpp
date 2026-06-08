@@ -100,7 +100,7 @@ namespace zharov
     Value& at(const Key& k);
     const Value& at(const Key& k) const;
     detail::Node< Key, Value >* fallLeft(detail::Node< Key, Value >* node) const;
-    Value drop(const Key& k);
+    void pop(const Key& k);
     bool isStructEqual(const BSTree& other) const;
     const_iterator rotateLeft(const_iterator it);
     const_iterator rotateRight(const_iterator it);
@@ -396,7 +396,7 @@ zharov::detail::Node< Key, Value >* zharov::BSTree< Key, Value, Compare >::fallL
 }
 
 template < class Key, class Value, class Compare >
-Value zharov::BSTree< Key, Value, Compare >::drop(const Key& k)
+void zharov::BSTree< Key, Value, Compare >::pop(const Key& k)
 {
   detail::Node< Key, Value >* node = findNode(k);
   if (node == nullptr)
@@ -404,7 +404,6 @@ Value zharov::BSTree< Key, Value, Compare >::drop(const Key& k)
     throw std::out_of_range("Key not found");
   }
 
-  Value res = std::move(node->data_.second);
   if (!node->left_->isFake() && !node->right_->isFake())
   {
     detail::Node< Key, Value >* n = fallLeft(node->right_);
@@ -434,7 +433,6 @@ Value zharov::BSTree< Key, Value, Compare >::drop(const Key& k)
 
   delete node;
   --size_;
-  return res;
 }
 
 template < class Key, class Value, class Compare >

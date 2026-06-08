@@ -221,7 +221,8 @@ BOOST_AUTO_TEST_CASE(DropLeafNode)
   zharov::BSTree< int, std::string, comp > tree;
   tree.push(8, "eight");
   tree.push(3, "three");
-  std::string removed = tree.drop(3);
+  std::string removed = tree.get(3);
+  tree.pop(3);
   BOOST_CHECK_EQUAL(removed, "three");
   BOOST_CHECK_EQUAL(tree.getSize(), 1);
   BOOST_CHECK_THROW(tree.get(3), std::logic_error);
@@ -233,7 +234,7 @@ BOOST_AUTO_TEST_CASE(DropNodeWithOneChild)
   tree.push(8, "eight");
   tree.push(3, "three");
   tree.push(1, "one");
-  tree.drop(3);
+  tree.pop(3);
   BOOST_CHECK_EQUAL(tree.getSize(), 2);
   BOOST_CHECK_THROW(tree.get(3), std::logic_error);
   BOOST_CHECK_EQUAL(tree.get(1), "one");
@@ -248,7 +249,8 @@ BOOST_AUTO_TEST_CASE(DropNodeWithTwoChildren)
   tree.push(3, "three");
   tree.push(7, "seven");
 
-  std::string removed = tree.drop(5);
+  std::string removed = tree.get(5);
+  tree.pop(5);
   BOOST_CHECK_EQUAL(removed, "five");
   BOOST_CHECK_EQUAL(tree.getSize(), 4);
   BOOST_CHECK_THROW(tree.get(5), std::logic_error);
@@ -260,7 +262,8 @@ BOOST_AUTO_TEST_CASE(DropRoot)
 {
   zharov::BSTree< int, std::string, comp > tree;
   tree.push(100, "hundred");
-  std::string removed = tree.drop(100);
+  std::string removed = tree.get(100);
+  tree.pop(100);
   BOOST_CHECK_EQUAL(removed, "hundred");
   BOOST_CHECK_EQUAL(tree.getSize(), 0);
   BOOST_CHECK_EQUAL(tree.height(), 0);
@@ -268,7 +271,7 @@ BOOST_AUTO_TEST_CASE(DropRoot)
 BOOST_AUTO_TEST_CASE(DropNonExistentKeyThrows)
 {
   zharov::BSTree< int, std::string, comp > tree;
-  BOOST_CHECK_THROW(tree.drop(123), std::out_of_range);
+  BOOST_CHECK_THROW(tree.pop(123), std::out_of_range);
 }
 BOOST_AUTO_TEST_SUITE_END()
 
