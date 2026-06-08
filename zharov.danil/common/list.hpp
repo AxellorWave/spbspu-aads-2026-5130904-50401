@@ -30,8 +30,6 @@ namespace zharov
   template < class T >
   class LIter
   {
-    friend class List< T >;
-
   public:
     T& operator*() noexcept;
     T* operator->() noexcept;
@@ -43,6 +41,7 @@ namespace zharov
     bool operator!=(const LIter& it) const noexcept;
 
   private:
+    friend class List< T >;
     detail::Node< T >* curr_;
     LIter(detail::Node< T >* node) noexcept;
   };
@@ -50,8 +49,6 @@ namespace zharov
   template < class T >
   class LCIter
   {
-    friend class List< T >;
-
   public:
     const T& operator*() const noexcept;
     const T* operator->() const noexcept;
@@ -63,6 +60,7 @@ namespace zharov
     bool operator!=(const LCIter& it) const noexcept;
 
   private:
+    friend class List< T >;
     const detail::Node< T >* curr_;
     LCIter(const detail::Node< T >* node) noexcept;
   };
