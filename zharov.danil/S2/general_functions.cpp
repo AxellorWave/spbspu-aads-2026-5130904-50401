@@ -118,6 +118,18 @@ zharov::Queue< std::string > zharov::getPostfix(Queue< std::string >& infix)
   return res;
 }
 
+zharov::Expression::Expression(const std::string& line)
+{
+  Queue< std::string > infix = getQueue(line);
+  postfix_ = getPostfix(infix);
+}
+
+long long zharov::Expression::calculate()
+{
+  Queue< std::string > postfix = postfix_;
+  return zharov::calculate(postfix);
+}
+
 zharov::ll_t zharov::calculate(Queue< std::string >& postfix)
 {
   Stack< ll_t > temp;
