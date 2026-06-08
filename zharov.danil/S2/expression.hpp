@@ -6,6 +6,13 @@
 
 namespace zharov
 {
+  namespace detail
+  {
+    Queue< std::string > getQueue(const std::string& line);
+    Queue< std::string > getPostfix(Queue< std::string >& infix);
+    long long calculate(Queue< std::string >& postfix);
+  }
+
   struct Expression
   {
     Expression(const std::string& line);
@@ -14,6 +21,7 @@ namespace zharov
   private:
     Queue< std::string > postfix_;
   };
+
 }
 
 #endif
