@@ -2,9 +2,7 @@
 #include <climits>
 #include <stdexcept>
 
-using ll_t = zharov::ll_t;
-
-ll_t zharov::add(const ll_t& a, const ll_t& b)
+zharov::ll_t zharov::add(const ll_t& a, const ll_t& b)
 {
   if ((b > 0 && a > MAX - b) || (b < 0 && a < MIN - b))
   {
@@ -13,7 +11,7 @@ ll_t zharov::add(const ll_t& a, const ll_t& b)
   return a + b;
 }
 
-ll_t zharov::sub(const ll_t& a, const ll_t& b)
+zharov::ll_t zharov::sub(const ll_t& a, const ll_t& b)
 {
   if ((b > 0 && a < MIN + b) || (b < 0 && a > MAX + b))
   {
@@ -22,7 +20,7 @@ ll_t zharov::sub(const ll_t& a, const ll_t& b)
   return a - b;
 }
 
-ll_t zharov::mul(const ll_t& a, const ll_t& b)
+zharov::ll_t zharov::mul(const ll_t& a, const ll_t& b)
 {
   if (a == 0 || b == 0)
   {
@@ -40,7 +38,7 @@ ll_t zharov::mul(const ll_t& a, const ll_t& b)
   return a * b;
 }
 
-ll_t zharov::div(const ll_t& a, const ll_t& b)
+zharov::ll_t zharov::div(const ll_t& a, const ll_t& b)
 {
   ll_t MIN = std::numeric_limits< ll_t >::min();
   if (b == 0)
@@ -54,7 +52,7 @@ ll_t zharov::div(const ll_t& a, const ll_t& b)
   return a / b;
 }
 
-ll_t zharov::mod(const ll_t& a, const ll_t& b)
+zharov::ll_t zharov::mod(const ll_t& a, const ll_t& b)
 {
   if (b == 0)
   {
@@ -68,7 +66,7 @@ ll_t zharov::mod(const ll_t& a, const ll_t& b)
   return result;
 }
 
-ll_t zharov::bitShiftLeft(const ll_t& a, const ll_t& b)
+zharov::ll_t zharov::bitShiftLeft(const ll_t& a, const ll_t& b)
 {
   ll_t width = sizeof(ll_t) * CHAR_BIT;
   if (a < 0)

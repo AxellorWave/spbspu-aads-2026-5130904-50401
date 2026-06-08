@@ -1,4 +1,5 @@
 #include <boost/test/unit_test.hpp>
+#include <utility>
 #include <queue.hpp>
 
 BOOST_AUTO_TEST_CASE(QueueDefaultConstructorTest)
@@ -14,10 +15,10 @@ BOOST_AUTO_TEST_CASE(QueueCopyConstructorTest)
   queue1.push(2);
   queue1.push(3);
   BOOST_CHECK_EQUAL(queue1.front(), 1);
-  BOOST_CHECK_EQUAL(queue1.back(), 3);
-  zharov::Queue< int > queue2 = zharov::Queue< int >(queue1);
+  BOOST_CHECK_EQUAL(queue1.size(), 3);
+  zharov::Queue< int > queue2(queue1);
   BOOST_CHECK_EQUAL(queue2.front(), 1);
-  BOOST_CHECK_EQUAL(queue2.back(), 3);
+  BOOST_CHECK_EQUAL(queue2.size(), 3);
 }
 
 BOOST_AUTO_TEST_CASE(QueueMoveConstructorTest)
@@ -27,10 +28,10 @@ BOOST_AUTO_TEST_CASE(QueueMoveConstructorTest)
   queue1.push(2);
   queue1.push(3);
   BOOST_CHECK_EQUAL(queue1.front(), 1);
-  BOOST_CHECK_EQUAL(queue1.back(), 3);
-  zharov::Queue< int > queue2 = zharov::Queue< int >(std::move(queue1));
+  BOOST_CHECK_EQUAL(queue1.size(), 3);
+  zharov::Queue< int > queue2(std::move(queue1));
   BOOST_CHECK_EQUAL(queue2.front(), 1);
-  BOOST_CHECK_EQUAL(queue2.back(), 3);
+  BOOST_CHECK_EQUAL(queue2.size(), 3);
   BOOST_CHECK_EQUAL(queue1.size(), 0);
 }
 
@@ -50,15 +51,15 @@ BOOST_AUTO_TEST_CASE(QueueCopyOperatorTest)
   queue1.push(1);
   queue1.push(3);
   BOOST_CHECK_EQUAL(queue1.front(), 1);
-  BOOST_CHECK_EQUAL(queue1.back(), 3);
+  BOOST_CHECK_EQUAL(queue1.size(), 2);
   zharov::Queue< int > queue2;
   queue2.push(11);
   queue2.push(33);
   BOOST_CHECK_EQUAL(queue2.front(), 11);
-  BOOST_CHECK_EQUAL(queue2.back(), 33);
+  BOOST_CHECK_EQUAL(queue2.size(), 2);
   queue2 = queue1;
   BOOST_CHECK_EQUAL(queue2.front(), 1);
-  BOOST_CHECK_EQUAL(queue2.back(), 3);
+  BOOST_CHECK_EQUAL(queue2.size(), 2);
 }
 
 BOOST_AUTO_TEST_CASE(QueueMoveOperatorTest)
@@ -67,15 +68,15 @@ BOOST_AUTO_TEST_CASE(QueueMoveOperatorTest)
   queue1.push(1);
   queue1.push(3);
   BOOST_CHECK_EQUAL(queue1.front(), 1);
-  BOOST_CHECK_EQUAL(queue1.back(), 3);
+  BOOST_CHECK_EQUAL(queue1.size(), 2);
   zharov::Queue< int > queue2;
   queue2.push(11);
   queue2.push(33);
   BOOST_CHECK_EQUAL(queue2.front(), 11);
-  BOOST_CHECK_EQUAL(queue2.back(), 33);
+  BOOST_CHECK_EQUAL(queue2.size(), 2);
   queue2 = std::move(queue1);
   BOOST_CHECK_EQUAL(queue2.front(), 1);
-  BOOST_CHECK_EQUAL(queue2.back(), 3);
+  BOOST_CHECK_EQUAL(queue2.size(), 2);
   BOOST_CHECK_EQUAL(queue1.size(), 0);
 }
 
@@ -89,17 +90,7 @@ BOOST_AUTO_TEST_CASE(QueueFrontTest)
   BOOST_CHECK_EQUAL(queue2.front(), 1);
 }
 
-BOOST_AUTO_TEST_CASE(QueueBackTest)
-{
-  zharov::Queue< int > queue;
-  queue.push(1);
-  queue.push(3);
-  BOOST_CHECK_EQUAL(queue.back(), 3);
-  const zharov::Queue< int > queue2(queue);
-  BOOST_CHECK_EQUAL(queue2.back(), 3);
-}
-
-BOOST_AUTO_TEST_CASE(QueuepushTest)
+BOOST_AUTO_TEST_CASE(QueuePushTest)
 {
   zharov::Queue< int > queue;
   queue.push(1);
@@ -108,13 +99,14 @@ BOOST_AUTO_TEST_CASE(QueuepushTest)
   BOOST_CHECK_EQUAL(queue.front(), 1);
 }
 
-BOOST_AUTO_TEST_CASE(QueueDropTest)
+BOOST_AUTO_TEST_CASE(QueuePopTest)
 {
   zharov::Queue< int > queue;
   queue.push(1);
   queue.push(2);
   queue.push(3);
-  int n = queue.drop();
+  int n = queue.front();
+  queue.pop();
   BOOST_CHECK_EQUAL(n, 1);
   BOOST_CHECK_EQUAL(queue.front(), 2);
   BOOST_CHECK_EQUAL(queue.size(), 2);
@@ -157,15 +149,31 @@ BOOST_AUTO_TEST_CASE(QueueSwapTest)
   queue2.push(200);
   BOOST_CHECK_EQUAL(queue1.size(), 3);
   BOOST_CHECK_EQUAL(queue1.front(), 10);
-  BOOST_CHECK_EQUAL(queue1.back(), 30);
   BOOST_CHECK_EQUAL(queue2.size(), 2);
   BOOST_CHECK_EQUAL(queue2.front(), 100);
-  BOOST_CHECK_EQUAL(queue2.back(), 200);
   queue1.swap(queue2);
   BOOST_CHECK_EQUAL(queue1.size(), 2);
   BOOST_CHECK_EQUAL(queue1.front(), 100);
-  BOOST_CHECK_EQUAL(queue1.back(), 200);
   BOOST_CHECK_EQUAL(queue2.size(), 3);
   BOOST_CHECK_EQUAL(queue2.front(), 10);
-  BOOST_CHECK_EQUAL(queue2.back(), 30);
+}
+
+BOOST_AUTO_TEST_CASE(QueueEmplaceSingleArgTest)
+{
+  zharov::Queue< int > queue;
+  queue.emplace(1);
+  queue.emplace(2);
+  queue.emplace(3);
+  BOOST_CHECK_EQUAL(queue.size(), 3);
+  BOOST_CHECK_EQUAL(queue.front(), 1);
+}
+
+BOOST_AUTO_TEST_CASE(QueueEmplaceMultiArgTest)
+{
+  zharov::Queue< std::pair< int, int > > queue;
+  queue.emplace(1, 2);
+  queue.emplace(3, 4);
+  BOOST_CHECK_EQUAL(queue.size(), 2);
+  BOOST_CHECK_EQUAL(queue.front().first, 1);
+  BOOST_CHECK_EQUAL(queue.front().second, 2);
 }

@@ -5,21 +5,23 @@
 
 namespace
 {
-  std::istream& getData(std::istream& in,
-    zharov::List< std::pair< std::string, zharov::List< size_t > > >& data);
-  std::ostream& printNums(std::ostream& out, zharov::List< zharov::List< size_t > > nums);
-  std::ostream& printNames(std::ostream& out,
-    zharov::List< std::pair< std::string, zharov::List< size_t > > > data);
-  zharov::List< zharov::List< size_t > > transposeNums(
-    zharov::List< std::pair< std::string, zharov::List< size_t > > > data);
-  size_t getSize(zharov::List< std::pair< std::string, zharov::List< size_t > > > data);
-  zharov::List< size_t > getSums(zharov::List< zharov::List< size_t > > nums);
-  std::ostream& printSums(std::ostream& out, zharov::List< size_t > sums);
+  using NumList = zharov::List< size_t >;
+  using NumMatrix = zharov::List< NumList >;
+  using DataEntry = std::pair< std::string, NumList >;
+  using DataList = zharov::List< DataEntry >;
+
+  std::istream& getData(std::istream& in, DataList& data);
+  std::ostream& printNums(std::ostream& out, NumMatrix nums);
+  std::ostream& printNames(std::ostream& out, DataList data);
+  NumMatrix transposeNums(DataList data);
+  size_t getSize(DataList data);
+  NumList getSums(NumMatrix nums);
+  std::ostream& printSums(std::ostream& out, NumList sums);
 }
 
 int main()
 {
-  zharov::List< std::pair< std::string, zharov::List< size_t > > > data;
+  DataList data;
   getData(std::cin, data);
   if (data.cbegin() == data.cend())
   {
@@ -33,12 +35,12 @@ int main()
     std::cout << "0\n";
     return 0;
   }
-  auto transpose_nums = transposeNums(data);
+  NumMatrix transpose_nums = transposeNums(data);
   printNums(std::cout, transpose_nums);
   std::cout << "\n";
   try
   {
-    auto sums_list = getSums(transpose_nums);
+    NumList sums_list = getSums(transpose_nums);
     printSums(std::cout, sums_list);
     std::cout << "\n";
   }
@@ -51,14 +53,13 @@ int main()
 
 namespace
 {
-  std::istream& getData(std::istream& in,
-    zharov::List< std::pair< std::string, zharov::List< size_t > > >& data)
+  std::istream& getData(std::istream& in, DataList& data)
   {
     std::string name;
     while (in >> name)
     {
       size_t num;
-      zharov::List< size_t > nums;
+      NumList nums;
       while (in >> num)
       {
         nums.pushBack(num);
@@ -69,7 +70,7 @@ namespace
     return in;
   }
 
-  std::ostream& printNums(std::ostream& out, zharov::List< zharov::List< size_t > > nums)
+  std::ostream& printNums(std::ostream& out, NumMatrix nums)
   {
     auto it = nums.cbegin();
     auto inner_it = it->cbegin();
@@ -96,8 +97,7 @@ namespace
     return out;
   }
 
-  std::ostream& printNames(std::ostream& out,
-    zharov::List< std::pair< std::string, zharov::List< size_t > > > data)
+  std::ostream& printNames(std::ostream& out, DataList data)
   {
     auto it = data.cbegin();
     out << it->first;
@@ -110,7 +110,7 @@ namespace
     return out;
   }
 
-  size_t getSize(zharov::List< std::pair< std::string, zharov::List< size_t > > > data)
+  size_t getSize(DataList data)
   {
     size_t res = 0;
     for (auto it = data.cbegin(); it != data.cend(); ++it)
@@ -120,13 +120,12 @@ namespace
     return res;
   }
 
-  zharov::List< zharov::List< size_t > > transposeNums(
-    zharov::List< std::pair< std::string, zharov::List< size_t > > > data)
+  NumMatrix transposeNums(DataList data)
   {
-    zharov::List< zharov::List< size_t > > res;
+    NumMatrix res;
     for (size_t i = 0; i < getSize(data); ++i)
     {
-      zharov::List< size_t > inner;
+      NumList inner;
       for (auto it = data.cbegin(); it != data.cend(); ++it)
       {
         auto num_it = it->second.cbegin();
@@ -144,9 +143,9 @@ namespace
     return res;
   }
 
-  zharov::List< size_t > getSums(zharov::List< zharov::List< size_t > > nums)
+  NumList getSums(NumMatrix nums)
   {
-    zharov::List< size_t > res;
+    NumList res;
     constexpr size_t MAX = std::numeric_limits< size_t >::max();
     for (auto it = nums.cbegin(); it != nums.cend(); ++it)
     {
@@ -164,7 +163,7 @@ namespace
     return res;
   }
 
-  std::ostream& printSums(std::ostream& out, zharov::List< size_t > sums)
+  std::ostream& printSums(std::ostream& out, NumList sums)
   {
     auto it = sums.cbegin();
     out << *it;

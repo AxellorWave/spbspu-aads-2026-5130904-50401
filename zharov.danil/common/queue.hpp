@@ -7,63 +7,22 @@ namespace zharov
   template < class T >
   class Queue
   {
-    List< T > list_;
-
   public:
-    Queue();
-    Queue(const Queue& q);
-    Queue(Queue&& q) noexcept;
-    ~Queue() = default;
-    Queue& operator=(const Queue& q);
-    Queue& operator=(Queue&& q) noexcept;
     T& front();
     const T& front() const;
-    T& back();
-    const T& back() const;
-    bool empty() const;
-    size_t size() const;
-    void clear();
-    void push(T rhs);
-    T drop();
-    void swap(Queue& q);
+    bool empty() const noexcept;
+    size_t size() const noexcept;
+    void clear() noexcept;
+    void push(const T& rhs);
+    void push(T&& rhs);
+    template < class... Args >
+    void emplace(Args&&... args);
+    void pop() noexcept;
+    void swap(Queue& q) noexcept;
+
+  private:
+    List< T > list_;
   };
-}
-
-template < class T >
-zharov::Queue< T >::Queue():
-  list_()
-{}
-
-template < class T >
-zharov::Queue< T >::Queue(const Queue& q):
-  list_(q.list_)
-{}
-
-template < class T >
-zharov::Queue< T >::Queue(Queue&& q) noexcept:
-  list_(std::move(q.list_))
-{}
-
-template < class T >
-zharov::Queue< T >& zharov::Queue< T >::operator=(const Queue& q)
-{
-  if (this != std::addressof(q))
-  {
-    Queue< T > temp(q);
-    swap(temp);
-  }
-  return *this;
-}
-
-template < class T >
-zharov::Queue< T >& zharov::Queue< T >::operator=(Queue&& q) noexcept
-{
-  if (this != std::addressof(q))
-  {
-    clear();
-    list_ = std::move(q.list_);
-  }
-  return *this;
 }
 
 template < class T >
@@ -79,51 +38,50 @@ const T& zharov::Queue< T >::front() const
 }
 
 template < class T >
-T& zharov::Queue< T >::back()
-{
-  return list_.back();
-}
-
-template < class T >
-const T& zharov::Queue< T >::back() const
-{
-  return list_.back();
-}
-
-template < class T >
-bool zharov::Queue< T >::empty() const
+bool zharov::Queue< T >::empty() const noexcept
 {
   return !list_.size();
 }
 
 template < class T >
-size_t zharov::Queue< T >::size() const
+size_t zharov::Queue< T >::size() const noexcept
 {
   return list_.size();
 }
 
 template < class T >
-void zharov::Queue< T >::clear()
+void zharov::Queue< T >::clear() noexcept
 {
   list_.clear();
 }
 
 template < class T >
-void zharov::Queue< T >::push(T rhs)
+void zharov::Queue< T >::push(const T& rhs)
 {
   list_.pushBack(rhs);
 }
 
 template < class T >
-T zharov::Queue< T >::drop()
+void zharov::Queue< T >::push(T&& rhs)
 {
-  T fr = front();
-  list_.popFront();
-  return fr;
+  list_.pushBack(std::move(rhs));
 }
 
 template < class T >
-void zharov::Queue< T >::swap(Queue& q)
+template < class... Args >
+void zharov::Queue< T >::emplace(Args&&... args)
+{
+  list_.emplaceBack(std::forward< Args >(args)...);
+}
+
+template < class T >
+void zharov::Queue< T >::pop() noexcept
+{
+  list_.popFront();
+}
+
+template < class T >
+void zharov::Queue< T >::swap(Queue& q) noexcept
 {
   list_.swap(q.list_);
 }

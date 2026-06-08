@@ -1,4 +1,5 @@
 #include <boost/test/unit_test.hpp>
+#include <utility>
 #include <stack.hpp>
 
 BOOST_AUTO_TEST_CASE(DefaultStackConstructorTest)
@@ -87,7 +88,7 @@ BOOST_AUTO_TEST_CASE(StackBackTest)
   BOOST_CHECK_EQUAL(stack2.top(), 3);
 }
 
-BOOST_AUTO_TEST_CASE(StackpushTest)
+BOOST_AUTO_TEST_CASE(StackPushTest)
 {
   zharov::Stack< int > stack;
   stack.push(1);
@@ -95,13 +96,14 @@ BOOST_AUTO_TEST_CASE(StackpushTest)
   BOOST_CHECK_EQUAL(stack.size(), 2);
 }
 
-BOOST_AUTO_TEST_CASE(StackDropTest)
+BOOST_AUTO_TEST_CASE(StackPopTest)
 {
   zharov::Stack< int > stack;
   stack.push(1);
   stack.push(2);
   stack.push(3);
-  int n = stack.drop();
+  int n = stack.top();
+  stack.pop();
   BOOST_CHECK_EQUAL(n, 3);
   BOOST_CHECK_EQUAL(stack.top(), 2);
   BOOST_CHECK_EQUAL(stack.size(), 2);
@@ -151,4 +153,24 @@ BOOST_AUTO_TEST_CASE(StackSwapTest)
   BOOST_CHECK_EQUAL(stack1.top(), 200);
   BOOST_CHECK_EQUAL(stack2.size(), 3);
   BOOST_CHECK_EQUAL(stack2.top(), 30);
+}
+
+BOOST_AUTO_TEST_CASE(StackEmplaceSingleArgTest)
+{
+  zharov::Stack< int > stack;
+  stack.emplace(1);
+  stack.emplace(2);
+  stack.emplace(3);
+  BOOST_CHECK_EQUAL(stack.size(), 3);
+  BOOST_CHECK_EQUAL(stack.top(), 3);
+}
+
+BOOST_AUTO_TEST_CASE(StackEmplaceMultiArgTest)
+{
+  zharov::Stack< std::pair< int, int > > stack;
+  stack.emplace(1, 2);
+  stack.emplace(3, 4);
+  BOOST_CHECK_EQUAL(stack.size(), 2);
+  BOOST_CHECK_EQUAL(stack.top().first, 3);
+  BOOST_CHECK_EQUAL(stack.top().second, 4);
 }

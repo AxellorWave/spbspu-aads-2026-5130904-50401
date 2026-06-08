@@ -2,17 +2,33 @@
 #include <stdexcept>
 #include "math_functions.hpp"
 
-bool zharov::isOperand(const std::string& str)
+namespace
 {
-  std::string signs[] = {"+", "-", "/", "*", "%", "<<", "(", ")"};
-  for (size_t i = 0; i < 8; ++i)
+  bool isOperator(const std::string& str)
   {
-    if (str == signs[i])
+    std::string signs[] = {"+", "-", "/", "*", "%", "<<", "(", ")"};
+    for (size_t i = 0; i < 8; ++i)
     {
-      return false;
+      if (str == signs[i])
+      {
+        return true;
+      }
     }
+    return false;
   }
-  return true;
+
+  int getPriority(const std::string& op)
+  {
+    if (op == "<<")
+    {
+      return 3;
+    }
+    if (op == "*" || op == "/")
+    {
+      return 1;
+    }
+    return 2;
+  }
 }
 
 zharov::Queue< std::string > zharov::getQueue(const std::string& line)
@@ -31,24 +47,11 @@ zharov::Queue< std::string > zharov::getQueue(const std::string& line)
       curr.push_back(line[i]);
     }
   }
-  if (curr != "")
+  if (!curr.empty())
   {
     res.push(curr);
   }
   return res;
-}
-
-int zharov::getPriority(const std::string& op)
-{
-  if (op == "<<")
-  {
-    return 3;
-  }
-  if (op == "*" || op == "/")
-  {
-    return 1;
-  }
-  return 2;
 }
 
 zharov::Queue< std::string > zharov::getPostfix(Queue< std::string >& infix)
@@ -57,8 +60,9 @@ zharov::Queue< std::string > zharov::getPostfix(Queue< std::string >& infix)
   Queue< std::string > res;
   while (!infix.empty())
   {
-    std::string curr = infix.drop();
-    if (isOperand(curr))
+    std::string curr = infix.front();
+    infix.pop();
+    if (!isOperator(curr))
     {
       res.push(curr);
     }
@@ -70,11 +74,12 @@ zharov::Queue< std::string > zharov::getPostfix(Queue< std::string >& infix)
     {
       while (!stack.empty() && stack.top() != "(")
       {
-        res.push(stack.drop());
+        res.push(stack.top());
+        stack.pop();
       }
       if (!stack.empty())
       {
-        stack.drop();
+        stack.pop();
       }
       else
       {
@@ -87,7 +92,8 @@ zharov::Queue< std::string > zharov::getPostfix(Queue< std::string >& infix)
       {
         if (getPriority(curr) >= getPriority(stack.top()))
         {
-          res.push(stack.drop());
+          res.push(stack.top());
+          stack.pop();
         }
         else
         {
@@ -101,7 +107,8 @@ zharov::Queue< std::string > zharov::getPostfix(Queue< std::string >& infix)
   {
     if (stack.top() != "(")
     {
-      res.push(stack.drop());
+      res.push(stack.top());
+      stack.pop();
     }
     else
     {
@@ -116,8 +123,9 @@ zharov::ll_t zharov::calculate(Queue< std::string >& postfix)
   Stack< ll_t > temp;
   while (!postfix.empty())
   {
-    std::string curr = postfix.drop();
-    if (!isOperand(curr))
+    std::string curr = postfix.front();
+    postfix.pop();
+    if (isOperator(curr))
     {
       if (temp.size() < 2)
       {
@@ -125,8 +133,10 @@ zharov::ll_t zharov::calculate(Queue< std::string >& postfix)
       }
       else
       {
-        ll_t b = temp.drop();
-        ll_t a = temp.drop();
+        ll_t b = temp.top();
+        temp.pop();
+        ll_t a = temp.top();
+        temp.pop();
         if (curr == "+")
         {
           temp.push(add(a, b));
@@ -166,22 +176,7 @@ zharov::ll_t zharov::calculate(Queue< std::string >& postfix)
   {
     throw std::logic_error("Not enough operators");
   }
-  return temp.drop();
-}
-
-std::istream& zharov::getResults(std::istream& in, Stack< ll_t >& results)
-{
-  std::string line;
-  while (!std::getline(in, line).eof())
-  {
-    if (line == "")
-    {
-      continue;
-    }
-    zharov::Queue< std::string > queue = zharov::getQueue(line);
-    queue = zharov::getPostfix(queue);
-    ll_t result = zharov::calculate(queue);
-    results.push(result);
-  }
-  return in;
+  ll_t result = temp.top();
+  temp.pop();
+  return result;
 }

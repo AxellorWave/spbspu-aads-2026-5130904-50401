@@ -1,47 +1,48 @@
-#include <iostream>
-#include <string>
+#include <exception>
 #include <fstream>
+#include <iostream>
+#include <memory>
+#include <string>
 #include "general_functions.hpp"
-
-using ll_t = long long;
 
 int main(int argc, char** argv)
 {
-  zharov::Stack< ll_t > results;
+  zharov::Stack< long long > results;
   try
   {
+    std::ifstream file;
+    std::istream* in = std::addressof(std::cin);
     if (argc > 1)
     {
-      std::ifstream d(argv[1]);
-      zharov::getResults(d, results);
+      file.open(argv[1]);
+      in = std::addressof(file);
     }
-    else
+    std::string line;
+    while (!std::getline(*in, line).eof())
     {
-      zharov::getResults(std::cin, results);
+      if (line.empty())
+      {
+        continue;
+      }
+      zharov::Queue< std::string > queue = zharov::getQueue(line);
+      queue = zharov::getPostfix(queue);
+      results.push(zharov::calculate(queue));
     }
   }
-  catch (const std::overflow_error& e)
+  catch (const std::exception& e)
   {
     std::cerr << e.what() << "\n";
     return 1;
   }
-  catch (const std::logic_error& e)
+  if (!results.empty())
   {
-    std::cerr << e.what() << "\n";
-    return 1;
+    std::cout << results.top();
+    results.pop();
   }
-  bool is_first = true;
   while (!results.empty())
   {
-    if (!is_first)
-    {
-      std::cout << " ";
-    }
-    else
-    {
-      is_first = false;
-    }
-    std::cout << results.drop();
+    std::cout << " " << results.top();
+    results.pop();
   }
   std::cout << "\n";
 }
