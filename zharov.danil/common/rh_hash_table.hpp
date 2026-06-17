@@ -251,25 +251,41 @@ void zharov::RHHashTable< Key, Value, Hash, Equal >::addImpl(K&& k, V&& v)
   {
     rehash();
   }
-  size_t idx = hasher_(k) % capacity_;
-  detail::Slot< Key, Value > incoming(std::forward< K >(k), std::forward< V >(v), 0);
-  for (size_t i = 0; i < capacity_; ++i, idx = (idx + 1) % capacity_, ++incoming.psl_)
+  size_t end = hasher_(k) % capacity_;
+  size_t psl = 0;
+  bool check_dup = true;
+  for (size_t i = 0; i < capacity_; ++i, end = (end + 1) % capacity_, ++psl)
   {
-    if (!occupied_[idx])
+    if (!occupied_[end])
     {
-      new (slots_ + idx) detail::Slot< Key, Value >(std::move(incoming));
-      occupied_[idx] = true;
-      ++size_;
-      return;
+      break;
     }
-    if (equal_(slots_[idx].key_, incoming.key_))
+    if (check_dup)
     {
-      throw std::invalid_argument("key already exists");
+      if (slots_[end].psl_ < psl)
+      {
+        check_dup = false;
+      }
+      else if (equal_(slots_[end].key_, k))
+      {
+        throw std::invalid_argument("key already exists");
+      }
     }
-    if (slots_[idx].psl_ < incoming.psl_)
+  }
+  new (slots_ + end) detail::Slot< Key, Value >(std::forward< K >(k), std::forward< V >(v), psl);
+  occupied_[end] = true;
+  ++size_;
+  while (slots_[end].psl_ > 0)
+  {
+    size_t prev = (end + capacity_ - 1) % capacity_;
+    if (slots_[prev].psl_ >= slots_[end].psl_ - 1)
     {
-      std::swap(*(slots_ + idx), incoming);
+      break;
     }
+    std::swap(*(slots_ + prev), *(slots_ + end));
+    --(slots_ + prev)->psl_;
+    ++(slots_ + end)->psl_;
+    end = prev;
   }
 }
 
@@ -314,6 +330,40 @@ Value& zharov::RHHashTable< Key, Value, Hash, Equal >::at(const Key& k)
 {
   const RHHashTable* const_table = this;
   return const_cast< Value& >((*const_table).at(k));
+}
+
+template < class Key, class Value, class Hash, class Equal >
+void zharov::RHHashTable< Key, Value, Hash, Equal >::remove(const Key& k)
+{
+  size_t idx = hasher_(k) % capacity_;
+  size_t found = capacity_;
+  for (size_t i = 0; i < capacity_; ++i, idx = (idx + 1) % capacity_)
+  {
+    if (!occupied_[idx] || slots_[idx].psl_ < i)
+    {
+      throw std::out_of_range("key not found");
+    }
+    if (equal_(slots_[idx].key_, k))
+    {
+      found = idx;
+      break;
+    }
+  }
+  if (found == capacity_)
+  {
+    throw std::out_of_range("key not found");
+  }
+  size_t next = (found + 1) % capacity_;
+  while (occupied_[next] && slots_[next].psl_ != 0)
+  {
+    *(slots_ + found) = std::move(*(slots_ + next));
+    --(slots_ + found)->psl_;
+    found = next;
+    next = (found + 1) % capacity_;
+  }
+  (slots_ + found)->~Slot();
+  occupied_[found] = false;
+  --size_;
 }
 
 #endif
