@@ -115,4 +115,32 @@ namespace zharov
   };
 }
 
+template < class Key, class Value, class Hash, class Equal >
+zharov::RHHashTable< Key, Value, Hash, Equal >::RHHashTable(size_t capacity):
+  hasher_(Hash{}),
+  equal_(Equal{}),
+  occupied_(nullptr),
+  slots_(nullptr),
+  capacity_(capacity ? capacity : 16),
+  size_(0)
+{
+  try
+  {
+    occupied_ = new bool[capacity_]{};
+    slots_ = static_cast< detail::Slot< Key, Value >* >(
+      ::operator new(sizeof(detail::Slot< Key, Value >) * capacity_));
+  }
+  catch (...)
+  {
+    delete[] occupied_;
+    ::operator delete(slots_);
+    throw;
+  }
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::RHHashTable< Key, Value, Hash, Equal >::RHHashTable():
+  RHHashTable(16)
+{}
+
 #endif
