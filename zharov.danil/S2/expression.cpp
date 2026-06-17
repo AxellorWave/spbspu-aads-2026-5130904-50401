@@ -1,4 +1,4 @@
-#include "general_functions.hpp"
+#include "expression.hpp"
 #include <stdexcept>
 #include "math_functions.hpp"
 
@@ -31,7 +31,7 @@ namespace
   }
 }
 
-zharov::Queue< std::string > zharov::getQueue(const std::string& line)
+zharov::Queue< std::string > zharov::detail::getQueue(const std::string& line)
 {
   Queue< std::string > res;
   std::string curr;
@@ -54,7 +54,7 @@ zharov::Queue< std::string > zharov::getQueue(const std::string& line)
   return res;
 }
 
-zharov::Queue< std::string > zharov::getPostfix(Queue< std::string >& infix)
+zharov::Queue< std::string > zharov::detail::getPostfix(Queue< std::string >& infix)
 {
   Stack< std::string > stack;
   Queue< std::string > res;
@@ -118,7 +118,7 @@ zharov::Queue< std::string > zharov::getPostfix(Queue< std::string >& infix)
   return res;
 }
 
-zharov::ll_t zharov::calculate(Queue< std::string >& postfix)
+long long zharov::detail::calculate(Queue< std::string >& postfix)
 {
   Stack< ll_t > temp;
   while (!postfix.empty())
@@ -179,4 +179,16 @@ zharov::ll_t zharov::calculate(Queue< std::string >& postfix)
   ll_t result = temp.top();
   temp.pop();
   return result;
+}
+
+zharov::Expression::Expression(const std::string& line)
+{
+  Queue< std::string > infix = detail::getQueue(line);
+  postfix_ = detail::getPostfix(infix);
+}
+
+long long zharov::Expression::calculate()
+{
+  Queue< std::string > postfix = postfix_;
+  return detail::calculate(postfix);
 }

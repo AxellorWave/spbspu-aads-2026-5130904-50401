@@ -64,7 +64,7 @@ void zharov::Stack< T >::push(const T& rhs)
 template < class T >
 void zharov::Stack< T >::push(T&& rhs)
 {
-  list_.pushBack(std::move(rhs));
+  list_.pushBack(std::forward< T >(rhs));
 }
 
 template < class T >

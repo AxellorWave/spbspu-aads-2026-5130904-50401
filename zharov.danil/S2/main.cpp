@@ -3,7 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include "general_functions.hpp"
+#include "expression.hpp"
 
 int main(int argc, char** argv)
 {
@@ -24,9 +24,7 @@ int main(int argc, char** argv)
       {
         continue;
       }
-      zharov::Queue< std::string > queue = zharov::getQueue(line);
-      queue = zharov::getPostfix(queue);
-      results.push(zharov::calculate(queue));
+      results.push(zharov::Expression(line).calculate());
     }
   }
   catch (const std::exception& e)
