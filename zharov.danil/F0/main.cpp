@@ -1,6 +1,7 @@
 #include <iostream>
 #include <limits>
 #include "cafe.hpp"
+#include "menu_cmd.hpp"
 
 int main(int argc, char** argv)
 {
@@ -11,8 +12,11 @@ int main(int argc, char** argv)
   using ConstCmd = void (*)(std::ostream&, std::istream&, const zharov::CafeSystem&);
   zharov::RHHashTable< std::string, Cmd, std::hash< std::string >, std::equal_to< std::string > >
     cmds;
-  zharov::RHHashTable< std::string, ConstCmd, std::hash< std::string >, std::equal_to< std::string > >
+  zharov::RHHashTable< std::string, ConstCmd, std::hash< std::string >,
+    std::equal_to< std::string > >
     constCmds;
+
+  cmds.add("menu-add", zharov::menuAdd);
 
   std::string command;
   while (std::cin >> command)
@@ -28,10 +32,10 @@ int main(int argc, char** argv)
         constCmds.at(command)(std::cout, std::cin, cafe);
       }
     }
-    catch (...)
+    catch (const std::exception& e)
     {
       std::cin.clear();
-      std::cout << "<INVALID COMMAND>\n";
+      std::cout << "<INVALID COMMAND: " << e.what() << ">\n";
       auto skip = std::numeric_limits< std::streamsize >::max();
       std::cin.ignore(skip, '\n');
     }
