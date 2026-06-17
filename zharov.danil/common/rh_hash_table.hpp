@@ -366,4 +366,23 @@ void zharov::RHHashTable< Key, Value, Hash, Equal >::remove(const Key& k)
   --size_;
 }
 
+template < class Key, class Value, class Hash, class Equal >
+void zharov::RHHashTable< Key, Value, Hash, Equal >::rehash(size_t slots)
+{
+  size_t new_capacity = slots ? slots : capacity_ * 2;
+  if (new_capacity < size_)
+  {
+    throw std::invalid_argument("capacity too small");
+  }
+  RHHashTable tmp(new_capacity);
+  for (size_t i = 0; i < capacity_; ++i)
+  {
+    if (occupied_[i])
+    {
+      tmp.add(std::move(slots_[i].key_), std::move(slots_[i].value_));
+    }
+  }
+  swap(tmp);
+}
+
 #endif
