@@ -186,6 +186,23 @@ zharov::RHHashTable< Key, Value, Hash, Equal >::RHHashTable(RHHashTable&& table)
 }
 
 template < class Key, class Value, class Hash, class Equal >
+zharov::RHHashTable< Key, Value, Hash, Equal >&
+zharov::RHHashTable< Key, Value, Hash, Equal >::operator=(const RHHashTable& table)
+{
+  RHHashTable tmp(table);
+  swap(tmp);
+  return *this;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::RHHashTable< Key, Value, Hash, Equal >&
+zharov::RHHashTable< Key, Value, Hash, Equal >::operator=(RHHashTable&& table) noexcept
+{
+  swap(table);
+  return *this;
+}
+
+template < class Key, class Value, class Hash, class Equal >
 zharov::RHHashTable< Key, Value, Hash, Equal >::~RHHashTable()
 {
   for (size_t i = 0; i < capacity_; ++i)
