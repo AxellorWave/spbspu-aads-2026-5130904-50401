@@ -488,4 +488,56 @@ bool zharov::CIter< Key, Value, Hash, Equal >::operator!=(const CIter& it) const
   return !(*this == it);
 }
 
+template < class Key, class Value, class Hash, class Equal >
+zharov::RHHashTable< Key, Value, Hash, Equal >::iterator
+zharov::RHHashTable< Key, Value, Hash, Equal >::begin()
+{
+  size_t i = 0;
+  while (i < capacity_ && !occupied_[i])
+  {
+    ++i;
+  }
+  return iterator(occupied_, slots_, i, capacity_);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::RHHashTable< Key, Value, Hash, Equal >::const_iterator
+zharov::RHHashTable< Key, Value, Hash, Equal >::begin() const
+{
+  return cbegin();
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::RHHashTable< Key, Value, Hash, Equal >::const_iterator
+zharov::RHHashTable< Key, Value, Hash, Equal >::cbegin() const
+{
+  size_t i = 0;
+  while (i < capacity_ && !occupied_[i])
+  {
+    ++i;
+  }
+  return const_iterator(occupied_, slots_, i, capacity_);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::RHHashTable< Key, Value, Hash, Equal >::iterator
+zharov::RHHashTable< Key, Value, Hash, Equal >::end()
+{
+  return iterator(occupied_, slots_, capacity_, capacity_);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::RHHashTable< Key, Value, Hash, Equal >::const_iterator
+zharov::RHHashTable< Key, Value, Hash, Equal >::end() const
+{
+  return cend();
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::RHHashTable< Key, Value, Hash, Equal >::const_iterator
+zharov::RHHashTable< Key, Value, Hash, Equal >::cend() const
+{
+  return const_iterator(occupied_, slots_, capacity_, capacity_);
+}
+
 #endif
