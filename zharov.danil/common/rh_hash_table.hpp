@@ -437,4 +437,55 @@ bool zharov::Iter< Key, Value, Hash, Equal >::operator!=(const Iter& it) const
   return !(*this == it);
 }
 
+template < class Key, class Value, class Hash, class Equal >
+zharov::CIter< Key, Value, Hash, Equal >::CIter(bool* occupied, detail::Slot< Key, Value >* slots, size_t curr, size_t capacity):
+  occupied_(occupied),
+  slots_(slots),
+  curr_(curr),
+  capacity_(capacity)
+{}
+
+template < class Key, class Value, class Hash, class Equal >
+const std::pair< const Key, Value >& zharov::CIter< Key, Value, Hash, Equal >::operator*() const
+{
+  return slots_[curr_].kv_;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+const std::pair< const Key, Value >* zharov::CIter< Key, Value, Hash, Equal >::operator->() const
+{
+  return &slots_[curr_].kv_;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::CIter< Key, Value, Hash, Equal >& zharov::CIter< Key, Value, Hash, Equal >::operator++()
+{
+  ++curr_;
+  while (curr_ < capacity_ && !occupied_[curr_])
+  {
+    ++curr_;
+  }
+  return *this;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::CIter< Key, Value, Hash, Equal > zharov::CIter< Key, Value, Hash, Equal >::operator++(int)
+{
+  CIter tmp = *this;
+  ++(*this);
+  return tmp;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+bool zharov::CIter< Key, Value, Hash, Equal >::operator==(const CIter& it) const
+{
+  return curr_ == it.curr_;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+bool zharov::CIter< Key, Value, Hash, Equal >::operator!=(const CIter& it) const
+{
+  return !(*this == it);
+}
+
 #endif
