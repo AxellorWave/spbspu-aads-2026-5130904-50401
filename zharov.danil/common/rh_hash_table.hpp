@@ -216,4 +216,45 @@ zharov::RHHashTable< Key, Value, Hash, Equal >::~RHHashTable()
   ::operator delete(slots_);
 }
 
+template < class Key, class Value, class Hash, class Equal >
+size_t zharov::RHHashTable< Key, Value, Hash, Equal >::size() const
+{
+  return size_;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+size_t zharov::RHHashTable< Key, Value, Hash, Equal >::capacity() const
+{
+  return capacity_;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+void zharov::RHHashTable< Key, Value, Hash, Equal >::add(const Key& k, const Value& v)
+{
+  if (size_ >= capacity_ * 3 / 4)
+  {
+    rehash();
+  }
+  size_t idx = hasher_(k) % capacity_;
+  detail::Slot< Key, Value > incoming(k, v, 0);
+  for (size_t i = 0; i < capacity_; ++i, idx = (idx + 1) % capacity_, ++incoming.psl_)
+  {
+    if (!occupied_[idx])
+    {
+      new (slots_ + idx) detail::Slot< Key, Value >(std::move(incoming));
+      occupied_[idx] = true;
+      ++size_;
+      return;
+    }
+    if (equal_(slots_[idx].key_, incoming.key_))
+    {
+      throw std::invalid_argument("key already exists");
+    }
+    if (slots_[idx].psl_ < incoming.psl_)
+    {
+      std::swap(*(slots_ + idx), incoming);
+    }
+  }
+}
+
 #endif
