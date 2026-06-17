@@ -16,17 +16,14 @@ namespace zharov
     {
       Slot() = delete;
       Slot(const Key& key, const Value& value, size_t psl):
-        key_(key),
-        value_(value),
+        kv_(key, value),
         psl_(psl)
       {}
       Slot(Key&& key, Value&& value, size_t psl):
-        key_(std::move(key)),
-        value_(std::move(value)),
+        kv_(std::move(key), std::move(value)),
         psl_(psl)
       {}
-      Key key_;
-      Value value_;
+      std::pair< const Key, Value > kv_;
       size_t psl_;
     };
   }
@@ -35,8 +32,8 @@ namespace zharov
   class Iter
   {
   public:
-    detail::Slot< Key, Value >& operator*() const;
-    detail::Slot< Key, Value >* operator->() const;
+    std::pair< const Key, Value >& operator*() const;
+    std::pair< const Key, Value >* operator->() const;
     Iter& operator++();
     Iter operator++(int);
     bool operator==(const Iter& it) const;
@@ -55,8 +52,8 @@ namespace zharov
   class CIter
   {
   public:
-    const detail::Slot< Key, Value >& operator*() const;
-    const detail::Slot< Key, Value >* operator->() const;
+    const std::pair< const Key, Value >& operator*() const;
+    const std::pair< const Key, Value >* operator->() const;
     CIter& operator++();
     CIter operator++(int);
     bool operator==(const CIter& it) const;
@@ -166,7 +163,7 @@ zharov::RHHashTable< Key, Value, Hash, Equal >::RHHashTable(const RHHashTable& t
     if (table.occupied_[i])
     {
       new (slots_ + i) detail::Slot< Key, Value >(
-        table.slots_[i].key_, table.slots_[i].value_, table.slots_[i].psl_);
+        table.slots_[i].kv_.first, table.slots_[i].kv_.second, table.slots_[i].psl_);
       occupied_[i] = true;
       ++size_;
     }
@@ -266,7 +263,7 @@ void zharov::RHHashTable< Key, Value, Hash, Equal >::addImpl(K&& k, V&& v)
       {
         check_dup = false;
       }
-      else if (equal_(slots_[end].key_, k))
+      else if (equal_(slots_[end].kv_.first, k))
       {
         throw std::invalid_argument("key already exists");
       }
@@ -282,7 +279,9 @@ void zharov::RHHashTable< Key, Value, Hash, Equal >::addImpl(K&& k, V&& v)
     {
       break;
     }
-    std::swap(*(slots_ + prev), *(slots_ + end));
+    std::swap(const_cast< Key& >(slots_[prev].kv_.first), const_cast< Key& >(slots_[end].kv_.first));
+    std::swap(slots_[prev].kv_.second, slots_[end].kv_.second);
+    std::swap(slots_[prev].psl_, slots_[end].psl_);
     --(slots_ + prev)->psl_;
     ++(slots_ + end)->psl_;
     end = prev;
@@ -299,7 +298,7 @@ bool zharov::RHHashTable< Key, Value, Hash, Equal >::has(const Key& k) const
     {
       return false;
     }
-    if (equal_(slots_[idx].key_, k))
+    if (equal_(slots_[idx].kv_.first, k))
     {
       return true;
     }
@@ -317,9 +316,9 @@ const Value& zharov::RHHashTable< Key, Value, Hash, Equal >::at(const Key& k) co
     {
       throw std::out_of_range("key not found");
     }
-    if (equal_(slots_[idx].key_, k))
+    if (equal_(slots_[idx].kv_.first, k))
     {
-      return slots_[idx].value_;
+      return slots_[idx].kv_.second;
     }
   }
   throw std::out_of_range("key not found");
@@ -343,7 +342,7 @@ void zharov::RHHashTable< Key, Value, Hash, Equal >::remove(const Key& k)
     {
       throw std::out_of_range("key not found");
     }
-    if (equal_(slots_[idx].key_, k))
+    if (equal_(slots_[idx].kv_.first, k))
     {
       found = idx;
       break;
@@ -356,7 +355,9 @@ void zharov::RHHashTable< Key, Value, Hash, Equal >::remove(const Key& k)
   size_t next = (found + 1) % capacity_;
   while (occupied_[next] && slots_[next].psl_ != 0)
   {
-    *(slots_ + found) = std::move(*(slots_ + next));
+    const_cast< Key& >(slots_[found].kv_.first) = std::move(const_cast< Key& >(slots_[next].kv_.first));
+    slots_[found].kv_.second = std::move(slots_[next].kv_.second);
+    slots_[found].psl_ = slots_[next].psl_;
     --(slots_ + found)->psl_;
     found = next;
     next = (found + 1) % capacity_;
@@ -379,10 +380,41 @@ void zharov::RHHashTable< Key, Value, Hash, Equal >::rehash(size_t slots)
   {
     if (occupied_[i])
     {
-      tmp.add(std::move(slots_[i].key_), std::move(slots_[i].value_));
+      tmp.add(std::move(slots_[i].kv_.first), std::move(slots_[i].kv_.second));
     }
   }
   swap(tmp);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::Iter< Key, Value, Hash, Equal >::Iter(bool* occupied, detail::Slot< Key, Value >* slots, size_t curr, size_t capacity):
+  occupied_(occupied),
+  slots_(slots),
+  curr_(curr),
+  capacity_(capacity)
+{}
+
+template < class Key, class Value, class Hash, class Equal >
+std::pair< const Key, Value >& zharov::Iter< Key, Value, Hash, Equal >::operator*() const
+{
+  return slots_[curr_].kv_;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+std::pair< const Key, Value >* zharov::Iter< Key, Value, Hash, Equal >::operator->() const
+{
+  return &slots_[curr_].kv_;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::Iter< Key, Value, Hash, Equal >& zharov::Iter< Key, Value, Hash, Equal >::operator++()
+{
+  ++curr_;
+  while (curr_ < capacity_ && !occupied_[curr_])
+  {
+    ++curr_;
+  }
+  return *this;
 }
 
 #endif
