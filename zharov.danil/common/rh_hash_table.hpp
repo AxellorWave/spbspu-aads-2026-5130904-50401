@@ -417,4 +417,24 @@ zharov::Iter< Key, Value, Hash, Equal >& zharov::Iter< Key, Value, Hash, Equal >
   return *this;
 }
 
+template < class Key, class Value, class Hash, class Equal >
+zharov::Iter< Key, Value, Hash, Equal > zharov::Iter< Key, Value, Hash, Equal >::operator++(int)
+{
+  Iter tmp = *this;
+  ++(*this);
+  return tmp;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+bool zharov::Iter< Key, Value, Hash, Equal >::operator==(const Iter& it) const
+{
+  return curr_ == it.curr_;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+bool zharov::Iter< Key, Value, Hash, Equal >::operator!=(const Iter& it) const
+{
+  return !(*this == it);
+}
+
 #endif
