@@ -144,6 +144,17 @@ zharov::RHHashTable< Key, Value, Hash, Equal >::RHHashTable(size_t capacity):
 }
 
 template < class Key, class Value, class Hash, class Equal >
+void zharov::RHHashTable< Key, Value, Hash, Equal >::swap(RHHashTable& table) noexcept
+{
+  std::swap(hasher_, table.hasher_);
+  std::swap(equal_, table.equal_);
+  std::swap(occupied_, table.occupied_);
+  std::swap(slots_, table.slots_);
+  std::swap(capacity_, table.capacity_);
+  std::swap(size_, table.size_);
+}
+
+template < class Key, class Value, class Hash, class Equal >
 zharov::RHHashTable< Key, Value, Hash, Equal >::~RHHashTable()
 {
   for (size_t i = 0; i < capacity_; ++i)
