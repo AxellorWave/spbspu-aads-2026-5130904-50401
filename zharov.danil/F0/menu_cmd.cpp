@@ -20,19 +20,19 @@ void zharov::menuAdd(std::ostream& out, std::istream& in, zharov::CafeSystem& ca
 {
   std::string menuName, name, description;
   int price = 0, prepTime = 0;
-  in >> menuName >> name >> price >> prepTime;
-  if (hasMoreArgs(in))
-  {
-    in >> std::quoted(description);
-  }
-
+  in >> menuName >> name >> price;
   if (price <= 0)
   {
     throw std::invalid_argument("Price must be positive");
   }
+  in >> prepTime;
   if (prepTime <= 0)
   {
     throw std::invalid_argument("Prep time must be positive");
+  }
+  if (hasMoreArgs(in))
+  {
+    in >> std::quoted(description);
   }
   if (!cafe.menus.has(menuName))
   {
@@ -49,9 +49,15 @@ void zharov::menuAdd(std::ostream& out, std::istream& in, zharov::CafeSystem& ca
 
 void zharov::menuRemove(std::ostream& out, std::istream& in, zharov::CafeSystem& cafe)
 {
-  std::string menuName, name;
-  in >> menuName >> name;
-  if (!cafe.menus.has(menuName) || !cafe.menus.at(menuName).has(name))
+  std::string menuName;
+  in >> menuName;
+  if (!cafe.menus.has(menuName))
+  {
+    throw std::invalid_argument("Menu not found");
+  }
+  std::string name;
+  in >> name;
+  if (!cafe.menus.at(menuName).has(name))
   {
     throw std::invalid_argument("Item not found");
   }
@@ -61,13 +67,20 @@ void zharov::menuRemove(std::ostream& out, std::istream& in, zharov::CafeSystem&
 
 void zharov::menuPrice(std::ostream& out, std::istream& in, zharov::CafeSystem& cafe)
 {
-  std::string menuName, name;
-  int newPrice = 0;
-  in >> menuName >> name >> newPrice;
-  if (!cafe.menus.has(menuName) || !cafe.menus.at(menuName).has(name))
+  std::string menuName;
+  in >> menuName;
+  if (!cafe.menus.has(menuName))
+  {
+    throw std::invalid_argument("Menu not found");
+  }
+  std::string name;
+  in >> name;
+  if (!cafe.menus.at(menuName).has(name))
   {
     throw std::invalid_argument("Item not found");
   }
+  int newPrice = 0;
+  in >> newPrice;
   if (newPrice <= 0)
   {
     throw std::invalid_argument("Price must be positive");
@@ -79,13 +92,20 @@ void zharov::menuPrice(std::ostream& out, std::istream& in, zharov::CafeSystem& 
 
 void zharov::menuTime(std::ostream& out, std::istream& in, zharov::CafeSystem& cafe)
 {
-  std::string menuName, name;
-  int newTime = 0;
-  in >> menuName >> name >> newTime;
-  if (!cafe.menus.has(menuName) || !cafe.menus.at(menuName).has(name))
+  std::string menuName;
+  in >> menuName;
+  if (!cafe.menus.has(menuName))
+  {
+    throw std::invalid_argument("Menu not found");
+  }
+  std::string name;
+  in >> name;
+  if (!cafe.menus.at(menuName).has(name))
   {
     throw std::invalid_argument("Item not found");
   }
+  int newTime = 0;
+  in >> newTime;
   if (newTime <= 0)
   {
     throw std::invalid_argument("Prep time must be positive");
@@ -97,24 +117,40 @@ void zharov::menuTime(std::ostream& out, std::istream& in, zharov::CafeSystem& c
 
 void zharov::menuDesc(std::ostream& out, std::istream& in, zharov::CafeSystem& cafe)
 {
-  std::string menuName, name, description;
-  in >> menuName >> name >> std::quoted(description);
-  if (!cafe.menus.has(menuName) || !cafe.menus.at(menuName).has(name))
+  std::string menuName;
+  in >> menuName;
+  if (!cafe.menus.has(menuName))
+  {
+    throw std::invalid_argument("Menu not found");
+  }
+  std::string name;
+  in >> name;
+  if (!cafe.menus.at(menuName).has(name))
   {
     throw std::invalid_argument("Item not found");
   }
+  std::string description;
+  in >> std::quoted(description);
   cafe.menus.at(menuName).at(name).description = description;
   out << "<OK: Description updated>\n";
 }
 
 void zharov::menuAvailable(std::ostream& out, std::istream& in, zharov::CafeSystem& cafe)
 {
-  std::string menuName, name, flag;
-  in >> menuName >> name >> flag;
-  if (!cafe.menus.has(menuName) || !cafe.menus.at(menuName).has(name))
+  std::string menuName;
+  in >> menuName;
+  if (!cafe.menus.has(menuName))
+  {
+    throw std::invalid_argument("Menu not found");
+  }
+  std::string name;
+  in >> name;
+  if (!cafe.menus.at(menuName).has(name))
   {
     throw std::invalid_argument("Item not found");
   }
+  std::string flag;
+  in >> flag;
   if (flag != "yes" && flag != "no")
   {
     throw std::invalid_argument("Expected yes or no");
@@ -157,8 +193,10 @@ void zharov::menuShow(std::ostream& out, std::istream& in, const zharov::CafeSys
 
 void zharov::menuExport(std::ostream& out, std::istream& in, const zharov::CafeSystem& cafe)
 {
-  std::string filename, menuName;
-  in >> filename >> menuName;
+  std::string filename;
+  in >> filename;
+  std::string menuName;
+  in >> menuName;
   if (!cafe.menus.has(menuName))
   {
     throw std::invalid_argument("Menu not found");
@@ -222,12 +260,14 @@ void zharov::menuImport(std::ostream& out, std::istream& in, zharov::CafeSystem&
 
 void zharov::menuCopy(std::ostream& out, std::istream& in, zharov::CafeSystem& cafe)
 {
-  std::string srcName, dstName;
-  in >> srcName >> dstName;
+  std::string srcName;
+  in >> srcName;
   if (!cafe.menus.has(srcName))
   {
     throw std::invalid_argument("Menu not found");
   }
+  std::string dstName;
+  in >> dstName;
   if (cafe.menus.has(dstName))
   {
     throw std::invalid_argument("Menu already exists");
