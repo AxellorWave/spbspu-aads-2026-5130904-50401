@@ -1,9 +1,10 @@
-#include <string>
 #include <stdexcept>
+#include <string>
 #include <boost/test/unit_test.hpp>
 #include <rh_hash_table.hpp>
 
-using Table = zharov::RHHashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > >;
+using Table =
+  zharov::RHHashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > >;
 
 BOOST_AUTO_TEST_SUITE(DefaultConstructorSuite)
 BOOST_AUTO_TEST_CASE(DefaultConstructor)
