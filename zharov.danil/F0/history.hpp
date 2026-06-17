@@ -12,8 +12,6 @@ namespace zharov
     int order_id;
     std::string status;
     Order order;
-
-    int getProfit(const CafeSystem& cafe) const;
   };
 
   void writeHistory(const CafeSystem& cafe, const HistoryEntry& entry);

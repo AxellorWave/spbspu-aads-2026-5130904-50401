@@ -3,23 +3,6 @@
 #include <stdexcept>
 #include <string>
 
-int zharov::HistoryEntry::getProfit(const zharov::CafeSystem& cafe) const
-{
-  int profit = 0;
-  for (auto it = order.items.cbegin(); it != order.items.cend(); ++it)
-  {
-    for (auto mit = cafe.menus.cbegin(); mit != cafe.menus.cend(); ++mit)
-    {
-      if (mit->second.has(it->first))
-      {
-        profit += mit->second.at(it->first).price * it->second;
-        break;
-      }
-    }
-  }
-  return profit;
-}
-
 void zharov::writeHistory(const zharov::CafeSystem& cafe, const zharov::HistoryEntry& entry)
 {
   std::ofstream file(cafe.history_file, std::ios::app);
@@ -28,7 +11,7 @@ void zharov::writeHistory(const zharov::CafeSystem& cafe, const zharov::HistoryE
     throw std::runtime_error("Cannot open history file");
   }
   file << entry.queue_name << "|" << entry.order_id << "|" << entry.status << "|"
-       << entry.getProfit(cafe) << "|";
+       << entry.order.getProfit(cafe) << "|";
   bool first = true;
   for (auto it = entry.order.items.cbegin(); it != entry.order.items.cend(); ++it)
   {
@@ -36,7 +19,7 @@ void zharov::writeHistory(const zharov::CafeSystem& cafe, const zharov::HistoryE
     {
       file << ",";
     }
-    file << it->first << ":" << it->second;
+    file << it->second.menu_name << ":" << it->first << ":" << it->second.count;
     first = false;
   }
   file << "\n";

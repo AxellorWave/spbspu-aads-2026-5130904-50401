@@ -17,6 +17,20 @@ namespace
   }
 }
 
+int zharov::Order::getProfit(const zharov::CafeSystem& cafe) const
+{
+  int profit = 0;
+  for (auto it = items.cbegin(); it != items.cend(); ++it)
+  {
+    const zharov::OrderItem& item = it->second;
+    if (cafe.menus.has(item.menu_name) && cafe.menus.at(item.menu_name).has(it->first))
+    {
+      profit += cafe.menus.at(item.menu_name).at(it->first).price * item.count;
+    }
+  }
+  return profit;
+}
+
 void zharov::orderCreate(std::ostream& out, std::istream& in, zharov::CafeSystem& cafe)
 {
   std::string queueName;
@@ -74,11 +88,11 @@ void zharov::orderAdd(std::ostream& out, std::istream& in, zharov::CafeSystem& c
   zharov::Order& order = cafe.queues.at(queueName).at(orderId);
   if (order.items.has(itemName))
   {
-    order.items.at(itemName) += count;
+    order.items.at(itemName).count += count;
   }
   else
   {
-    order.items.add(itemName, count);
+    order.items.add(itemName, zharov::OrderItem{menuName, count});
   }
   out << "<OK: Added " << count << "x \"" << itemName << "\" to order #" << orderId << ">\n";
 }
@@ -110,30 +124,23 @@ void zharov::orderRemove(std::ostream& out, std::istream& in, zharov::CafeSystem
 
 namespace
 {
-  void printOrder(std::ostream& out,
-    int orderId,
-    const zharov::Order& order,
-    const zharov::CafeSystem& cafe)
+  void printOrder(std::ostream& out, const zharov::Order& order, const zharov::CafeSystem& cafe)
   {
-    out << "=== ORDER #" << orderId << " ===\n";
+    out << "=== ORDER #" << order.id << " ===\n";
     int total = 0, totalTime = 0;
     for (auto it = order.items.cbegin(); it != order.items.cend(); ++it)
     {
-      int count = it->second;
+      const zharov::OrderItem& item = it->second;
       int price = 0, prepTime = 0;
-      for (auto mit = cafe.menus.cbegin(); mit != cafe.menus.cend(); ++mit)
+      if (cafe.menus.has(item.menu_name) && cafe.menus.at(item.menu_name).has(it->first))
       {
-        if (mit->second.has(it->first))
-        {
-          price = mit->second.at(it->first).price;
-          prepTime = mit->second.at(it->first).prep_time;
-          break;
-        }
+        price = cafe.menus.at(item.menu_name).at(it->first).price;
+        prepTime = cafe.menus.at(item.menu_name).at(it->first).prep_time;
       }
-      out << count << "x " << it->first << " - " << count * price << " rub - " << count * prepTime
-          << " min\n";
-      total += count * price;
-      totalTime += count * prepTime;
+      out << item.count << "x " << it->first << " - " << item.count * price << " rub - "
+          << item.count * prepTime << " min\n";
+      total += item.count * price;
+      totalTime += item.count * prepTime;
     }
     out << "TOTAL: " << total << " rub\n";
     out << "TOTAL TIME: " << totalTime << " min\n";
@@ -157,13 +164,13 @@ void zharov::orderShow(std::ostream& out, std::istream& in, const zharov::CafeSy
     {
       throw std::invalid_argument("Order not found");
     }
-    printOrder(out, orderId, queue.at(orderId), cafe);
+    printOrder(out, queue.at(orderId), cafe);
   }
   else
   {
     for (auto it = queue.cbegin(); it != queue.cend(); ++it)
     {
-      printOrder(out, it->first, it->second, cafe);
+      printOrder(out, it->second, cafe);
     }
   }
 }

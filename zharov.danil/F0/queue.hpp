@@ -20,4 +20,5 @@ namespace zharov
 
   void queueShow(std::ostream&, std::istream&, const CafeSystem&);
 }
+
 #endif

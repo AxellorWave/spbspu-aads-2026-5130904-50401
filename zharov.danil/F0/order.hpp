@@ -8,13 +8,21 @@ namespace zharov
 {
   struct CafeSystem;
 
+  struct OrderItem
+  {
+    std::string menu_name;
+    int count;
+  };
+
   using ItemTable =
-    RHHashTable< std::string, int, std::hash< std::string >, std::equal_to< std::string > >;
+    RHHashTable< std::string, OrderItem, std::hash< std::string >, std::equal_to< std::string > >;
 
   struct Order
   {
     int id;
     ItemTable items;
+
+    int getProfit(const CafeSystem& cafe) const;
   };
 
   void orderCreate(std::ostream&, std::istream&, CafeSystem&);
