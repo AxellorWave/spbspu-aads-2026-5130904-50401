@@ -106,6 +106,9 @@ namespace zharov
     const_iterator cend() const;
 
   private:
+    template < class K, class V >
+    void addImpl(K&& k, V&& v);
+
     Hash hasher_;
     Equal equal_;
     bool* occupied_;
@@ -231,12 +234,25 @@ size_t zharov::RHHashTable< Key, Value, Hash, Equal >::capacity() const
 template < class Key, class Value, class Hash, class Equal >
 void zharov::RHHashTable< Key, Value, Hash, Equal >::add(const Key& k, const Value& v)
 {
+  addImpl(k, v);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+void zharov::RHHashTable< Key, Value, Hash, Equal >::add(Key&& k, Value&& v)
+{
+  addImpl(std::forward< Key >(k), std::forward< Value >(v));
+}
+
+template < class Key, class Value, class Hash, class Equal >
+template < class K, class V >
+void zharov::RHHashTable< Key, Value, Hash, Equal >::addImpl(K&& k, V&& v)
+{
   if (size_ >= capacity_ * 3 / 4)
   {
     rehash();
   }
   size_t idx = hasher_(k) % capacity_;
-  detail::Slot< Key, Value > incoming(k, v, 0);
+  detail::Slot< Key, Value > incoming(std::forward< K >(k), std::forward< V >(v), 0);
   for (size_t i = 0; i < capacity_; ++i, idx = (idx + 1) % capacity_, ++incoming.psl_)
   {
     if (!occupied_[idx])
@@ -255,6 +271,24 @@ void zharov::RHHashTable< Key, Value, Hash, Equal >::add(const Key& k, const Val
       std::swap(*(slots_ + idx), incoming);
     }
   }
+}
+
+template < class Key, class Value, class Hash, class Equal >
+bool zharov::RHHashTable< Key, Value, Hash, Equal >::has(const Key& k) const
+{
+  size_t idx = hasher_(k) % capacity_;
+  for (size_t i = 0; i < capacity_; ++i, idx = (idx + 1) % capacity_)
+  {
+    if (!occupied_[idx] || slots_[idx].psl_ < i)
+    {
+      return false;
+    }
+    if (equal_(slots_[idx].key_, k))
+    {
+      return true;
+    }
+  }
+  return false;
 }
 
 #endif
