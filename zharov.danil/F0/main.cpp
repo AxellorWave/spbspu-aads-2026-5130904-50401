@@ -17,6 +17,16 @@ int main(int argc, char** argv)
     constCmds;
 
   cmds.add("menu-add", zharov::menuAdd);
+  cmds.add("menu-remove", zharov::menuRemove);
+  cmds.add("menu-price", zharov::menuPrice);
+  cmds.add("menu-time", zharov::menuTime);
+  cmds.add("menu-desc", zharov::menuDesc);
+  cmds.add("menu-available", zharov::menuAvailable);
+  cmds.add("menu-import", zharov::menuImport);
+  cmds.add("menu-copy", zharov::menuCopy);
+  constCmds.add("menu-show", zharov::menuShow);
+  constCmds.add("menu-export", zharov::menuExport);
+  constCmds.add("menu-list", zharov::menuList);
 
   std::string command;
   while (std::cin >> command)
@@ -35,7 +45,7 @@ int main(int argc, char** argv)
     catch (const std::exception& e)
     {
       std::cin.clear();
-      std::cout << "<INVALID COMMAND: " << e.what() << ">\n";
+      std::cout << "<INVALID COMMAND>\n";
       auto skip = std::numeric_limits< std::streamsize >::max();
       std::cin.ignore(skip, '\n');
     }

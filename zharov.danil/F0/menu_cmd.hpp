@@ -16,5 +16,6 @@ namespace zharov
 
   void menuShow(std::ostream&, std::istream&, const CafeSystem&);
   void menuExport(std::ostream&, std::istream&, const CafeSystem&);
+  void menuList(std::ostream&, std::istream&, const CafeSystem&);
 }
 #endif
