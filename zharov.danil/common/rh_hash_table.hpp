@@ -116,12 +116,17 @@ namespace zharov
 }
 
 template < class Key, class Value, class Hash, class Equal >
+zharov::RHHashTable< Key, Value, Hash, Equal >::RHHashTable():
+  RHHashTable(16)
+{}
+
+template < class Key, class Value, class Hash, class Equal >
 zharov::RHHashTable< Key, Value, Hash, Equal >::RHHashTable(size_t capacity):
   hasher_(Hash{}),
   equal_(Equal{}),
   occupied_(nullptr),
   slots_(nullptr),
-  capacity_(capacity ? capacity : 16),
+  capacity_(capacity),
   size_(0)
 {
   try
@@ -139,8 +144,17 @@ zharov::RHHashTable< Key, Value, Hash, Equal >::RHHashTable(size_t capacity):
 }
 
 template < class Key, class Value, class Hash, class Equal >
-zharov::RHHashTable< Key, Value, Hash, Equal >::RHHashTable():
-  RHHashTable(16)
-{}
+zharov::RHHashTable< Key, Value, Hash, Equal >::~RHHashTable()
+{
+  for (size_t i = 0; i < capacity_; ++i)
+  {
+    if (occupied_[i])
+    {
+      (slots_ + i)->~Slot();
+    }
+  }
+  delete[] occupied_;
+  ::operator delete(slots_);
+}
 
 #endif
