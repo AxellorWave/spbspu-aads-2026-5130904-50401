@@ -291,4 +291,29 @@ bool zharov::RHHashTable< Key, Value, Hash, Equal >::has(const Key& k) const
   return false;
 }
 
+template < class Key, class Value, class Hash, class Equal >
+const Value& zharov::RHHashTable< Key, Value, Hash, Equal >::at(const Key& k) const
+{
+  size_t idx = hasher_(k) % capacity_;
+  for (size_t i = 0; i < capacity_; ++i, idx = (idx + 1) % capacity_)
+  {
+    if (!occupied_[idx] || slots_[idx].psl_ < i)
+    {
+      throw std::out_of_range("key not found");
+    }
+    if (equal_(slots_[idx].key_, k))
+    {
+      return slots_[idx].value_;
+    }
+  }
+  throw std::out_of_range("key not found");
+}
+
+template < class Key, class Value, class Hash, class Equal >
+Value& zharov::RHHashTable< Key, Value, Hash, Equal >::at(const Key& k)
+{
+  const RHHashTable* const_table = this;
+  return const_cast< Value& >((*const_table).at(k));
+}
+
 #endif
