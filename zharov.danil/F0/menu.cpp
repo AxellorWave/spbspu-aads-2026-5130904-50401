@@ -1,8 +1,9 @@
-#include "menu_cmd.hpp"
+#include "menu.hpp"
 #include <fstream>
 #include <iomanip>
 #include <stdexcept>
 #include <string>
+#include "cafe.hpp"
 
 namespace
 {

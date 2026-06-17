@@ -1,7 +1,9 @@
 #include <iostream>
 #include <limits>
 #include "cafe.hpp"
-#include "menu_cmd.hpp"
+#include "history.hpp"
+#include "menu.hpp"
+#include "order.hpp"
 
 int main(int argc, char** argv)
 {
@@ -28,9 +30,23 @@ int main(int argc, char** argv)
   constCmds.add("menu-export", zharov::menuExport);
   constCmds.add("menu-list", zharov::menuList);
 
+  cmds.add("order-create", zharov::orderCreate);
+  cmds.add("order-add", zharov::orderAdd);
+  cmds.add("order-remove", zharov::orderRemove);
+  cmds.add("order-cancel", zharov::orderCancel);
+  constCmds.add("order-show", zharov::orderShow);
+
+  constCmds.add("history", zharov::cmdHistory);
+
   std::string command;
   while (std::cin >> command)
   {
+    if (!cmds.has(command) && !constCmds.has(command))
+    {
+      std::cout << "<INVALID COMMAND>\n";
+      std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+      continue;
+    }
     try
     {
       if (cmds.has(command))
@@ -45,9 +61,8 @@ int main(int argc, char** argv)
     catch (const std::exception& e)
     {
       std::cin.clear();
-      std::cout << "<INVALID COMMAND>\n";
-      auto skip = std::numeric_limits< std::streamsize >::max();
-      std::cin.ignore(skip, '\n');
+      std::cout << "<INVALID COMMAND: " << e.what() << ">\n";
+      std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
     }
   }
 }

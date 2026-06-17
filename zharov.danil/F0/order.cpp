@@ -1,14 +1,18 @@
-#include "order_cmd.hpp"
-#include <fstream>
+#include "order.hpp"
 #include <iomanip>
 #include <stdexcept>
 #include <string>
+#include "cafe.hpp"
+#include "history.hpp"
 
 namespace
 {
   bool hasMoreArgs(std::istream& in)
   {
-    while (in.peek() == ' ') { in.get(); }
+    while (in.peek() == ' ')
+    {
+      in.get();
+    }
     return in.peek() != '\n' && in.peek() != EOF;
   }
 }
@@ -106,7 +110,9 @@ void zharov::orderRemove(std::ostream& out, std::istream& in, zharov::CafeSystem
 
 namespace
 {
-  void printOrder(std::ostream& out, int orderId, const zharov::Order& order,
+  void printOrder(std::ostream& out,
+    int orderId,
+    const zharov::Order& order,
     const zharov::CafeSystem& cafe)
   {
     out << "=== ORDER #" << orderId << " ===\n";
@@ -124,8 +130,8 @@ namespace
           break;
         }
       }
-      out << count << "x " << it->first << " - " << count * price << " rub - "
-          << count * prepTime << " min\n";
+      out << count << "x " << it->first << " - " << count * price << " rub - " << count * prepTime
+          << " min\n";
       total += count * price;
       totalTime += count * prepTime;
     }
@@ -160,4 +166,28 @@ void zharov::orderShow(std::ostream& out, std::istream& in, const zharov::CafeSy
       printOrder(out, it->first, it->second, cafe);
     }
   }
+}
+
+void zharov::orderCancel(std::ostream& out, std::istream& in, zharov::CafeSystem& cafe)
+{
+  std::string queueName;
+  in >> queueName;
+  if (!cafe.queues.has(queueName))
+  {
+    throw std::invalid_argument("Queue not found");
+  }
+  int orderId = 0;
+  in >> orderId;
+  if (!cafe.queues.at(queueName).has(orderId))
+  {
+    throw std::invalid_argument("Order not found");
+  }
+  zharov::HistoryEntry entry;
+  entry.queue_name = queueName;
+  entry.order_id = orderId;
+  entry.status = "cancelled";
+  entry.order = cafe.queues.at(queueName).at(orderId);
+  zharov::writeHistory(cafe, entry);
+  cafe.queues.at(queueName).remove(orderId);
+  out << "<OK: Order #" << orderId << " cancelled>\n";
 }
