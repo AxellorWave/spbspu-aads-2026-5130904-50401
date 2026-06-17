@@ -279,7 +279,8 @@ void zharov::RHHashTable< Key, Value, Hash, Equal >::addImpl(K&& k, V&& v)
     {
       break;
     }
-    std::swap(const_cast< Key& >(slots_[prev].kv_.first), const_cast< Key& >(slots_[end].kv_.first));
+    std::swap(
+      const_cast< Key& >(slots_[prev].kv_.first), const_cast< Key& >(slots_[end].kv_.first));
     std::swap(slots_[prev].kv_.second, slots_[end].kv_.second);
     std::swap(slots_[prev].psl_, slots_[end].psl_);
     --(slots_ + prev)->psl_;
@@ -355,7 +356,8 @@ void zharov::RHHashTable< Key, Value, Hash, Equal >::remove(const Key& k)
   size_t next = (found + 1) % capacity_;
   while (occupied_[next] && slots_[next].psl_ != 0)
   {
-    const_cast< Key& >(slots_[found].kv_.first) = std::move(const_cast< Key& >(slots_[next].kv_.first));
+    const_cast< Key& >(slots_[found].kv_.first) =
+      std::move(const_cast< Key& >(slots_[next].kv_.first));
     slots_[found].kv_.second = std::move(slots_[next].kv_.second);
     slots_[found].psl_ = slots_[next].psl_;
     --(slots_ + found)->psl_;
@@ -387,7 +389,10 @@ void zharov::RHHashTable< Key, Value, Hash, Equal >::rehash(size_t slots)
 }
 
 template < class Key, class Value, class Hash, class Equal >
-zharov::Iter< Key, Value, Hash, Equal >::Iter(bool* occupied, detail::Slot< Key, Value >* slots, size_t curr, size_t capacity):
+zharov::Iter< Key, Value, Hash, Equal >::Iter(bool* occupied,
+  detail::Slot< Key, Value >* slots,
+  size_t curr,
+  size_t capacity):
   occupied_(occupied),
   slots_(slots),
   curr_(curr),
@@ -438,7 +443,10 @@ bool zharov::Iter< Key, Value, Hash, Equal >::operator!=(const Iter& it) const
 }
 
 template < class Key, class Value, class Hash, class Equal >
-zharov::CIter< Key, Value, Hash, Equal >::CIter(bool* occupied, detail::Slot< Key, Value >* slots, size_t curr, size_t capacity):
+zharov::CIter< Key, Value, Hash, Equal >::CIter(bool* occupied,
+  detail::Slot< Key, Value >* slots,
+  size_t curr,
+  size_t capacity):
   occupied_(occupied),
   slots_(slots),
   curr_(curr),
