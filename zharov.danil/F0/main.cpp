@@ -1,5 +1,6 @@
 #include <iostream>
 #include <limits>
+#include "analyze.hpp"
 #include "cafe.hpp"
 #include "history.hpp"
 #include "menu.hpp"
@@ -48,6 +49,8 @@ int main(int argc, char** argv)
   cmds.add("optimize", zharov::cmdOptimize);
 
   constCmds.add("history", zharov::cmdHistory);
+
+  constCmds.add("analyze-item", zharov::analyzeItem);
 
   std::string command;
   while (std::cin >> command)
