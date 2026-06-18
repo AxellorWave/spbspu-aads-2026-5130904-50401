@@ -17,6 +17,7 @@ namespace zharov
   void queueReject(std::ostream&, std::istream&, CafeSystem&);
 
   void queueShow(std::ostream&, std::istream&, const CafeSystem&);
+  void queueList(std::ostream&, std::istream&, const CafeSystem&);
 }
 
 #endif

@@ -21,7 +21,7 @@ void zharov::menuAdd(std::ostream& out, std::istream& in, zharov::CafeSystem& ca
 {
   std::string menuName, name, description;
   int price = 0, prepTime = 0;
-  in >> menuName >> name >> price;
+  in >> menuName >> std::quoted(name) >> price;
   if (price <= 0)
   {
     throw std::invalid_argument("Price must be positive");
@@ -57,7 +57,7 @@ void zharov::menuRemove(std::ostream& out, std::istream& in, zharov::CafeSystem&
     throw std::invalid_argument("Menu not found");
   }
   std::string name;
-  in >> name;
+  in >> std::quoted(name);
   if (!cafe.menus.at(menuName).has(name))
   {
     throw std::invalid_argument("Item not found");
@@ -75,7 +75,7 @@ void zharov::menuPrice(std::ostream& out, std::istream& in, zharov::CafeSystem& 
     throw std::invalid_argument("Menu not found");
   }
   std::string name;
-  in >> name;
+  in >> std::quoted(name);
   if (!cafe.menus.at(menuName).has(name))
   {
     throw std::invalid_argument("Item not found");
@@ -100,7 +100,7 @@ void zharov::menuTime(std::ostream& out, std::istream& in, zharov::CafeSystem& c
     throw std::invalid_argument("Menu not found");
   }
   std::string name;
-  in >> name;
+  in >> std::quoted(name);
   if (!cafe.menus.at(menuName).has(name))
   {
     throw std::invalid_argument("Item not found");
@@ -125,7 +125,7 @@ void zharov::menuDesc(std::ostream& out, std::istream& in, zharov::CafeSystem& c
     throw std::invalid_argument("Menu not found");
   }
   std::string name;
-  in >> name;
+  in >> std::quoted(name);
   if (!cafe.menus.at(menuName).has(name))
   {
     throw std::invalid_argument("Item not found");
@@ -145,7 +145,7 @@ void zharov::menuAvailable(std::ostream& out, std::istream& in, zharov::CafeSyst
     throw std::invalid_argument("Menu not found");
   }
   std::string name;
-  in >> name;
+  in >> std::quoted(name);
   if (!cafe.menus.at(menuName).has(name))
   {
     throw std::invalid_argument("Item not found");
@@ -173,7 +173,7 @@ void zharov::menuShow(std::ostream& out, std::istream& in, const zharov::CafeSys
   if (hasMoreArgs(in))
   {
     std::string name;
-    in >> name;
+    in >> std::quoted(name);
     if (!menu.has(name))
     {
       throw std::invalid_argument("Item not found");
@@ -184,11 +184,15 @@ void zharov::menuShow(std::ostream& out, std::istream& in, const zharov::CafeSys
   }
   else
   {
+    std::ios::fmtflags savedFlags = out.flags();
     for (auto it = menu.cbegin(); it != menu.cend(); ++it)
     {
-      out << it->first << " | " << it->second.price << " rub | " << it->second.prep_time
-          << " min | " << (it->second.available ? "available" : "unavailable") << "\n";
+      out << std::left << std::setw(20) << it->first << std::right << " | " << std::setw(5)
+          << it->second.price << " rub"
+          << " | " << std::setw(3) << it->second.prep_time << " min"
+          << " | " << (it->second.available ? "available" : "unavailable") << "\n";
     }
+    out.flags(savedFlags);
   }
 }
 

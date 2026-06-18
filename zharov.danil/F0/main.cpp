@@ -3,6 +3,7 @@
 #include "cafe.hpp"
 #include "history.hpp"
 #include "menu.hpp"
+#include "optimize.hpp"
 #include "order.hpp"
 #include "queue.hpp"
 
@@ -42,6 +43,9 @@ int main(int argc, char** argv)
   cmds.add("queue-complete", zharov::queueComplete);
   cmds.add("queue-reject", zharov::queueReject);
   constCmds.add("queue-show", zharov::queueShow);
+  constCmds.add("queue-list", zharov::queueList);
+
+  cmds.add("optimize", zharov::cmdOptimize);
 
   constCmds.add("history", zharov::cmdHistory);
 
@@ -68,7 +72,7 @@ int main(int argc, char** argv)
     catch (const std::exception& e)
     {
       std::cin.clear();
-      std::cout << "<INVALID COMMAND: " << e.what() << ">\n";
+      std::cout << "<INVALID COMMAND>\n";
       std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
     }
   }

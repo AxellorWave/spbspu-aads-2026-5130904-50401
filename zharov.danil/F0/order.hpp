@@ -23,6 +23,7 @@ namespace zharov
     ItemTable items;
 
     int getProfit(const CafeSystem& cafe) const;
+    int getTime(const CafeSystem& cafe) const;
   };
 
   void cancelOrder(CafeSystem&, const std::string& queueName, int orderId);

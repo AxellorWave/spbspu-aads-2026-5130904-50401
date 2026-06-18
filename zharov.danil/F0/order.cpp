@@ -31,6 +31,20 @@ int zharov::Order::getProfit(const zharov::CafeSystem& cafe) const
   return profit;
 }
 
+int zharov::Order::getTime(const zharov::CafeSystem& cafe) const
+{
+  int total = 0;
+  for (auto it = items.cbegin(); it != items.cend(); ++it)
+  {
+    const zharov::OrderItem& item = it->second;
+    if (cafe.menus.has(item.menu_name) && cafe.menus.at(item.menu_name).has(it->first))
+    {
+      total += cafe.menus.at(item.menu_name).at(it->first).prep_time * item.count;
+    }
+  }
+  return total;
+}
+
 void zharov::orderCreate(std::ostream& out, std::istream& in, zharov::CafeSystem& cafe)
 {
   std::string queueName;
@@ -71,7 +85,7 @@ void zharov::orderAdd(std::ostream& out, std::istream& in, zharov::CafeSystem& c
     throw std::invalid_argument("Menu not found");
   }
   std::string itemName;
-  in >> itemName;
+  in >> std::quoted(itemName);
   if (!cafe.menus.at(menuName).has(itemName))
   {
     throw std::invalid_argument("Item not found");
@@ -112,7 +126,7 @@ void zharov::orderRemove(std::ostream& out, std::istream& in, zharov::CafeSystem
     throw std::invalid_argument("Order not found");
   }
   std::string itemName;
-  in >> itemName;
+  in >> std::quoted(itemName);
   zharov::Order& order = cafe.queues.at(queueName).at(orderId);
   if (!order.items.has(itemName))
   {

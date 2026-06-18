@@ -93,3 +93,11 @@ void zharov::queueShow(std::ostream& out, std::istream& in, const zharov::CafeSy
     out << "Order #" << it->first << " (" << it->second.items.size() << " items)\n";
   }
 }
+
+void zharov::queueList(std::ostream& out, std::istream&, const zharov::CafeSystem& cafe)
+{
+  for (auto it = cafe.queues.cbegin(); it != cafe.queues.cend(); ++it)
+  {
+    out << it->first << " (" << it->second.size() << " orders)\n";
+  }
+}
