@@ -1,12 +1,49 @@
 #include <iostream>
 #include <limits>
-#include "analyze.hpp"
+#include "analytics.hpp"
 #include "cafe.hpp"
 #include "history.hpp"
 #include "menu.hpp"
-#include "optimize.hpp"
 #include "order.hpp"
 #include "queue.hpp"
+
+namespace
+{
+  void cmdHelp(std::ostream& out, std::istream&, const zharov::CafeSystem&)
+  {
+    out << "=== CAFE SYSTEM COMMANDS ===\n";
+    out << "\n-- MENU --\n";
+    out << "menu-add <menu> <name> <price> <time> [desc]  add item to menu\n";
+    out << "menu-remove <menu> <name>                     remove item from menu\n";
+    out << "menu-price <menu> <name> <price>              change item price\n";
+    out << "menu-time <menu> <name> <time>                change item prep time\n";
+    out << "menu-desc <menu> <name> <desc>                update item description\n";
+    out << "menu-available <menu> <name> yes|no           set item availability\n";
+    out << "menu-import <file> <menu>                     load menu from file\n";
+    out << "menu-copy <src> <dst>                         copy menu under new name\n";
+    out << "menu-show <menu> [name]                       show menu or single item\n";
+    out << "menu-export <file> <menu>                     save menu to file\n";
+    out << "menu-list                                     list all menus\n";
+    out << "\n-- ORDERS --\n";
+    out << "order-create <queue> <id>                     create empty order in queue\n";
+    out << "order-add <queue> <id> <menu> <name> [count]  add item to order\n";
+    out << "order-remove <queue> <id> <name>              remove item from order\n";
+    out << "order-cancel <queue> <id>                     cancel order (saved to history)\n";
+    out << "order-show <queue> [id]                       show order(s) with totals\n";
+    out << "\n-- QUEUES --\n";
+    out << "queue-create <name>                           create new queue\n";
+    out << "queue-remove <name>                           cancel all orders and remove queue\n";
+    out << "queue-complete <name>                         mark all orders completed\n";
+    out << "queue-reject <name>                           mark all orders rejected\n";
+    out << "queue-show <name>                             list orders in queue\n";
+    out << "queue-list                                    list all queues\n";
+    out << "\n-- ANALYTICS --\n";
+    out << "optimize <src> <accept> <reject> <time>       select max-profit orders by knapsack\n";
+    out << "history [n]                                   show last n history entries\n";
+    out << "analyze-item <menu> <name>                    show item stats from history\n";
+    out << "help                                          show this message\n";
+  }
+}
 
 int main(int argc, char** argv)
 {
@@ -32,25 +69,21 @@ int main(int argc, char** argv)
   constCmds.add("menu-show", zharov::menuShow);
   constCmds.add("menu-export", zharov::menuExport);
   constCmds.add("menu-list", zharov::menuList);
-
   cmds.add("order-create", zharov::orderCreate);
   cmds.add("order-add", zharov::orderAdd);
   cmds.add("order-remove", zharov::orderRemove);
   cmds.add("order-cancel", zharov::orderCancel);
   constCmds.add("order-show", zharov::orderShow);
-
   cmds.add("queue-create", zharov::queueCreate);
   cmds.add("queue-remove", zharov::queueRemove);
   cmds.add("queue-complete", zharov::queueComplete);
   cmds.add("queue-reject", zharov::queueReject);
   constCmds.add("queue-show", zharov::queueShow);
   constCmds.add("queue-list", zharov::queueList);
-
   cmds.add("optimize", zharov::cmdOptimize);
-
   constCmds.add("history", zharov::cmdHistory);
-
   constCmds.add("analyze-item", zharov::analyzeItem);
+  constCmds.add("help", cmdHelp);
 
   std::string command;
   while (std::cin >> command)
