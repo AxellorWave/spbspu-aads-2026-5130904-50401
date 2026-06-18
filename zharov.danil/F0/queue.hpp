@@ -13,8 +13,6 @@ namespace zharov
 
   void queueCreate(std::ostream&, std::istream&, CafeSystem&);
   void queueRemove(std::ostream&, std::istream&, CafeSystem&);
-  void queueClear(std::ostream&, std::istream&, CafeSystem&);
-  void queueProcess(std::ostream&, std::istream&, CafeSystem&);
   void queueComplete(std::ostream&, std::istream&, CafeSystem&);
   void queueReject(std::ostream&, std::istream&, CafeSystem&);
 

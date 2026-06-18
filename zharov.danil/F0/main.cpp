@@ -4,6 +4,7 @@
 #include "history.hpp"
 #include "menu.hpp"
 #include "order.hpp"
+#include "queue.hpp"
 
 int main(int argc, char** argv)
 {
@@ -35,6 +36,12 @@ int main(int argc, char** argv)
   cmds.add("order-remove", zharov::orderRemove);
   cmds.add("order-cancel", zharov::orderCancel);
   constCmds.add("order-show", zharov::orderShow);
+
+  cmds.add("queue-create", zharov::queueCreate);
+  cmds.add("queue-remove", zharov::queueRemove);
+  cmds.add("queue-complete", zharov::queueComplete);
+  cmds.add("queue-reject", zharov::queueReject);
+  constCmds.add("queue-show", zharov::queueShow);
 
   constCmds.add("history", zharov::cmdHistory);
 

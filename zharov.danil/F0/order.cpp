@@ -175,6 +175,17 @@ void zharov::orderShow(std::ostream& out, std::istream& in, const zharov::CafeSy
   }
 }
 
+void zharov::cancelOrder(zharov::CafeSystem& cafe, const std::string& queueName, int orderId)
+{
+  zharov::HistoryEntry entry;
+  entry.queue_name = queueName;
+  entry.order_id = orderId;
+  entry.status = "cancelled";
+  entry.order = cafe.queues.at(queueName).at(orderId);
+  zharov::writeHistory(cafe, entry);
+  cafe.queues.at(queueName).remove(orderId);
+}
+
 void zharov::orderCancel(std::ostream& out, std::istream& in, zharov::CafeSystem& cafe)
 {
   std::string queueName;
@@ -189,12 +200,6 @@ void zharov::orderCancel(std::ostream& out, std::istream& in, zharov::CafeSystem
   {
     throw std::invalid_argument("Order not found");
   }
-  zharov::HistoryEntry entry;
-  entry.queue_name = queueName;
-  entry.order_id = orderId;
-  entry.status = "cancelled";
-  entry.order = cafe.queues.at(queueName).at(orderId);
-  zharov::writeHistory(cafe, entry);
-  cafe.queues.at(queueName).remove(orderId);
+  zharov::cancelOrder(cafe, queueName, orderId);
   out << "<OK: Order #" << orderId << " cancelled>\n";
 }

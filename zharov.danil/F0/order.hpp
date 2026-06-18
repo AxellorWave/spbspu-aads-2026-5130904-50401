@@ -25,6 +25,8 @@ namespace zharov
     int getProfit(const CafeSystem& cafe) const;
   };
 
+  void cancelOrder(CafeSystem&, const std::string& queueName, int orderId);
+
   void orderCreate(std::ostream&, std::istream&, CafeSystem&);
   void orderAdd(std::ostream&, std::istream&, CafeSystem&);
   void orderRemove(std::ostream&, std::istream&, CafeSystem&);
