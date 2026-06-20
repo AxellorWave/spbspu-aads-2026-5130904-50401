@@ -80,7 +80,7 @@ namespace zharov
     void add(const Key& k, const Value& v);
     void add(Key&& k, Value&& v);
     void remove(const Key& k);
-    bool has(const Key& k) const;
+    bool contains(const Key& k) const;
     void rehash(size_t slots = 0);
     void swap(HashTable& table) noexcept;
     size_t getSize() const noexcept;
@@ -233,7 +233,7 @@ size_t zharov::HashTable< Key, Value, Hash, Equal >::getSize() const noexcept
 }
 
 template < class Key, class Value, class Hash, class Equal >
-bool zharov::HashTable< Key, Value, Hash, Equal >::has(const Key& k) const
+bool zharov::HashTable< Key, Value, Hash, Equal >::contains(const Key& k) const
 {
   size_t hash = hasher_(k);
   size_t i = 0;

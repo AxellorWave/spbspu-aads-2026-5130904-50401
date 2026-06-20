@@ -55,7 +55,7 @@ int main(int argc, char** argv)
   {
     try
     {
-      if (cmds.has(command))
+      if (cmds.contains(command))
       {
         cmds.at(command)(std::cout, std::cin, graphs);
       }
