@@ -100,15 +100,16 @@ namespace zharov
     HashTable& operator=(const HashTable& table);
     HashTable& operator=(HashTable&& table) noexcept;
 
-    void add(Key k, Value v);
-    void remove(Key k);
-    bool has(Key k) const;
+    void add(const Key& k, const Value& v);
+    void add(Key&& k, Value&& v);
+    void remove(const Key& k);
+    bool has(const Key& k) const;
     void rehash(size_t slots = 0);
     void swap(HashTable& table) noexcept;
     size_t getSize() const;
     size_t getCapacity() const;
-    Value& at(Key k);
-    const Value& at(Key k) const;
+    Value& at(const Key& k);
+    const Value& at(const Key& k) const;
 
     iter begin();
     citer begin() const;
@@ -118,6 +119,9 @@ namespace zharov
     citer cend() const;
 
   private:
+    template < class K, class V >
+    void addImpl(K&& k, V&& v);
+
     Hash hasher_;
     Equal comparator_;
     State* states_;
@@ -251,7 +255,7 @@ size_t zharov::HashTable< Key, Value, Hash, Equal >::getSize() const
 }
 
 template < class Key, class Value, class Hash, class Equal >
-bool zharov::HashTable< Key, Value, Hash, Equal >::has(Key k) const
+bool zharov::HashTable< Key, Value, Hash, Equal >::has(const Key& k) const
 {
   size_t hash = hasher_(k);
   size_t i = 0;
@@ -272,13 +276,25 @@ bool zharov::HashTable< Key, Value, Hash, Equal >::has(Key k) const
 }
 
 template < class Key, class Value, class Hash, class Equal >
-void zharov::HashTable< Key, Value, Hash, Equal >::add(Key k, Value v)
+void zharov::HashTable< Key, Value, Hash, Equal >::add(const Key& k, const Value& v)
+{
+  addImpl(k, v);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+void zharov::HashTable< Key, Value, Hash, Equal >::add(Key&& k, Value&& v)
+{
+  addImpl(std::forward< Key >(k), std::forward< Value >(v));
+}
+
+template < class Key, class Value, class Hash, class Equal >
+template < class K, class V >
+void zharov::HashTable< Key, Value, Hash, Equal >::addImpl(K&& k, V&& v)
 {
   if (size_ == capacity_)
   {
     throw std::logic_error("Not enough place to add");
   }
-
   if (has(k))
   {
     throw std::logic_error("Key already exist");
@@ -294,13 +310,13 @@ void zharov::HashTable< Key, Value, Hash, Equal >::add(Key k, Value v)
       break;
     }
   }
-  new (slots_ + pos) Slot< Key, Value >(k, v);
+  new (slots_ + pos) Slot< Key, Value >(std::forward< K >(k), std::forward< V >(v));
   states_[pos] = State::OCCUPIED;
   ++size_;
 }
 
 template < class Key, class Value, class Hash, class Equal >
-void zharov::HashTable< Key, Value, Hash, Equal >::remove(Key k)
+void zharov::HashTable< Key, Value, Hash, Equal >::remove(const Key& k)
 {
   size_t hash = hasher_(k);
   size_t i = 0;
@@ -338,14 +354,14 @@ void zharov::HashTable< Key, Value, Hash, Equal >::rehash(size_t slots)
 }
 
 template < class Key, class Value, class Hash, class Equal >
-Value& zharov::HashTable< Key, Value, Hash, Equal >::at(Key k)
+Value& zharov::HashTable< Key, Value, Hash, Equal >::at(const Key& k)
 {
   const HashTable* const_table = this;
   return const_cast< Value& >((*const_table).at(k));
 }
 
 template < class Key, class Value, class Hash, class Equal >
-const Value& zharov::HashTable< Key, Value, Hash, Equal >::at(Key k) const
+const Value& zharov::HashTable< Key, Value, Hash, Equal >::at(const Key& k) const
 {
   size_t hash = hasher_(k);
   size_t i = 0;
