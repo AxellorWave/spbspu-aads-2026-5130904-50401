@@ -87,10 +87,9 @@ namespace zharov
   template < class Key, class Value, class Hash, class Equal >
   class HashTable
   {
-    using iter = Iter< Key, Value, Hash, Equal >;
-    using citer = CIter< Key, Value, Hash, Equal >;
-
   public:
+    using iterator = Iter< Key, Value, Hash, Equal >;
+    using const_iterator = CIter< Key, Value, Hash, Equal >;
     HashTable();
     HashTable(size_t capacity);
     HashTable(const HashTable& table);
@@ -111,12 +110,12 @@ namespace zharov
     Value& at(const Key& k);
     const Value& at(const Key& k) const;
 
-    iter begin();
-    citer begin() const;
-    citer cbegin() const;
-    iter end();
-    citer end() const;
-    citer cend() const;
+    iterator begin();
+    const_iterator begin() const;
+    const_iterator cbegin() const;
+    iterator end();
+    const_iterator end() const;
+    const_iterator cend() const;
 
   private:
     template < class K, class V >
