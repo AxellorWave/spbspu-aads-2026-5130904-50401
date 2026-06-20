@@ -67,7 +67,7 @@ void zharov::Graph::rmEdge(const std::string& v1, const std::string& v2, size_t 
   auto key = std::make_pair(v1, v2);
   if (edges_.has(key))
   {
-    auto v = edges_.at(key);
+    auto& v = edges_.at(key);
     if (v.getSize() > 1)
     {
       for (auto i = v.begin(); i != v.end(); ++i)

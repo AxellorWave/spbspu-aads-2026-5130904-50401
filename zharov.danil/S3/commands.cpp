@@ -52,9 +52,9 @@ void zharov::vertexes(std::ostream& out, std::istream& in, const graphs_table& g
     throw std::logic_error("Graph not found");
   }
 
+  const auto& gr = graphs.at(gr_name);
   zharov::Vector< std::string > names;
-  for (auto i = graphs.at(gr_name).vertexes_.cbegin(); i != graphs.at(gr_name).vertexes_.cend();
-    ++i)
+  for (auto i = gr.vertexes_.cbegin(); i != gr.vertexes_.cend(); ++i)
   {
     names.pushBack(*i);
   }
@@ -79,13 +79,14 @@ void zharov::outbound(std::ostream& out, std::istream& in, const graphs_table& g
     throw std::logic_error("Graph not found");
   }
 
-  if (!graphs.at(gr_name).vertexes_.has(vert_name))
+  const auto& gr = graphs.at(gr_name);
+  if (!gr.vertexes_.has(vert_name))
   {
     throw std::logic_error("Vertex not found");
   }
 
   zharov::Vector< std::pair< std::string, size_t > > names;
-  for (auto i = graphs.at(gr_name).edges_.cbegin(); i != graphs.at(gr_name).edges_.cend(); ++i)
+  for (auto i = gr.edges_.cbegin(); i != gr.edges_.cend(); ++i)
   {
     if (i->first.first == vert_name)
     {
@@ -123,13 +124,14 @@ void zharov::inbound(std::ostream& out, std::istream& in, const graphs_table& gr
     throw std::logic_error("Graph not found");
   }
 
-  if (!graphs.at(gr_name).vertexes_.has(vert_name))
+  const auto& gr = graphs.at(gr_name);
+  if (!gr.vertexes_.has(vert_name))
   {
     throw std::logic_error("Vertex not found");
   }
 
   zharov::Vector< std::pair< std::string, size_t > > names;
-  for (auto i = graphs.at(gr_name).edges_.cbegin(); i != graphs.at(gr_name).edges_.cend(); ++i)
+  for (auto i = gr.edges_.cbegin(); i != gr.edges_.cend(); ++i)
   {
     if (i->first.second == vert_name)
     {
