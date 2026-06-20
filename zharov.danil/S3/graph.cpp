@@ -7,7 +7,7 @@ zharov::Graph::Graph(size_t count):
 
 void zharov::Graph::addVertex(const std::string& v)
 {
-  if (vertexes_.contains(v))
+  if (vertexes_.has(v))
   {
     return;
   }
@@ -16,7 +16,7 @@ void zharov::Graph::addVertex(const std::string& v)
 
 void zharov::Graph::rmVertex(const std::string& v)
 {
-  if (!vertexes_.contains(v))
+  if (!vertexes_.has(v))
   {
     return;
   }

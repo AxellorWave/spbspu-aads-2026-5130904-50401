@@ -9,8 +9,8 @@ BOOST_AUTO_TEST_SUITE(DefaultConstructorSuite)
 BOOST_AUTO_TEST_CASE(DefaultConstructor)
 {
   zharov::HashTable< size_t, std::string, zharov::Blake2Hasher< size_t >, std::equal_to< size_t > > table;
-  BOOST_CHECK_EQUAL(table.getSize(), 0);
-  BOOST_CHECK_EQUAL(table.getCapacity(), 16);
+  BOOST_CHECK_EQUAL(table.size(), 0);
+  BOOST_CHECK_EQUAL(table.capacity(), 16);
 }
 BOOST_AUTO_TEST_SUITE_END()
 
@@ -18,13 +18,13 @@ BOOST_AUTO_TEST_SUITE(CapacityConstructorSuite)
 BOOST_AUTO_TEST_CASE(CapacityConstructorNormal)
 {
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table(10);
-  BOOST_CHECK_EQUAL(table.getCapacity(), 16);
-  BOOST_CHECK_EQUAL(table.getSize(), 0);
+  BOOST_CHECK_EQUAL(table.capacity(), 16);
+  BOOST_CHECK_EQUAL(table.size(), 0);
 }
 BOOST_AUTO_TEST_CASE(CapacityConstructorPowOfTwo)
 {
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table(32);
-  BOOST_CHECK_EQUAL(table.getCapacity(), 32);
+  BOOST_CHECK_EQUAL(table.capacity(), 32);
 }
 BOOST_AUTO_TEST_SUITE_END()
 
@@ -35,8 +35,8 @@ BOOST_AUTO_TEST_CASE(CopyConstructor)
   original.add(1, "one");
   original.add(2, "two");
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > copy(original);
-  BOOST_CHECK_EQUAL(copy.getSize(), 2);
-  BOOST_CHECK_EQUAL(copy.getCapacity(), original.getCapacity());
+  BOOST_CHECK_EQUAL(copy.size(), 2);
+  BOOST_CHECK_EQUAL(copy.capacity(), original.capacity());
   BOOST_CHECK_EQUAL(copy.at(1), "one");
   BOOST_CHECK_EQUAL(copy.at(2), "two");
 }
@@ -48,9 +48,9 @@ BOOST_AUTO_TEST_CASE(MoveConstructor)
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > original;
   original.add(1, "one");
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > moved(std::move(original));
-  BOOST_CHECK_EQUAL(moved.getSize(), 1);
+  BOOST_CHECK_EQUAL(moved.size(), 1);
   BOOST_CHECK_EQUAL(moved.at(1), "one");
-  BOOST_CHECK_EQUAL(original.getSize(), 0);
+  BOOST_CHECK_EQUAL(original.size(), 0);
 }
 BOOST_AUTO_TEST_SUITE_END()
 
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(CopyOperatorSelfAssign)
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
   table.add(1, "one");
   table = table;
-  BOOST_CHECK_EQUAL(table.getSize(), 1);
+  BOOST_CHECK_EQUAL(table.size(), 1);
   BOOST_CHECK_EQUAL(table.at(1), "one");
 }
 BOOST_AUTO_TEST_CASE(CopyOperatorDifferentTables)
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(CopyOperatorDifferentTables)
   a.add(10, "ten");
   b.add(20, "twenty");
   b = a;
-  BOOST_CHECK_EQUAL(b.getSize(), 1);
+  BOOST_CHECK_EQUAL(b.size(), 1);
   BOOST_CHECK_EQUAL(b.at(10), "ten");
   BOOST_CHECK_THROW(b.at(20), std::logic_error);
 }
@@ -81,9 +81,9 @@ BOOST_AUTO_TEST_CASE(MoveOperator)
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > a, b;
   a.add(7, "seven");
   b = std::move(a);
-  BOOST_CHECK_EQUAL(b.getSize(), 1);
+  BOOST_CHECK_EQUAL(b.size(), 1);
   BOOST_CHECK_EQUAL(b.at(7), "seven");
-  BOOST_CHECK_EQUAL(a.getSize(), 0);
+  BOOST_CHECK_EQUAL(a.size(), 0);
 }
 BOOST_AUTO_TEST_SUITE_END()
 
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(AddSingleElement)
 {
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
   table.add(1, "value");
-  BOOST_CHECK_EQUAL(table.getSize(), 1);
+  BOOST_CHECK_EQUAL(table.size(), 1);
   BOOST_CHECK_EQUAL(table.at(1), "value");
 }
 BOOST_AUTO_TEST_CASE(AddDuplicateThrows)
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(RemoveExisting)
   table.add(10, "ten");
   table.add(20, "twenty");
   table.remove(10);
-  BOOST_CHECK_EQUAL(table.getSize(), 1);
+  BOOST_CHECK_EQUAL(table.size(), 1);
   BOOST_CHECK(!table.contains(10));
   BOOST_CHECK(table.contains(20));
 }
@@ -150,10 +150,10 @@ BOOST_AUTO_TEST_CASE(RehashLargerCapacity)
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table(4);
   table.add(1, "a");
   table.add(2, "b");
-  size_t oldCap = table.getCapacity();
+  size_t oldCap = table.capacity();
   table.rehash(10);
-  BOOST_CHECK_GT(table.getCapacity(), oldCap);
-  BOOST_CHECK_EQUAL(table.getSize(), 2);
+  BOOST_CHECK_GT(table.capacity(), oldCap);
+  BOOST_CHECK_EQUAL(table.size(), 2);
   BOOST_CHECK_EQUAL(table.at(1), "a");
   BOOST_CHECK_EQUAL(table.at(2), "b");
 }
@@ -173,9 +173,9 @@ BOOST_AUTO_TEST_CASE(SwapTables)
   a.add(1, "first");
   b.add(2, "second");
   a.swap(b);
-  BOOST_CHECK_EQUAL(a.getSize(), 1);
+  BOOST_CHECK_EQUAL(a.size(), 1);
   BOOST_CHECK_EQUAL(a.at(2), "second");
-  BOOST_CHECK_EQUAL(b.getSize(), 1);
+  BOOST_CHECK_EQUAL(b.size(), 1);
   BOOST_CHECK_EQUAL(b.at(1), "first");
 }
 BOOST_AUTO_TEST_SUITE_END()
@@ -184,11 +184,11 @@ BOOST_AUTO_TEST_SUITE(GetSizeSuite)
 BOOST_AUTO_TEST_CASE(GetSize)
 {
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
-  BOOST_CHECK_EQUAL(table.getSize(), 0);
+  BOOST_CHECK_EQUAL(table.size(), 0);
   table.add(1, "x");
-  BOOST_CHECK_EQUAL(table.getSize(), 1);
+  BOOST_CHECK_EQUAL(table.size(), 1);
   table.remove(1);
-  BOOST_CHECK_EQUAL(table.getSize(), 0);
+  BOOST_CHECK_EQUAL(table.size(), 0);
 }
 BOOST_AUTO_TEST_SUITE_END()
 
@@ -196,9 +196,9 @@ BOOST_AUTO_TEST_SUITE(GetCapacitySuite)
 BOOST_AUTO_TEST_CASE(GetCapacity)
 {
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table(8);
-  BOOST_CHECK_EQUAL(table.getCapacity(), 8);
+  BOOST_CHECK_EQUAL(table.capacity(), 8);
   table.rehash(20);
-  BOOST_CHECK_EQUAL(table.getCapacity(), 32);
+  BOOST_CHECK_EQUAL(table.capacity(), 32);
 }
 BOOST_AUTO_TEST_SUITE_END()
 
@@ -335,7 +335,7 @@ BOOST_AUTO_TEST_CASE(RangeForLoop)
   {
     ++count;
   }
-  BOOST_CHECK_EQUAL(count, table.getSize());
+  BOOST_CHECK_EQUAL(count, table.size());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

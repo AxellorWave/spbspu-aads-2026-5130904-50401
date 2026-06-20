@@ -83,8 +83,8 @@ namespace zharov
     bool contains(const Key& k) const;
     void rehash(size_t slots = 0);
     void swap(HashTable& table) noexcept;
-    size_t getSize() const noexcept;
-    size_t getCapacity() const noexcept;
+    size_t size() const noexcept;
+    size_t capacity() const noexcept;
     Value& at(const Key& k);
     const Value& at(const Key& k) const;
 
@@ -221,13 +221,13 @@ zharov::HashTable< Key, Value, Hash, Equal >::operator=(HashTable&& table) noexc
 }
 
 template < class Key, class Value, class Hash, class Equal >
-size_t zharov::HashTable< Key, Value, Hash, Equal >::getCapacity() const noexcept
+size_t zharov::HashTable< Key, Value, Hash, Equal >::capacity() const noexcept
 {
   return capacity_;
 }
 
 template < class Key, class Value, class Hash, class Equal >
-size_t zharov::HashTable< Key, Value, Hash, Equal >::getSize() const noexcept
+size_t zharov::HashTable< Key, Value, Hash, Equal >::size() const noexcept
 {
   return size_;
 }
@@ -273,7 +273,7 @@ void zharov::HashTable< Key, Value, Hash, Equal >::addImpl(K&& k, V&& v)
   {
     throw std::logic_error("Not enough place to add");
   }
-  if (has(k))
+  if (contains(k))
   {
     throw std::logic_error("Key already exist");
   }

@@ -26,7 +26,7 @@ namespace
 
 void zharov::graphs(std::ostream& out, std::istream&, const graphs_table& graphs)
 {
-  if (graphs.getSize() == 0)
+  if (graphs.size() == 0)
   {
     out << "\n";
     return;
@@ -80,7 +80,7 @@ void zharov::outbound(std::ostream& out, std::istream& in, const graphs_table& g
   }
 
   const auto& gr = graphs.at(gr_name);
-  if (!gr.vertexes_.contains(vert_name))
+  if (!gr.vertexes_.has(vert_name))
   {
     throw std::logic_error("Vertex not found");
   }
@@ -125,7 +125,7 @@ void zharov::inbound(std::ostream& out, std::istream& in, const graphs_table& gr
   }
 
   const auto& gr = graphs.at(gr_name);
-  if (!gr.vertexes_.contains(vert_name))
+  if (!gr.vertexes_.has(vert_name))
   {
     throw std::logic_error("Vertex not found");
   }
@@ -183,13 +183,13 @@ void zharov::cut(std::ostream&, std::istream& in, graphs_table& graphs)
     throw std::logic_error("Graph not found");
   }
   auto& gr = graphs.at(gr_name);
-  if (!gr.vertexes_.contains(vert_name_1) || !gr.vertexes_.contains(vert_name_2))
+  if (!gr.vertexes_.has(vert_name_1) || !gr.vertexes_.has(vert_name_2))
   {
     throw std::logic_error("Vertex not found");
   }
 
   if (!gr.edges_.contains(std::make_pair(vert_name_1, vert_name_2)) ||
-    !gr.edges_.at(std::make_pair(vert_name_1, vert_name_2)).contains(weight))
+    !gr.edges_.at(std::make_pair(vert_name_1, vert_name_2)).has(weight))
   {
     throw std::logic_error("Edge not found");
   }
@@ -273,7 +273,7 @@ void zharov::extract(std::ostream&, std::istream& in, graphs_table& graphs)
   }
   for (auto i = vertexes.cbegin(); i != vertexes.cend(); ++i)
   {
-    if (!graphs.at(gr_old).vertexes_.contains(*i))
+    if (!graphs.at(gr_old).vertexes_.has(*i))
     {
       throw std::logic_error("Vertex not found");
     }
@@ -283,7 +283,7 @@ void zharov::extract(std::ostream&, std::istream& in, graphs_table& graphs)
   gr.vertexes_ = vertexes;
   for (auto i = graphs.at(gr_old).edges_.cbegin(); i != graphs.at(gr_old).edges_.cend(); ++i)
   {
-    if (vertexes.contains(i->first.first) && vertexes.contains(i->first.second))
+    if (vertexes.has(i->first.first) && vertexes.has(i->first.second))
     {
       for (auto j = i->second.cbegin(); j != i->second.cend(); ++j)
       {

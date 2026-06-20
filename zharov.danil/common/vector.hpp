@@ -26,7 +26,7 @@ namespace zharov
     const T& operator[](size_t id) const noexcept;
     T& at(size_t id);
     const T& at(size_t id) const;
-    bool contains(const T& val) const;
+    bool has(const T& val) const;
 
     void swap(Vector< T >& rhs) noexcept;
     bool isEmpty() const noexcept;
@@ -188,7 +188,7 @@ T& zharov::Vector< T >::at(size_t id)
 }
 
 template < class T >
-bool zharov::Vector< T >::contains(const T& val) const
+bool zharov::Vector< T >::has(const T& val) const
 {
   for (auto i = cbegin(); i != cend(); ++i)
   {

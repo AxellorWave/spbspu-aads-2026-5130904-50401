@@ -20,8 +20,8 @@ int main(int argc, char** argv)
 
   using cmd = void (*)(std::ostream&, std::istream&, zharov::graphs_table&);
   using constCmd = void (*)(std::ostream&, std::istream&, const zharov::graphs_table&);
-  zharov::HashTable< std::string, cmd, zharov::Blake2Hasher< std::string >, zharov::KeyComp > cmds;
-  zharov::HashTable< std::string, constCmd, zharov::Blake2Hasher< std::string >, zharov::KeyComp >
+  zharov::HashTable< std::string, cmd, zharov::Blake2Hasher< std::string >, std::equal_to< std::string > > cmds;
+  zharov::HashTable< std::string, constCmd, zharov::Blake2Hasher< std::string >, std::equal_to< std::string > >
     constCmds;
 
   constCmds.add("graphs", zharov::graphs);
