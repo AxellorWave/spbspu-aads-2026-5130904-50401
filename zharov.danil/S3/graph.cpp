@@ -37,9 +37,9 @@ void zharov::Graph::rmVertex(const std::string& v)
 
   for (auto i = edges_.begin(); i != edges_.end(); ++i)
   {
-    if (i->key_.first == v || i->key_.second == v)
+    if (i->first.first == v || i->first.second == v)
     {
-      edges_.remove(i->key_);
+      edges_.remove(i->first);
     }
   }
 }

@@ -57,7 +57,7 @@ void zharov::graphs(std::ostream& out, std::istream&, const graphs_table& graphs
   zharov::Vector< std::string > names;
   for (auto i = graphs.begin(); i != graphs.end(); ++i)
   {
-    names.pushBack(i->key_);
+    names.pushBack(i->first);
   }
   sort(names, SortComparator< std::string >{});
   for (auto i = names.begin(); i != names.end(); ++i)
@@ -110,11 +110,11 @@ void zharov::outbound(std::ostream& out, std::istream& in, const graphs_table& g
   zharov::Vector< std::pair< std::string, size_t > > names;
   for (auto i = graphs.at(gr_name).edges_.cbegin(); i != graphs.at(gr_name).edges_.cend(); ++i)
   {
-    if (i->key_.first == vert_name)
+    if (i->first.first == vert_name)
     {
-      for (auto j = i->value_.begin(); j != i->value_.end(); ++j)
+      for (auto j = i->second.begin(); j != i->second.end(); ++j)
       {
-        names.pushBack(std::make_pair(i->key_.second, *j));
+        names.pushBack(std::make_pair(i->first.second, *j));
       }
     }
   }
@@ -154,11 +154,11 @@ void zharov::inbound(std::ostream& out, std::istream& in, const graphs_table& gr
   zharov::Vector< std::pair< std::string, size_t > > names;
   for (auto i = graphs.at(gr_name).edges_.cbegin(); i != graphs.at(gr_name).edges_.cend(); ++i)
   {
-    if (i->key_.second == vert_name)
+    if (i->first.second == vert_name)
     {
-      for (auto j = i->value_.begin(); j != i->value_.end(); ++j)
+      for (auto j = i->second.begin(); j != i->second.end(); ++j)
       {
-        names.pushBack(std::make_pair(i->key_.first, *j));
+        names.pushBack(std::make_pair(i->first.first, *j));
       }
     }
   }
@@ -263,9 +263,9 @@ void zharov::merge(std::ostream&, std::istream& in, graphs_table& graphs)
   }
   for (auto i = graphs.at(gr_old_2).edges_.cbegin(); i != graphs.at(gr_old_2).edges_.cend(); ++i)
   {
-    for (auto j = i->value_.cbegin(); j != i->value_.cend(); ++j)
+    for (auto j = i->second.cbegin(); j != i->second.cend(); ++j)
     {
-      gr.addEdge(i->key_.first, i->key_.second, *j);
+      gr.addEdge(i->first.first, i->first.second, *j);
     }
   }
 
@@ -304,11 +304,11 @@ void zharov::extract(std::ostream&, std::istream& in, graphs_table& graphs)
   gr.vertexes_ = vertexes;
   for (auto i = graphs.at(gr_old).edges_.cbegin(); i != graphs.at(gr_old).edges_.cend(); ++i)
   {
-    if (vertexes.has(i->key_.first) && vertexes.has(i->key_.second))
+    if (vertexes.has(i->first.first) && vertexes.has(i->first.second))
     {
-      for (auto j = i->value_.cbegin(); j != i->value_.cend(); ++j)
+      for (auto j = i->second.cbegin(); j != i->second.cend(); ++j)
       {
-        gr.addEdge(i->key_.first, i->key_.second, *j);
+        gr.addEdge(i->first.first, i->first.second, *j);
       }
     }
   }
