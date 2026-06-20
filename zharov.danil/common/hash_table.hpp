@@ -87,6 +87,9 @@ namespace zharov
     size_t capacity() const noexcept;
     Value& at(const Key& k);
     const Value& at(const Key& k) const;
+    Value& operator[](const Key& k);
+    iterator find(const Key& k);
+    const_iterator find(const Key& k) const;
 
     iterator begin();
     const_iterator begin() const;
@@ -343,22 +346,51 @@ Value& zharov::HashTable< Key, Value, Hash, Equal >::at(const Key& k)
 template < class Key, class Value, class Hash, class Equal >
 const Value& zharov::HashTable< Key, Value, Hash, Equal >::at(const Key& k) const
 {
-  size_t hash = hasher_(k);
-  size_t i = 0;
-  size_t pos = 0;
-  for (; i < capacity_; ++i)
+  const_iterator it = find(k);
+  if (it == cend())
   {
-    pos = (hash + (i + i * i) / 2) % capacity_;
+    throw std::logic_error("Key not found");
+  }
+  return it->second;
+}
+
+template < class Key, class Value, class Hash, class Equal >
+typename zharov::HashTable< Key, Value, Hash, Equal >::iterator
+zharov::HashTable< Key, Value, Hash, Equal >::find(const Key& k)
+{
+  const HashTable* const_table = this;
+  const_iterator cit = const_table->find(k);
+  return iterator(states_, slots_, cit.curr_, capacity_);
+}
+
+template < class Key, class Value, class Hash, class Equal >
+typename zharov::HashTable< Key, Value, Hash, Equal >::const_iterator
+zharov::HashTable< Key, Value, Hash, Equal >::find(const Key& k) const
+{
+  size_t hash = hasher_(k);
+  for (size_t i = 0; i < capacity_; ++i)
+  {
+    size_t pos = (hash + (i + i * i) / 2) % capacity_;
     if (states_[pos] == State::OCCUPIED && comparator_(slots_[pos].first, k))
     {
-      return slots_[pos].second;
+      return const_iterator(states_, slots_, pos, capacity_);
     }
     else if (states_[pos] == State::EMPTY)
     {
       break;
     }
   }
-  throw std::logic_error("Key not found");
+  return cend();
+}
+
+template < class Key, class Value, class Hash, class Equal >
+Value& zharov::HashTable< Key, Value, Hash, Equal >::operator[](const Key& k)
+{
+  if (!contains(k))
+  {
+    add(k, Value{});
+  }
+  return at(k);
 }
 
 template < class Key, class Value, class Hash, class Equal >
