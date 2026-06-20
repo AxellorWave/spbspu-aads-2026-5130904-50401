@@ -1,51 +1,27 @@
+#include <functional>
 #include "commands.hpp"
 
-template < class T >
-struct SortComparator
+namespace
 {
-  bool operator()(const T& p1, const T& p2)
+  template < class T, class Cmp >
+  void sort(zharov::Vector< T >& v, Cmp cmp)
   {
-    return p1 < p2;
-  }
-};
-
-template <>
-struct SortComparator< std::pair< std::string, size_t > >
-{
-  using pair_t = std::pair< std::string, size_t >;
-  bool operator()(const pair_t& p1, const pair_t& p2)
-  {
-    if (p1.first != p2.first)
+    for (size_t i = 0; i < v.getSize(); ++i)
     {
-      return p1.first < p2.first;
-    }
-    return p1.second < p2.second;
-  }
-};
-
-template < class T, class Cmp >
-void sort(zharov::Vector< T >& v, Cmp cmp)
-{
-  for (size_t i = 0; i < v.getSize(); ++i)
-  {
-    size_t min = i;
-    for (size_t j = i + 1; j < v.getSize(); ++j)
-    {
-      if (cmp(v[j], v[min]))
+      size_t min = i;
+      for (size_t j = i + 1; j < v.getSize(); ++j)
       {
-        min = j;
+        if (cmp(v[j], v[min]))
+        {
+          min = j;
+        }
+      }
+      if (min != i)
+      {
+        std::swap(v[i], v[min]);
       }
     }
-    if (min != i)
-    {
-      std::swap(v[i], v[min]);
-    }
   }
-}
-
-bool zharov::KeyComp::operator()(const std::string& k1, const std::string& k2) const
-{
-  return k1 == k2;
 }
 
 void zharov::graphs(std::ostream& out, std::istream&, const graphs_table& graphs)
@@ -53,13 +29,14 @@ void zharov::graphs(std::ostream& out, std::istream&, const graphs_table& graphs
   if (graphs.getSize() == 0)
   {
     out << "\n";
+    return;
   }
   zharov::Vector< std::string > names;
   for (auto i = graphs.begin(); i != graphs.end(); ++i)
   {
     names.pushBack(i->first);
   }
-  sort(names, SortComparator< std::string >{});
+  sort(names, std::less< std::string >{});
   for (auto i = names.begin(); i != names.end(); ++i)
   {
     out << *i << "\n";
@@ -82,7 +59,7 @@ void zharov::vertexes(std::ostream& out, std::istream& in, const graphs_table& g
     names.pushBack(*i);
   }
 
-  sort(names, SortComparator< std::string >{});
+  sort(names, std::less< std::string >{});
   if (names.isEmpty())
   {
     out << "\n";
@@ -122,7 +99,7 @@ void zharov::outbound(std::ostream& out, std::istream& in, const graphs_table& g
   {
     out << "\n";
   }
-  sort(names, SortComparator< std::pair< std::string, size_t > >{});
+  sort(names, std::less< std::pair< std::string, size_t > >{});
   for (auto i = names.begin(); i != names.end();)
   {
     auto temp = i->first;
@@ -166,7 +143,7 @@ void zharov::inbound(std::ostream& out, std::istream& in, const graphs_table& gr
   {
     out << "\n";
   }
-  sort(names, SortComparator< std::pair< std::string, size_t > >{});
+  sort(names, std::less< std::pair< std::string, size_t > >{});
   for (auto i = names.begin(); i != names.end();)
   {
     auto temp = i->first;

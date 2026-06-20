@@ -1,21 +1,14 @@
+#include <functional>
 #include <string>
 #include <boost/test/unit_test.hpp>
 #include <hash_table.hpp>
 #include <stdexcept>
 #include "hasher.hpp"
 
-struct comp
-{
-  bool operator()(size_t a, size_t b) const
-  {
-    return a == b;
-  }
-};
-
 BOOST_AUTO_TEST_SUITE(DefaultConstructorSuite)
 BOOST_AUTO_TEST_CASE(DefaultConstructor)
 {
-  zharov::HashTable< size_t, std::string, zharov::Blake2Hasher< size_t >, comp > table;
+  zharov::HashTable< size_t, std::string, zharov::Blake2Hasher< size_t >, std::equal_to< size_t > > table;
   BOOST_CHECK_EQUAL(table.getSize(), 0);
   BOOST_CHECK_EQUAL(table.getCapacity(), 16);
 }

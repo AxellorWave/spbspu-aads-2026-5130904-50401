@@ -36,12 +36,7 @@ namespace zharov
     std::pair< const Key, Value >* slots_;
     size_t curr_;
     size_t capacity_;
-    Iter(State* states, std::pair< const Key, Value >* slots, size_t curr, size_t capacity):
-      states_(states),
-      slots_(slots),
-      curr_(curr),
-      capacity_(capacity)
-    {}
+    Iter(State* states, std::pair< const Key, Value >* slots, size_t curr, size_t capacity);
   };
 
   template < class Key, class Value, class Hash, class Equal >
@@ -63,12 +58,7 @@ namespace zharov
     std::pair< const Key, Value >* slots_;
     size_t curr_;
     size_t capacity_;
-    CIter(State* states, std::pair< const Key, Value >* slots, size_t curr, size_t capacity):
-      states_(states),
-      slots_(slots),
-      curr_(curr),
-      capacity_(capacity)
-    {}
+    CIter(State* states, std::pair< const Key, Value >* slots, size_t curr, size_t capacity);
   };
 
   template < class Key, class Value, class Hash, class Equal >
@@ -370,6 +360,24 @@ const Value& zharov::HashTable< Key, Value, Hash, Equal >::at(const Key& k) cons
   }
   throw std::logic_error("Key not found");
 }
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::Iter< Key, Value, Hash, Equal >::Iter(State* states, std::pair< const Key, Value >* slots,
+  size_t curr, size_t capacity):
+  states_(states),
+  slots_(slots),
+  curr_(curr),
+  capacity_(capacity)
+{}
+
+template < class Key, class Value, class Hash, class Equal >
+zharov::CIter< Key, Value, Hash, Equal >::CIter(State* states, std::pair< const Key, Value >* slots,
+  size_t curr, size_t capacity):
+  states_(states),
+  slots_(slots),
+  curr_(curr),
+  capacity_(capacity)
+{}
 
 template < class Key, class Value, class Hash, class Equal >
 std::pair< const Key, Value >& zharov::Iter< Key, Value, Hash, Equal >::operator*() const

@@ -1,10 +1,5 @@
 #include "graph.hpp"
 
-bool zharov::VertComp::operator()(const key_t& v1, const key_t& v2) const
-{
-  return v1.first == v2.first && v1.second == v2.second;
-}
-
 zharov::Graph::Graph(size_t count):
   edges_(count),
   vertexes_()
@@ -31,7 +26,7 @@ void zharov::Graph::rmVertex(const std::string& v)
     if (v == *i)
     {
       vertexes_.erase(i);
-      return;
+      break;
     }
   }
 
