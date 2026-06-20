@@ -35,6 +35,17 @@ namespace zharov
   template < class Key, class Value, class Hash, class Equal >
   class Iter
   {
+  public:
+    Slot< Key, Value >& operator*() const;
+    Slot< Key, Value >* operator->() const;
+    Iter& operator++();
+    Iter operator++(int);
+    Iter& operator--();
+    Iter operator--(int);
+    bool operator==(const Iter& it) const noexcept;
+    bool operator!=(const Iter& it) const noexcept;
+
+  private:
     friend class HashTable< Key, Value, Hash, Equal >;
     State* states_;
     Slot< Key, Value >* slots_;
@@ -46,21 +57,22 @@ namespace zharov
       curr_(curr),
       capacity_(capacity)
     {}
-
-  public:
-    Slot< Key, Value >& operator*() const;
-    Slot< Key, Value >* operator->() const;
-    Iter& operator++();
-    Iter operator++(int);
-    Iter& operator--();
-    Iter operator--(int);
-    bool operator==(const Iter& it) const noexcept;
-    bool operator!=(const Iter& it) const noexcept;
   };
 
   template < class Key, class Value, class Hash, class Equal >
   class CIter
   {
+  public:
+    const Slot< Key, Value >& operator*() const;
+    const Slot< Key, Value >* operator->() const;
+    CIter& operator++();
+    CIter operator++(int);
+    CIter& operator--();
+    CIter operator--(int);
+    bool operator==(const CIter& it) const noexcept;
+    bool operator!=(const CIter& it) const noexcept;
+
+  private:
     friend class HashTable< Key, Value, Hash, Equal >;
     State* states_;
     Slot< Key, Value >* slots_;
@@ -72,16 +84,6 @@ namespace zharov
       curr_(curr),
       capacity_(capacity)
     {}
-
-  public:
-    const Slot< Key, Value >& operator*() const;
-    const Slot< Key, Value >* operator->() const;
-    CIter& operator++();
-    CIter operator++(int);
-    CIter& operator--();
-    CIter operator--(int);
-    bool operator==(const CIter& it) const noexcept;
-    bool operator!=(const CIter& it) const noexcept;
   };
 
   template < class Key, class Value, class Hash, class Equal >
