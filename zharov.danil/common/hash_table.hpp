@@ -54,8 +54,8 @@ namespace zharov
     Iter operator++(int);
     Iter& operator--();
     Iter operator--(int);
-    bool operator==(const Iter& it) const;
-    bool operator!=(const Iter& it) const;
+    bool operator==(const Iter& it) const noexcept;
+    bool operator!=(const Iter& it) const noexcept;
   };
 
   template < class Key, class Value, class Hash, class Equal >
@@ -80,8 +80,8 @@ namespace zharov
     CIter operator++(int);
     CIter& operator--();
     CIter operator--(int);
-    bool operator==(const CIter& it) const;
-    bool operator!=(const CIter& it) const;
+    bool operator==(const CIter& it) const noexcept;
+    bool operator!=(const CIter& it) const noexcept;
   };
 
   template < class Key, class Value, class Hash, class Equal >
@@ -105,8 +105,8 @@ namespace zharov
     bool has(const Key& k) const;
     void rehash(size_t slots = 0);
     void swap(HashTable& table) noexcept;
-    size_t getSize() const;
-    size_t getCapacity() const;
+    size_t getSize() const noexcept;
+    size_t getCapacity() const noexcept;
     Value& at(const Key& k);
     const Value& at(const Key& k) const;
 
@@ -242,13 +242,13 @@ zharov::HashTable< Key, Value, Hash, Equal >::operator=(HashTable&& table) noexc
 }
 
 template < class Key, class Value, class Hash, class Equal >
-size_t zharov::HashTable< Key, Value, Hash, Equal >::getCapacity() const
+size_t zharov::HashTable< Key, Value, Hash, Equal >::getCapacity() const noexcept
 {
   return capacity_;
 }
 
 template < class Key, class Value, class Hash, class Equal >
-size_t zharov::HashTable< Key, Value, Hash, Equal >::getSize() const
+size_t zharov::HashTable< Key, Value, Hash, Equal >::getSize() const noexcept
 {
   return size_;
 }
@@ -431,14 +431,14 @@ zharov::Iter< Key, Value, Hash, Equal > zharov::Iter< Key, Value, Hash, Equal >:
 }
 
 template < class Key, class Value, class Hash, class Equal >
-bool zharov::Iter< Key, Value, Hash, Equal >::operator==(const Iter& it) const
+bool zharov::Iter< Key, Value, Hash, Equal >::operator==(const Iter& it) const noexcept
 {
   return slots_ == it.slots_ && states_ == it.states_ && curr_ == it.curr_ &&
     capacity_ == it.capacity_;
 }
 
 template < class Key, class Value, class Hash, class Equal >
-bool zharov::Iter< Key, Value, Hash, Equal >::operator!=(const Iter& it) const
+bool zharov::Iter< Key, Value, Hash, Equal >::operator!=(const Iter& it) const noexcept
 {
   return !(it == *this);
 }
@@ -494,14 +494,14 @@ zharov::CIter< Key, Value, Hash, Equal > zharov::CIter< Key, Value, Hash, Equal 
 }
 
 template < class Key, class Value, class Hash, class Equal >
-bool zharov::CIter< Key, Value, Hash, Equal >::operator==(const CIter& it) const
+bool zharov::CIter< Key, Value, Hash, Equal >::operator==(const CIter& it) const noexcept
 {
   return slots_ == it.slots_ && states_ == it.states_ && curr_ == it.curr_ &&
     capacity_ == it.capacity_;
 }
 
 template < class Key, class Value, class Hash, class Equal >
-bool zharov::CIter< Key, Value, Hash, Equal >::operator!=(const CIter& it) const
+bool zharov::CIter< Key, Value, Hash, Equal >::operator!=(const CIter& it) const noexcept
 {
   return !(it == *this);
 }
