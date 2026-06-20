@@ -214,7 +214,7 @@ BOOST_AUTO_TEST_CASE(AtConstReturnsValue)
 {
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
   table.add(200, "constant");
-  const auto& constTable = table;
+  const zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > >& constTable = table;
   BOOST_CHECK_EQUAL(constTable.at(200), "constant");
 }
 BOOST_AUTO_TEST_CASE(AtThrowsWhenNotFound)
@@ -320,7 +320,7 @@ BOOST_AUTO_TEST_CASE(ConstIteratorNonModifiable)
 {
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
   table.add(99, "const");
-  const auto& constTable = table;
+  const zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > >& constTable = table;
   auto cit = constTable.cbegin();
   BOOST_CHECK_EQUAL(cit->second, "const");
 }

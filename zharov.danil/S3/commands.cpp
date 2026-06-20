@@ -52,7 +52,7 @@ void zharov::vertexes(std::ostream& out, std::istream& in, const graphs_table& g
     throw std::logic_error("Graph not found");
   }
 
-  const auto& gr = graphs.at(gr_name);
+  const zharov::Graph& gr = graphs.at(gr_name);
   zharov::Vector< std::string > names;
   for (auto i = gr.vertexes_.cbegin(); i != gr.vertexes_.cend(); ++i)
   {
@@ -79,7 +79,7 @@ void zharov::outbound(std::ostream& out, std::istream& in, const graphs_table& g
     throw std::logic_error("Graph not found");
   }
 
-  const auto& gr = graphs.at(gr_name);
+  const zharov::Graph& gr = graphs.at(gr_name);
   if (!gr.vertexes_.has(vert_name))
   {
     throw std::logic_error("Vertex not found");
@@ -103,7 +103,7 @@ void zharov::outbound(std::ostream& out, std::istream& in, const graphs_table& g
   sort(names, std::less< std::pair< std::string, size_t > >{});
   for (auto i = names.begin(); i != names.end();)
   {
-    auto temp = i->first;
+    std::string temp = i->first;
     out << i->first << " " << i->second;
     ++i;
     while (i != names.end() && i->first == temp)
@@ -124,7 +124,7 @@ void zharov::inbound(std::ostream& out, std::istream& in, const graphs_table& gr
     throw std::logic_error("Graph not found");
   }
 
-  const auto& gr = graphs.at(gr_name);
+  const zharov::Graph& gr = graphs.at(gr_name);
   if (!gr.vertexes_.has(vert_name))
   {
     throw std::logic_error("Vertex not found");
@@ -148,7 +148,7 @@ void zharov::inbound(std::ostream& out, std::istream& in, const graphs_table& gr
   sort(names, std::less< std::pair< std::string, size_t > >{});
   for (auto i = names.begin(); i != names.end();)
   {
-    auto temp = i->first;
+    std::string temp = i->first;
     out << i->first << " " << i->second;
     ++i;
     while (i != names.end() && i->first == temp)
@@ -182,7 +182,7 @@ void zharov::cut(std::ostream&, std::istream& in, graphs_table& graphs)
   {
     throw std::logic_error("Graph not found");
   }
-  auto& gr = graphs.at(gr_name);
+  zharov::Graph& gr = graphs.at(gr_name);
   if (!gr.vertexes_.has(vert_name_1) || !gr.vertexes_.has(vert_name_2))
   {
     throw std::logic_error("Vertex not found");
