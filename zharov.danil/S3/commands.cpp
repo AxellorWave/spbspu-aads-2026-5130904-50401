@@ -47,11 +47,6 @@ void zharov::vertexes(std::ostream& out, std::istream& in, const graphs_table& g
 {
   std::string gr_name;
   in >> gr_name;
-  if (!graphs.contains(gr_name))
-  {
-    throw std::logic_error("Graph not found");
-  }
-
   const zharov::Graph& gr = graphs.at(gr_name);
   zharov::Vector< std::string > names;
   for (auto i = gr.vertexes.cbegin(); i != gr.vertexes.cend(); ++i)
@@ -74,11 +69,6 @@ void zharov::outbound(std::ostream& out, std::istream& in, const graphs_table& g
 {
   std::string gr_name, vert_name;
   in >> gr_name >> vert_name;
-  if (!graphs.contains(gr_name))
-  {
-    throw std::logic_error("Graph not found");
-  }
-
   const zharov::Graph& gr = graphs.at(gr_name);
   if (!gr.vertexes.has(vert_name))
   {
@@ -119,11 +109,6 @@ void zharov::inbound(std::ostream& out, std::istream& in, const graphs_table& gr
 {
   std::string gr_name, vert_name;
   in >> gr_name >> vert_name;
-  if (!graphs.contains(gr_name))
-  {
-    throw std::logic_error("Graph not found");
-  }
-
   const zharov::Graph& gr = graphs.at(gr_name);
   if (!gr.vertexes.has(vert_name))
   {
@@ -165,11 +150,6 @@ void zharov::bind(std::ostream&, std::istream& in, graphs_table& graphs)
   std::string gr_name, vert_name_1, vert_name_2;
   size_t weight;
   in >> gr_name >> vert_name_1 >> vert_name_2 >> weight;
-  if (!graphs.contains(gr_name))
-  {
-    throw std::logic_error("Graph not found");
-  }
-
   graphs.at(gr_name).addEdge(vert_name_1, vert_name_2, weight);
 }
 
@@ -178,10 +158,6 @@ void zharov::cut(std::ostream&, std::istream& in, graphs_table& graphs)
   std::string gr_name, vert_name_1, vert_name_2;
   size_t weight;
   in >> gr_name >> vert_name_1 >> vert_name_2 >> weight;
-  if (!graphs.contains(gr_name))
-  {
-    throw std::logic_error("Graph not found");
-  }
   zharov::Graph& gr = graphs.at(gr_name);
   if (!gr.vertexes.has(vert_name_1) || !gr.vertexes.has(vert_name_2))
   {
@@ -227,10 +203,6 @@ void zharov::merge(std::ostream&, std::istream& in, graphs_table& graphs)
   {
     throw std::logic_error("Graph already exist");
   }
-  if (!graphs.contains(gr_old_1) || !graphs.contains(gr_old_2))
-  {
-    throw std::logic_error("Graph not found");
-  }
 
   Graph gr;
   gr.vertexes = graphs.at(gr_old_1).vertexes;
@@ -260,10 +232,6 @@ void zharov::extract(std::ostream&, std::istream& in, graphs_table& graphs)
   if (graphs.contains(gr_new))
   {
     throw std::logic_error("Graph already exist");
-  }
-  if (!graphs.contains(gr_old))
-  {
-    throw std::logic_error("Graph not found");
   }
 
   for (size_t i = 0; i < count; ++i)
