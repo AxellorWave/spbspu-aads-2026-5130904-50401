@@ -397,6 +397,10 @@ template< class Key, class Value, class Hash, class Equal >
 void zharov::HashTable< Key, Value, Hash, Equal >::rehash(size_t slots)
 {
   slots = slots ? std::pow(2, std::ceil(std::log2(slots))) : capacity_ * 2;
+  if (slots < size_)
+  {
+    throw std::logic_error("Rehash size too small");
+  }
   HashTable< Key, Value, Hash, Equal > new_table(slots);
   for (size_t i = 0; i < capacity_; ++i)
   {

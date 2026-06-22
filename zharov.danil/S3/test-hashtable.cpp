@@ -104,12 +104,14 @@ BOOST_AUTO_TEST_CASE(AddDuplicateThrows)
   table.add(2, "first");
   BOOST_CHECK_THROW(table.add(2, "second"), std::logic_error);
 }
-BOOST_AUTO_TEST_CASE(AddWhenFullThrows)
+BOOST_AUTO_TEST_CASE(AddAutoRehashesWhenFull)
 {
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table(2);
   table.add(1, "one");
   table.add(2, "two");
-  BOOST_CHECK_THROW(table.add(3, "three"), std::logic_error);
+  BOOST_CHECK_NO_THROW(table.add(3, "three"));
+  BOOST_CHECK_EQUAL(table.size(), 3);
+  BOOST_CHECK(table.contains(3));
 }
 BOOST_AUTO_TEST_SUITE_END()
 
@@ -365,6 +367,129 @@ BOOST_AUTO_TEST_CASE(OperatorBracketModifies)
   table.add(5, "old");
   table[5] = "new";
   BOOST_CHECK_EQUAL(table.at(5), "new");
+}
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(LoadFactorSuite)
+BOOST_AUTO_TEST_CASE(LoadFactorEmpty)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table(8);
+  BOOST_CHECK_EQUAL(table.loadFactor(), 0.0);
+}
+BOOST_AUTO_TEST_CASE(LoadFactorWithElements)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table(8);
+  table.add(1, "a");
+  table.add(2, "b");
+  table.add(3, "c");
+  table.add(4, "d");
+  BOOST_CHECK_CLOSE(table.loadFactor(), 0.5, 1e-9);
+}
+BOOST_AUTO_TEST_CASE(LoadFactorExcludesTombstones)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table(8);
+  table.add(1, "a");
+  table.add(2, "b");
+  table.remove(1);
+  BOOST_CHECK_CLOSE(table.loadFactor(), 1.0 / 8.0, 1e-9);
+}
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(TombstoneFactorSuite)
+BOOST_AUTO_TEST_CASE(TombstoneFactorEmpty)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table(8);
+  BOOST_CHECK_EQUAL(table.tombstoneFactor(), 0.0);
+}
+BOOST_AUTO_TEST_CASE(TombstoneFactorAfterRemove)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table(8);
+  table.add(1, "a");
+  table.add(2, "b");
+  table.remove(1);
+  table.remove(2);
+  BOOST_CHECK_CLOSE(table.tombstoneFactor(), 2.0 / 8.0, 1e-9);
+}
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(MaxLoadFactorSuite)
+BOOST_AUTO_TEST_CASE(MaxLoadFactorDefault)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
+  BOOST_CHECK_CLOSE(table.maxLoadFactor(), 0.75, 1e-9);
+}
+BOOST_AUTO_TEST_CASE(MaxLoadFactorGetterSetter)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
+  table.maxLoadFactor(0.6);
+  BOOST_CHECK_CLOSE(table.maxLoadFactor(), 0.6, 1e-9);
+}
+BOOST_AUTO_TEST_CASE(MaxLoadFactorZeroThrows)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
+  BOOST_CHECK_THROW(table.maxLoadFactor(0.0), std::logic_error);
+}
+BOOST_AUTO_TEST_CASE(MaxLoadFactorOneThrows)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
+  BOOST_CHECK_THROW(table.maxLoadFactor(1.0), std::logic_error);
+}
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(MaxTombstoneFactorSuite)
+BOOST_AUTO_TEST_CASE(MaxTombstoneFactorDefault)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
+  BOOST_CHECK_CLOSE(table.maxTombstoneFactor(), 0.25, 1e-9);
+}
+BOOST_AUTO_TEST_CASE(MaxTombstoneFactorGetterSetter)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
+  table.maxTombstoneFactor(0.3);
+  BOOST_CHECK_CLOSE(table.maxTombstoneFactor(), 0.3, 1e-9);
+}
+BOOST_AUTO_TEST_CASE(MaxTombstoneFactorZeroThrows)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
+  BOOST_CHECK_THROW(table.maxTombstoneFactor(0.0), std::logic_error);
+}
+BOOST_AUTO_TEST_CASE(MaxTombstoneFactorOneThrows)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
+  BOOST_CHECK_THROW(table.maxTombstoneFactor(1.0), std::logic_error);
+}
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(AutoRehashSuite)
+BOOST_AUTO_TEST_CASE(AutoRehashOnLoadFactor)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table(4);
+  table.maxLoadFactor(0.5);
+  table.add(1, "a");
+  table.add(2, "b");
+  BOOST_CHECK_EQUAL(table.capacity(), 4);
+  table.add(3, "c");
+  BOOST_CHECK_EQUAL(table.capacity(), 8);
+  BOOST_CHECK_EQUAL(table.size(), 3);
+  BOOST_CHECK(table.contains(1));
+  BOOST_CHECK(table.contains(2));
+  BOOST_CHECK(table.contains(3));
+}
+BOOST_AUTO_TEST_CASE(AutoRehashOnTombstoneFactor)
+{
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table(8);
+  table.maxTombstoneFactor(0.2);
+  table.add(1, "a");
+  table.add(2, "b");
+  table.add(3, "c");
+  table.remove(1);
+  table.remove(2);
+  BOOST_CHECK_EQUAL(table.capacity(), 8);
+  table.add(4, "d");
+  BOOST_CHECK_EQUAL(table.capacity(), 16);
+  BOOST_CHECK_EQUAL(table.tombstoneFactor(), 0.0);
+  BOOST_CHECK(table.contains(3));
+  BOOST_CHECK(table.contains(4));
 }
 BOOST_AUTO_TEST_SUITE_END()
 
