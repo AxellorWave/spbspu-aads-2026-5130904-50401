@@ -151,7 +151,7 @@ zharov::detail::Node< Key, Value >::Node(
 
 template< class Key, class Value >
 zharov::detail::Node< Key, Value >::Node(Key&& key, Value&& val, Node< Key, Value >* parent):
-  data(key, val),
+  data(std::forward< Key >(key), std::forward< Value >(val)),
   left(fake),
   right(fake),
   parent(parent)
