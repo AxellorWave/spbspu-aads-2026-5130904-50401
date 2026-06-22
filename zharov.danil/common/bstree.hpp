@@ -130,19 +130,15 @@ namespace zharov
     template< class K, class V >
     void pushImpl(K&& k, V&& v);
     size_t getHight(const detail::Node< Key, Value >* node) const;
-    bool isStructEqualImpl(
-      const detail::Node< Key, Value >* a,
-      const detail::Node< Key, Value >* b
-    ) const;
+    bool isStructEqualImpl(const detail::Node< Key, Value >* a,
+      const detail::Node< Key, Value >* b) const;
   };
 }
 
 template< class Key, class Value >
-zharov::detail::Node< Key, Value >::Node(
-  const Key& key,
+zharov::detail::Node< Key, Value >::Node(const Key& key,
   const Value& val,
-  Node< Key, Value >* parent
-):
+  Node< Key, Value >* parent):
   data(key, val),
   left(fake),
   right(fake),
@@ -242,10 +238,9 @@ void zharov::BSTree< Key, Value, Compare >::swap(BSTree& other) noexcept
 }
 
 template< class Key, class Value, class Compare >
-zharov::detail::Node< Key, Value >* zharov::BSTree< Key, Value, Compare >::clone(
-  detail::Node< Key, Value >* root,
-  detail::Node< Key, Value >* parent
-)
+zharov::detail::Node< Key, Value >*
+  zharov::BSTree< Key, Value, Compare >::clone(detail::Node< Key, Value >* root,
+    detail::Node< Key, Value >* parent)
 {
   using Node = detail::Node< Key, Value >;
   if (root->isFake())
@@ -847,10 +842,8 @@ zharov::BSTConstIterator< Key, Value >
 }
 
 template< class Key, class Value, class Compare >
-bool zharov::BSTree< Key, Value, Compare >::isStructEqualImpl(
-  const detail::Node< Key, Value >* a,
-  const detail::Node< Key, Value >* b
-) const
+bool zharov::BSTree< Key, Value, Compare >::isStructEqualImpl(const detail::Node< Key, Value >* a,
+  const detail::Node< Key, Value >* b) const
 {
   if (a->isFake() && b->isFake())
   {
@@ -869,8 +862,7 @@ bool zharov::BSTree< Key, Value, Compare >::isStructEqualImpl(
 
 template< class Key, class Value, class Compare >
 bool zharov::BSTree< Key, Value, Compare >::isStructEqual(
-  const BSTree< Key, Value, Compare >& other
-) const
+  const BSTree< Key, Value, Compare >& other) const
 {
   return isStructEqualImpl(root_, other.root_);
 }
