@@ -1,5 +1,6 @@
 #ifndef BSTREE_HPP
 #define BSTREE_HPP
+#include <algorithm>
 #include <cstddef>
 #include <stdexcept>
 #include <utility>
@@ -455,7 +456,7 @@ size_t zharov::BSTree< Key, Value, Compare >::getHight(const detail::Node< Key, 
   }
   size_t left = getHight(node->left);
   size_t right = getHight(node->right);
-  return 1 + (left > right ? left : right);
+  return 1 + std::max(left, right);
 }
 
 template< class Key, class Value, class Compare >
