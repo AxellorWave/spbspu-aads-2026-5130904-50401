@@ -94,6 +94,10 @@ namespace zharov
     size_t capacity() const noexcept;
     double loadFactor() const noexcept;
     double tombstoneFactor() const noexcept;
+    double maxLoadFactor() const noexcept;
+    void maxLoadFactor(double mlf);
+    double maxTombstoneFactor() const noexcept;
+    void maxTombstoneFactor(double mtf);
     Value& at(const Key& k);
     const Value& at(const Key& k) const;
     iterator find(const Key& k);
@@ -114,6 +118,8 @@ namespace zharov
     size_t capacity_;
     size_t size_;
     size_t tombstones_;
+    double maxLoadFactor_;
+    double maxTombstoneFactor_;
 
     void destroyAt(size_t pos);
 
@@ -135,7 +141,9 @@ zharov::HashTable< Key, Value, Hash, Equal >::HashTable(size_t capacity):
   slots_(nullptr),
   capacity_(std::pow(2, std::ceil(std::log2(capacity)))),
   size_(0),
-  tombstones_(0)
+  tombstones_(0),
+  maxLoadFactor_(0.75),
+  maxTombstoneFactor_(0.25)
 {
   try
   {
@@ -174,7 +182,9 @@ zharov::HashTable< Key, Value, Hash, Equal >::HashTable(HashTable&& table) noexc
   slots_(std::exchange(table.slots_, nullptr)),
   capacity_(std::exchange(table.capacity_, 0)),
   size_(std::exchange(table.size_, 0)),
-  tombstones_(std::exchange(table.tombstones_, 0))
+  tombstones_(std::exchange(table.tombstones_, 0)),
+  maxLoadFactor_(table.maxLoadFactor_),
+  maxTombstoneFactor_(table.maxTombstoneFactor_)
 {}
 
 template< class Key, class Value, class Hash, class Equal >
@@ -201,6 +211,8 @@ void zharov::HashTable< Key, Value, Hash, Equal >::swap(HashTable& table) noexce
   std::swap(table.capacity_, capacity_);
   std::swap(table.size_, size_);
   std::swap(table.tombstones_, tombstones_);
+  std::swap(table.maxLoadFactor_, maxLoadFactor_);
+  std::swap(table.maxTombstoneFactor_, maxTombstoneFactor_);
 }
 
 template< class Key, class Value, class Hash, class Equal >
@@ -253,6 +265,38 @@ template< class Key, class Value, class Hash, class Equal >
 double zharov::HashTable< Key, Value, Hash, Equal >::tombstoneFactor() const noexcept
 {
   return static_cast< double >(tombstones_) / capacity_;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+double zharov::HashTable< Key, Value, Hash, Equal >::maxLoadFactor() const noexcept
+{
+  return maxLoadFactor_;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+void zharov::HashTable< Key, Value, Hash, Equal >::maxLoadFactor(double mlf)
+{
+  if (mlf <= 0.0 || mlf >= 1.0)
+  {
+    throw std::logic_error("maxLoadFactor must be in (0, 1)");
+  }
+  maxLoadFactor_ = mlf;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+double zharov::HashTable< Key, Value, Hash, Equal >::maxTombstoneFactor() const noexcept
+{
+  return maxTombstoneFactor_;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+void zharov::HashTable< Key, Value, Hash, Equal >::maxTombstoneFactor(double mtf)
+{
+  if (mtf <= 0.0 || mtf >= 1.0)
+  {
+    throw std::logic_error("maxTombstoneFactor must be in (0, 1)");
+  }
+  maxTombstoneFactor_ = mtf;
 }
 
 template< class Key, class Value, class Hash, class Equal >
