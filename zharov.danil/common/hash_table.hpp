@@ -92,6 +92,8 @@ namespace zharov
     void swap(HashTable& table) noexcept;
     size_t size() const noexcept;
     size_t capacity() const noexcept;
+    double loadFactor() const noexcept;
+    double tombstoneFactor() const noexcept;
     Value& at(const Key& k);
     const Value& at(const Key& k) const;
     iterator find(const Key& k);
@@ -111,6 +113,7 @@ namespace zharov
     std::pair< const Key, Value >* slots_;
     size_t capacity_;
     size_t size_;
+    size_t tombstones_;
 
     void destroyAt(size_t pos);
 
@@ -131,7 +134,8 @@ zharov::HashTable< Key, Value, Hash, Equal >::HashTable(size_t capacity):
   states_(nullptr),
   slots_(nullptr),
   capacity_(std::pow(2, std::ceil(std::log2(capacity)))),
-  size_(0)
+  size_(0),
+  tombstones_(0)
 {
   try
   {
@@ -169,7 +173,8 @@ zharov::HashTable< Key, Value, Hash, Equal >::HashTable(HashTable&& table) noexc
   states_(std::exchange(table.states_, nullptr)),
   slots_(std::exchange(table.slots_, nullptr)),
   capacity_(std::exchange(table.capacity_, 0)),
-  size_(std::exchange(table.size_, 0))
+  size_(std::exchange(table.size_, 0)),
+  tombstones_(std::exchange(table.tombstones_, 0))
 {}
 
 template< class Key, class Value, class Hash, class Equal >
@@ -195,6 +200,7 @@ void zharov::HashTable< Key, Value, Hash, Equal >::swap(HashTable& table) noexce
   std::swap(table.slots_, slots_);
   std::swap(table.capacity_, capacity_);
   std::swap(table.size_, size_);
+  std::swap(table.tombstones_, tombstones_);
 }
 
 template< class Key, class Value, class Hash, class Equal >
@@ -235,6 +241,18 @@ template< class Key, class Value, class Hash, class Equal >
 size_t zharov::HashTable< Key, Value, Hash, Equal >::size() const noexcept
 {
   return size_;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+double zharov::HashTable< Key, Value, Hash, Equal >::loadFactor() const noexcept
+{
+  return static_cast< double >(size_) / capacity_;
+}
+
+template< class Key, class Value, class Hash, class Equal >
+double zharov::HashTable< Key, Value, Hash, Equal >::tombstoneFactor() const noexcept
+{
+  return static_cast< double >(tombstones_) / capacity_;
 }
 
 template< class Key, class Value, class Hash, class Equal >
@@ -324,6 +342,7 @@ void zharov::HashTable< Key, Value, Hash, Equal >::remove(const Key& k)
       destroyAt(pos);
       states_[pos] = zharov::detail::State::TOMBSTONE;
       --size_;
+      ++tombstones_;
       return;
     }
   }
