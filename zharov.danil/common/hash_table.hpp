@@ -343,9 +343,9 @@ template< class Key, class Value, class Hash, class Equal >
 template< class K, class V >
 void zharov::HashTable< Key, Value, Hash, Equal >::addImpl(K&& k, V&& v)
 {
-  if (size_ == capacity_)
+  if (loadFactor() >= maxLoadFactor_)
   {
-    throw std::logic_error("Not enough place to add");
+    rehash();
   }
   if (contains(k))
   {
@@ -387,6 +387,10 @@ void zharov::HashTable< Key, Value, Hash, Equal >::remove(const Key& k)
       states_[pos] = zharov::detail::State::TOMBSTONE;
       --size_;
       ++tombstones_;
+      if (tombstoneFactor() > maxTombstoneFactor_)
+      {
+        rehash();
+      }
       return;
     }
   }
