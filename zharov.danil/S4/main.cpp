@@ -21,7 +21,8 @@ int main(int argc, char** argv)
   }
 
   zharov::BSTree< std::string, zharov::cmd, std::less< std::string > > cmds;
-  cmds.push("print", zharov::print);
+  zharov::BSTree< std::string, zharov::constCmd, std::less< std::string > > constCmds;
+  constCmds.push("print", zharov::print);
   cmds.push("complement", zharov::complement);
   cmds.push("intersect", zharov::intersect);
   cmds.push("union", zharov::makeUnion);
@@ -61,7 +62,15 @@ int main(int argc, char** argv)
   {
     try
     {
-      cmds.at(command)(std::cout, std::cin, dicts);
+      if (cmds.has(command))
+      {
+        cmds.at(command)(std::cout, std::cin, dicts);
+      }
+      else
+      {
+        constCmds.at(command)(std::cout, std::cin, dicts);
+        std::cout << '\n';
+      }
     }
     catch (...)
     {

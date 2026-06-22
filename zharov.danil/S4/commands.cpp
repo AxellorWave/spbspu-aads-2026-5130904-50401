@@ -1,6 +1,6 @@
 #include "commands.hpp"
 
-void zharov::print(std::ostream& out, std::istream& in, dictionaries_t& dicts)
+void zharov::print(std::ostream& out, std::istream& in, const dictionaries_t& dicts)
 {
   std::string dict_name;
   in >> dict_name;
@@ -11,7 +11,7 @@ void zharov::print(std::ostream& out, std::istream& in, dictionaries_t& dicts)
 
   if (dicts.at(dict_name).size() == 0)
   {
-    out << "<EMPTY>\n";
+    out << "<EMPTY>";
     return;
   }
   out << dict_name;
@@ -19,7 +19,6 @@ void zharov::print(std::ostream& out, std::istream& in, dictionaries_t& dicts)
   {
     out << ' ' << i->first << ' ' << i->second;
   }
-  out << "\n";
 }
 
 void zharov::complement(std::ostream&, std::istream& in, dictionaries_t& dicts)
