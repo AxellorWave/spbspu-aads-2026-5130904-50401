@@ -98,7 +98,7 @@ namespace zharov
     void push(Key&& k, Value&& v);
     detail::Node< Key, Value >* findNode(const Key& k) const;
     bool has(const Key& k) const;
-    Value get(const Key& k) const;
+    const Value& get(const Key& k) const;
     Value& at(const Key& k);
     const Value& at(const Key& k) const;
     detail::Node< Key, Value >* fallLeft(detail::Node< Key, Value >* node) const;
@@ -368,7 +368,7 @@ bool zharov::BSTree< Key, Value, Compare >::has(const Key& k) const
 }
 
 template< class Key, class Value, class Compare >
-Value zharov::BSTree< Key, Value, Compare >::get(const Key& k) const
+const Value& zharov::BSTree< Key, Value, Compare >::get(const Key& k) const
 {
   return at(k);
 }
