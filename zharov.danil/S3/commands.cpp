@@ -1,9 +1,9 @@
-#include <functional>
 #include "commands.hpp"
+#include <functional>
 
 namespace
 {
-  template < class T, class Cmp >
+  template< class T, class Cmp >
   void sort(zharov::Vector< T >& v, Cmp cmp)
   {
     for (size_t i = 0; i < v.getSize(); ++i)
