@@ -339,7 +339,7 @@ void zharov::BSTree< Key, Value, Compare >::push(const Key& k, const Value& v)
 template< class Key, class Value, class Compare >
 void zharov::BSTree< Key, Value, Compare >::push(Key&& k, Value&& v)
 {
-  pushImpl(std::move(k), std::move(v));
+  pushImpl(std::forward< Key >(k), std::forward< Value >(v));
 }
 
 template< class Key, class Value, class Compare >
