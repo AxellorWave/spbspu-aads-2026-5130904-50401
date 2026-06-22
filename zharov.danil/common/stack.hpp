@@ -4,7 +4,7 @@
 
 namespace zharov
 {
-  template < class T >
+  template< class T >
   class Stack
   {
   public:
@@ -15,7 +15,7 @@ namespace zharov
     void clear() noexcept;
     void push(const T& rhs);
     void push(T&& rhs);
-    template < class... Args >
+    template< class... Args >
     void emplace(Args&&... args);
     void pop() noexcept;
     void swap(Stack& s) noexcept;
@@ -25,62 +25,62 @@ namespace zharov
   };
 }
 
-template < class T >
+template< class T >
 T& zharov::Stack< T >::top()
 {
   return list_.back();
 }
 
-template < class T >
+template< class T >
 const T& zharov::Stack< T >::top() const
 {
   return list_.back();
 }
 
-template < class T >
+template< class T >
 bool zharov::Stack< T >::empty() const noexcept
 {
   return !list_.size();
 }
 
-template < class T >
+template< class T >
 size_t zharov::Stack< T >::size() const noexcept
 {
   return list_.size();
 }
 
-template < class T >
+template< class T >
 void zharov::Stack< T >::clear() noexcept
 {
   list_.clear();
 }
 
-template < class T >
+template< class T >
 void zharov::Stack< T >::push(const T& rhs)
 {
   list_.pushBack(rhs);
 }
 
-template < class T >
+template< class T >
 void zharov::Stack< T >::push(T&& rhs)
 {
   list_.pushBack(std::forward< T >(rhs));
 }
 
-template < class T >
-template < class... Args >
+template< class T >
+template< class... Args >
 void zharov::Stack< T >::emplace(Args&&... args)
 {
   list_.emplaceBack(std::forward< Args >(args)...);
 }
 
-template < class T >
+template< class T >
 void zharov::Stack< T >::pop() noexcept
 {
   list_.popBack();
 }
 
-template < class T >
+template< class T >
 void zharov::Stack< T >::swap(Stack& s) noexcept
 {
   list_.swap(s.list_);
