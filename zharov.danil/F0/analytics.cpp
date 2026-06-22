@@ -207,8 +207,8 @@ void zharov::analyzeItem(std::ostream& out, std::istream& in, const zharov::Cafe
       while (pos < itemsStr.size())
       {
         size_t comma = itemsStr.find(',', pos);
-        std::string token = (comma == std::string::npos) ? itemsStr.substr(pos)
-                                                         : itemsStr.substr(pos, comma - pos);
+        std::string token =
+          (comma == std::string::npos) ? itemsStr.substr(pos) : itemsStr.substr(pos, comma - pos);
         pos = (comma == std::string::npos) ? itemsStr.size() : comma + 1;
 
         if (tokenMenu(token) == menuName && tokenItem(token) == itemName)
