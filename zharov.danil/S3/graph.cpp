@@ -1,78 +1,90 @@
 #include "graph.hpp"
 
-bool zharov::VertComp::operator()(const key_t& v1, const key_t& v2) const
-{
-  return v1.first == v2.first && v1.second == v2.second;
-}
-
 zharov::Graph::Graph(size_t count):
-  edges_(count),
-  vertexes_()
+  edges(count),
+  vertexes()
 {}
 
 void zharov::Graph::addVertex(const std::string& v)
 {
-  if (vertexes_.has(v))
+  if (vertexes.has(v))
   {
     return;
   }
-  vertexes_.pushBack(v);
+  vertexes.pushBack(v);
 }
 
 void zharov::Graph::rmVertex(const std::string& v)
 {
-  if (!vertexes_.has(v))
+  if (!vertexes.has(v))
   {
     return;
   }
 
-  for (auto i = vertexes_.begin(); i != vertexes_.end(); ++i)
+  for (auto i = vertexes.begin(); i != vertexes.end(); ++i)
   {
     if (v == *i)
     {
-      vertexes_.erase(i);
-      return;
+      vertexes.erase(i);
+      break;
     }
   }
 
-  for (auto i = edges_.begin(); i != edges_.end(); ++i)
+  for (auto i = edges.begin(); i != edges.end(); ++i)
   {
-    if (i->key_.first == v || i->key_.second == v)
+    if (i->first.first == v || i->first.second == v)
     {
-      edges_.remove(i->key_);
+      edges.remove(i->first);
     }
   }
 }
 
 void zharov::Graph::addEdge(const std::string& v1, const std::string& v2, size_t w)
 {
+  bool v1_new = !vertexes.has(v1);
+  bool v2_new = !vertexes.has(v2);
   addVertex(v1);
-  addVertex(v2);
-  auto key = std::make_pair(v1, v2);
-  if (edges_.has(key))
+  try
   {
-    edges_.at(key).pushBack(w);
+    addVertex(v2);
+    zharov::key_t key = std::make_pair(v1, v2);
+    if (edges.contains(key))
+    {
+      edges.at(key).pushBack(w);
+    }
+    else
+    {
+      try
+      {
+        edges.add(key, Vector< size_t >{w});
+      }
+      catch (...)
+      {
+        edges.rehash();
+        edges.add(key, Vector< size_t >{w});
+      }
+    }
   }
-  else
+  catch (...)
   {
-    try
+    if (v2_new)
     {
-      edges_.add(key, Vector< size_t >{w});
+      rmVertex(v2);
     }
-    catch (...)
+    if (v1_new)
     {
-      edges_.rehash();
-      edges_.add(key, Vector< size_t >{w});
+      rmVertex(v1);
     }
+    throw;
   }
 }
 
 void zharov::Graph::rmEdge(const std::string& v1, const std::string& v2, size_t w)
 {
-  auto key = std::make_pair(v1, v2);
-  if (edges_.has(key))
+  zharov::key_t key = std::make_pair(v1, v2);
+  if (edges.contains(key))
   {
-    auto v = edges_.at(key);
+    zharov::Vector< size_t >& v = edges.at(key);
     if (v.getSize() > 1)
     {
       for (auto i = v.begin(); i != v.end(); ++i)
@@ -86,7 +98,7 @@ void zharov::Graph::rmEdge(const std::string& v1, const std::string& v2, size_t 
     }
     else
     {
-      edges_.remove(key);
+      edges.remove(key);
     }
   }
 }
