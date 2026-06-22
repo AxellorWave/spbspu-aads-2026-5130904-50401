@@ -248,8 +248,17 @@ zharov::detail::Node< Key, Value >*
     return Node::fake;
   }
   Node* node = new Node(root->data.first, root->data.second, parent);
-  node->left = clone(root->left, node);
-  node->right = clone(root->right, node);
+  try
+  {
+    node->left = clone(root->left, node);
+    node->right = clone(root->right, node);
+  }
+  catch (...)
+  {
+    deleteNodes(node->left);
+    delete node;
+    throw;
+  }
   return node;
 }
 
