@@ -1,7 +1,7 @@
 #ifndef COMMANDS_HPP
 #define COMMANDS_HPP
-#include <bstree.hpp>
 #include <fstream>
+#include <bstree.hpp>
 
 namespace zharov
 {
