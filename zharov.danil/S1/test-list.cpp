@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE S1
-#include <boost/test/included/unit_test.hpp>
 #include <functional>
+#include <boost/test/included/unit_test.hpp>
 #include <list.hpp>
 
 BOOST_AUTO_TEST_CASE(DefaultListConstructorTest)
@@ -323,7 +323,11 @@ BOOST_AUTO_TEST_CASE(PartitionTest)
   list.pushBack(2);
   list.pushBack(5);
   list.pushBack(3);
-  zharov::LIter< int > mid = list.partition([](int x) { return x < 4; });
+  zharov::LIter< int > mid = list.partition(
+    [](int x)
+    {
+      return x < 4;
+    });
   BOOST_CHECK_EQUAL(list.size(), 5);
   BOOST_CHECK_EQUAL(*mid, 4);
   zharov::LIter< int > it = list.begin();
@@ -340,7 +344,11 @@ BOOST_AUTO_TEST_CASE(PartitionAllTrueTest)
   list.pushBack(1);
   list.pushBack(2);
   list.pushBack(3);
-  zharov::LIter< int > mid = list.partition([](int x) { return x > 0; });
+  zharov::LIter< int > mid = list.partition(
+    [](int x)
+    {
+      return x > 0;
+    });
   BOOST_CHECK(mid == list.end());
   BOOST_CHECK_EQUAL(list.size(), 3);
 }
@@ -351,7 +359,11 @@ BOOST_AUTO_TEST_CASE(PartitionAllFalseTest)
   list.pushBack(1);
   list.pushBack(2);
   list.pushBack(3);
-  zharov::LIter< int > mid = list.partition([](int x) { return x > 10; });
+  zharov::LIter< int > mid = list.partition(
+    [](int x)
+    {
+      return x > 10;
+    });
   BOOST_CHECK(mid == list.begin());
   BOOST_CHECK_EQUAL(list.size(), 3);
 }
@@ -418,7 +430,9 @@ BOOST_AUTO_TEST_CASE(SpliceRangeTest)
   zharov::LIter< int > first = src.begin();
   ++first;
   zharov::LIter< int > last = first;
-  ++last; ++last; ++last;
+  ++last;
+  ++last;
+  ++last;
   zharov::LIter< int > pos = dest.begin();
   ++pos;
   dest.splice(pos, src, first, last);
