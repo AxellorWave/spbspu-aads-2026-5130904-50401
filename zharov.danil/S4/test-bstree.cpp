@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_SUITE(DefaultConstructorSuite)
 BOOST_AUTO_TEST_CASE(DefaultConstructor)
 {
   zharov::BSTree< int, std::string, comp > tree;
-  BOOST_CHECK_EQUAL(tree.getSize(), 0);
+  BOOST_CHECK_EQUAL(tree.size(), 0);
   BOOST_CHECK_EQUAL(tree.height(), 0);
 }
 BOOST_AUTO_TEST_SUITE_END()
@@ -28,11 +28,11 @@ BOOST_AUTO_TEST_CASE(CopyConstructor)
   original.push(1, "one");
   original.push(2, "two");
   zharov::BSTree< int, std::string, comp > copy(original);
-  BOOST_CHECK_EQUAL(copy.getSize(), 2);
+  BOOST_CHECK_EQUAL(copy.size(), 2);
   BOOST_CHECK_EQUAL(copy.get(1), "one");
   BOOST_CHECK_EQUAL(copy.get(2), "two");
   original.push(3, "three");
-  BOOST_CHECK_EQUAL(copy.getSize(), 2);
+  BOOST_CHECK_EQUAL(copy.size(), 2);
   BOOST_CHECK_THROW(copy.get(3), std::logic_error);
 }
 BOOST_AUTO_TEST_SUITE_END()
@@ -44,10 +44,10 @@ BOOST_AUTO_TEST_CASE(MoveConstructor)
   original.push(10, "ten");
   original.push(20, "twenty");
   zharov::BSTree< int, std::string, comp > moved(std::move(original));
-  BOOST_CHECK_EQUAL(moved.getSize(), 2);
+  BOOST_CHECK_EQUAL(moved.size(), 2);
   BOOST_CHECK_EQUAL(moved.get(10), "ten");
   BOOST_CHECK_EQUAL(moved.get(20), "twenty");
-  BOOST_CHECK_EQUAL(original.getSize(), 0);
+  BOOST_CHECK_EQUAL(original.size(), 0);
   BOOST_CHECK_EQUAL(original.height(), 0);
 }
 BOOST_AUTO_TEST_SUITE_END()
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(CopyAssignmentSelfAssign)
   zharov::BSTree< int, std::string, comp > tree;
   tree.push(5, "five");
   tree = tree;
-  BOOST_CHECK_EQUAL(tree.getSize(), 1);
+  BOOST_CHECK_EQUAL(tree.size(), 1);
   BOOST_CHECK_EQUAL(tree.get(5), "five");
 }
 BOOST_AUTO_TEST_CASE(CopyAssignmentDifferentTrees)
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(CopyAssignmentDifferentTrees)
   a.push(100, "hundred");
   b.push(200, "two hundred");
   b = a;
-  BOOST_CHECK_EQUAL(b.getSize(), 1);
+  BOOST_CHECK_EQUAL(b.size(), 1);
   BOOST_CHECK_EQUAL(b.get(100), "hundred");
   BOOST_CHECK_THROW(b.get(200), std::logic_error);
 }
@@ -80,10 +80,10 @@ BOOST_AUTO_TEST_CASE(MoveAssignment)
   a.push(7, "seven");
   a.push(8, "eight");
   b = std::move(a);
-  BOOST_CHECK_EQUAL(b.getSize(), 2);
+  BOOST_CHECK_EQUAL(b.size(), 2);
   BOOST_CHECK_EQUAL(b.get(7), "seven");
   BOOST_CHECK_EQUAL(b.get(8), "eight");
-  BOOST_CHECK_EQUAL(a.getSize(), 0);
+  BOOST_CHECK_EQUAL(a.size(), 0);
 }
 BOOST_AUTO_TEST_SUITE_END()
 
@@ -94,9 +94,9 @@ BOOST_AUTO_TEST_CASE(Swap)
   a.push(1, "first");
   b.push(2, "second");
   a.swap(b);
-  BOOST_CHECK_EQUAL(a.getSize(), 1);
+  BOOST_CHECK_EQUAL(a.size(), 1);
   BOOST_CHECK_EQUAL(a.get(2), "second");
-  BOOST_CHECK_EQUAL(b.getSize(), 1);
+  BOOST_CHECK_EQUAL(b.size(), 1);
   BOOST_CHECK_EQUAL(b.get(1), "first");
 }
 BOOST_AUTO_TEST_SUITE_END()
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(Clear)
   tree.push(42, "answer");
   tree.push(13, "unlucky");
   tree.clear();
-  BOOST_CHECK_EQUAL(tree.getSize(), 0);
+  BOOST_CHECK_EQUAL(tree.size(), 0);
   BOOST_CHECK_EQUAL(tree.height(), 0);
   BOOST_CHECK_THROW(tree.at(42), std::logic_error);
   BOOST_CHECK_THROW(tree.get(13), std::logic_error);
@@ -122,14 +122,14 @@ BOOST_AUTO_TEST_CASE(PushLvalue)
   const int key = 10;
   const std::string value = "ten";
   tree.push(key, value);
-  BOOST_CHECK_EQUAL(tree.getSize(), 1);
+  BOOST_CHECK_EQUAL(tree.size(), 1);
   BOOST_CHECK_EQUAL(tree.get(10), "ten");
 }
 BOOST_AUTO_TEST_CASE(PushRvalue)
 {
   zharov::BSTree< int, std::string, comp > tree;
   tree.push(20, std::string("twenty"));
-  BOOST_CHECK_EQUAL(tree.getSize(), 1);
+  BOOST_CHECK_EQUAL(tree.size(), 1);
   BOOST_CHECK_EQUAL(tree.get(20), "twenty");
 }
 BOOST_AUTO_TEST_CASE(PushDuplicateUpdatesValue)
@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(PushDuplicateUpdatesValue)
   zharov::BSTree< int, std::string, comp > tree;
   tree.push(3, "old");
   tree.push(3, "new");
-  BOOST_CHECK_EQUAL(tree.getSize(), 1);
+  BOOST_CHECK_EQUAL(tree.size(), 1);
   BOOST_CHECK_EQUAL(tree.get(3), "new");
 }
 BOOST_AUTO_TEST_CASE(PushMultipleElements)
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE(PushMultipleElements)
   tree.push(7, "seven");
   tree.push(2, "two");
   tree.push(4, "four");
-  BOOST_CHECK_EQUAL(tree.getSize(), 5);
+  BOOST_CHECK_EQUAL(tree.size(), 5);
   BOOST_CHECK_EQUAL(tree.height(), 3);
 }
 BOOST_AUTO_TEST_SUITE_END()
@@ -224,7 +224,7 @@ BOOST_AUTO_TEST_CASE(DropLeafNode)
   std::string removed = tree.get(3);
   tree.pop(3);
   BOOST_CHECK_EQUAL(removed, "three");
-  BOOST_CHECK_EQUAL(tree.getSize(), 1);
+  BOOST_CHECK_EQUAL(tree.size(), 1);
   BOOST_CHECK_THROW(tree.get(3), std::logic_error);
   BOOST_CHECK_EQUAL(tree.get(8), "eight");
 }
@@ -235,7 +235,7 @@ BOOST_AUTO_TEST_CASE(DropNodeWithOneChild)
   tree.push(3, "three");
   tree.push(1, "one");
   tree.pop(3);
-  BOOST_CHECK_EQUAL(tree.getSize(), 2);
+  BOOST_CHECK_EQUAL(tree.size(), 2);
   BOOST_CHECK_THROW(tree.get(3), std::logic_error);
   BOOST_CHECK_EQUAL(tree.get(1), "one");
   BOOST_CHECK_EQUAL(tree.get(8), "eight");
@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE(DropNodeWithTwoChildren)
   std::string removed = tree.get(5);
   tree.pop(5);
   BOOST_CHECK_EQUAL(removed, "five");
-  BOOST_CHECK_EQUAL(tree.getSize(), 4);
+  BOOST_CHECK_EQUAL(tree.size(), 4);
   BOOST_CHECK_THROW(tree.get(5), std::logic_error);
 
   BOOST_CHECK_EQUAL(tree.get(7), "seven");
@@ -265,7 +265,7 @@ BOOST_AUTO_TEST_CASE(DropRoot)
   std::string removed = tree.get(100);
   tree.pop(100);
   BOOST_CHECK_EQUAL(removed, "hundred");
-  BOOST_CHECK_EQUAL(tree.getSize(), 0);
+  BOOST_CHECK_EQUAL(tree.size(), 0);
   BOOST_CHECK_EQUAL(tree.height(), 0);
 }
 BOOST_AUTO_TEST_CASE(DropNonExistentKeyThrows)

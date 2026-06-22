@@ -90,7 +90,7 @@ namespace zharov
     BSTree& operator=(const BSTree& other);
     BSTree& operator=(BSTree&& other) noexcept;
 
-    size_t getSize() const;
+    size_t size() const;
     void swap(BSTree& other) noexcept;
     void clear() noexcept;
 
@@ -208,7 +208,7 @@ zharov::BSTree< Key, Value, Compare >::BSTree(BSTree&& other) noexcept:
 {}
 
 template< class Key, class Value, class Compare >
-size_t zharov::BSTree< Key, Value, Compare >::getSize() const
+size_t zharov::BSTree< Key, Value, Compare >::size() const
 {
   return size_;
 }

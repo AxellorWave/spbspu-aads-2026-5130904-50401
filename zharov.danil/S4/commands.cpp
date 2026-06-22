@@ -9,7 +9,7 @@ void zharov::print(std::ostream& out, std::istream& in, dictionaries_t& dicts)
     throw std::logic_error("Dict not found");
   }
 
-  if (dicts.at(dict_name).getSize() == 0)
+  if (dicts.at(dict_name).size() == 0)
   {
     out << "<EMPTY>\n";
     return;
