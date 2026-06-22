@@ -4,7 +4,7 @@
 
 namespace zharov
 {
-  template < class T >
+  template< class T >
   struct VIter
   {
     VIter();
@@ -32,42 +32,42 @@ namespace zharov
   };
 }
 
-template < class T >
+template< class T >
 zharov::VIter< T >::VIter():
   ptr_(nullptr)
 {}
 
-template < class T >
+template< class T >
 zharov::VIter< T >::VIter(T* ptr):
   ptr_(ptr)
 {}
 
-template < class T >
+template< class T >
 T& zharov::VIter< T >::operator*() const
 {
   return *ptr_;
 }
 
-template < class T >
+template< class T >
 T* zharov::VIter< T >::operator->() const
 {
   return ptr_;
 }
 
-template < class T >
+template< class T >
 T& zharov::VIter< T >::operator[](std::ptrdiff_t n) const
 {
   return ptr_[n];
 }
 
-template < class T >
+template< class T >
 zharov::VIter< T >& zharov::VIter< T >::operator++()
 {
   ++ptr_;
   return *this;
 }
 
-template < class T >
+template< class T >
 zharov::VIter< T > zharov::VIter< T >::operator++(int)
 {
   VIter< T > temp = *this;
@@ -75,14 +75,14 @@ zharov::VIter< T > zharov::VIter< T >::operator++(int)
   return temp;
 }
 
-template < class T >
+template< class T >
 zharov::VIter< T >& zharov::VIter< T >::operator--()
 {
   --ptr_;
   return *this;
 }
 
-template < class T >
+template< class T >
 zharov::VIter< T > zharov::VIter< T >::operator--(int)
 {
   VIter< T > temp = *this;
@@ -90,56 +90,56 @@ zharov::VIter< T > zharov::VIter< T >::operator--(int)
   return temp;
 }
 
-template < class T >
+template< class T >
 zharov::VIter< T > zharov::VIter< T >::operator-(std::ptrdiff_t n) const
 {
   return VIter< T >(ptr_ + n);
   ;
 }
 
-template < class T >
+template< class T >
 zharov::VIter< T > zharov::VIter< T >::operator+(std::ptrdiff_t n) const
 {
   return VIter< T >(ptr_ + n);
 }
 
-template < class T >
+template< class T >
 std::ptrdiff_t zharov::VIter< T >::operator-(const VIter< T >& other)
 {
   return ptr_ - other.ptr_;
 }
 
-template < class T >
+template< class T >
 bool zharov::VIter< T >::operator==(const VIter& other) const noexcept
 {
   return ptr_ == other.ptr_;
 }
 
-template < class T >
+template< class T >
 bool zharov::VIter< T >::operator!=(const VIter& other) const noexcept
 {
   return ptr_ != other.ptr_;
 }
 
-template < class T >
+template< class T >
 bool zharov::VIter< T >::operator>(const VIter& other) const noexcept
 {
   return ptr_ > other.ptr_;
 }
 
-template < class T >
+template< class T >
 bool zharov::VIter< T >::operator<(const VIter& other) const noexcept
 {
   return ptr_ < other.ptr_;
 }
 
-template < class T >
+template< class T >
 bool zharov::VIter< T >::operator>=(const VIter& other) const noexcept
 {
   return ptr_ >= other.ptr_;
 }
 
-template < class T >
+template< class T >
 bool zharov::VIter< T >::operator<=(const VIter& other) const noexcept
 {
   return ptr_ <= other.ptr_;

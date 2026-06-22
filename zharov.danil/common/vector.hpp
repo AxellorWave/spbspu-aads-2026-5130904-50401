@@ -10,7 +10,7 @@
 
 namespace zharov
 {
-  template < class T >
+  template< class T >
   struct Vector
   {
     ~Vector();
@@ -44,7 +44,7 @@ namespace zharov
 
     void pushBack(const T& v);
     void pushBackCount(size_t k, const T& v);
-    template < class IT >
+    template< class IT >
     void pushBackRange(IT b, size_t c);
     void popBack();
     void insert(size_t id, const T& v);
@@ -56,11 +56,11 @@ namespace zharov
     void erase(size_t start, size_t end);
     void erase(VIter< T > start, VIter< T > finish);
     void erase(VIter< T > pos);
-    template < class Cmp >
+    template< class Cmp >
     void erase(VIter< T > pos, Cmp cmp);
 
   private:
-    template < class U >
+    template< class U >
     VIter< T > generalInsert(VIter< T > pos, U&& v);
     void unsafePushBack(const T& v);
     explicit Vector(size_t c);
@@ -68,11 +68,11 @@ namespace zharov
     size_t size_, capacity_;
   };
 
-  template < class T >
+  template< class T >
   bool operator==(const Vector< T >& lhs, const Vector< T >& rhs);
 }
 
-template < class T >
+template< class T >
 zharov::Vector< T >::~Vector()
 {
   for (size_t j = 0; j < size_; ++j)
@@ -82,14 +82,14 @@ zharov::Vector< T >::~Vector()
   ::operator delete(data_);
 }
 
-template < class T >
+template< class T >
 zharov::Vector< T >::Vector():
   data_(nullptr),
   size_(0),
   capacity_(0)
 {}
 
-template < class T >
+template< class T >
 zharov::Vector< T >::Vector(const Vector& other):
   Vector(other.size_)
 {
@@ -101,7 +101,7 @@ zharov::Vector< T >::Vector(const Vector& other):
   size_ = other.size_;
 }
 
-template < class T >
+template< class T >
 zharov::Vector< T >::Vector(Vector&& o):
   data_(o.data_),
   size_(o.size_),
@@ -110,14 +110,14 @@ zharov::Vector< T >::Vector(Vector&& o):
   o.data_ = nullptr;
 }
 
-template < class T >
+template< class T >
 zharov::Vector< T >::Vector(size_t c):
   data_(c ? static_cast< T* >(::operator new(sizeof(T) * c)) : nullptr),
   size_(0),
   capacity_(c)
 {}
 
-template < class T >
+template< class T >
 zharov::Vector< T >::Vector(size_t size, const T& init):
   Vector(size)
 {
@@ -129,7 +129,7 @@ zharov::Vector< T >::Vector(size_t size, const T& init):
   size_ = size;
 }
 
-template < class T >
+template< class T >
 zharov::Vector< T >::Vector(std::initializer_list< T > il):
   Vector(il.size())
 {
@@ -141,7 +141,7 @@ zharov::Vector< T >::Vector(std::initializer_list< T > il):
   size_ = il.size();
 }
 
-template < class T >
+template< class T >
 zharov::Vector< T >& zharov::Vector< T >::operator=(const Vector& rhs)
 {
   Vector< T > cpy(rhs);
@@ -149,7 +149,7 @@ zharov::Vector< T >& zharov::Vector< T >::operator=(const Vector& rhs)
   return *this;
 }
 
-template < class T >
+template< class T >
 zharov::Vector< T >& zharov::Vector< T >::operator=(Vector&& o)
 {
   Vector< T > cpy(std::move(o));
@@ -157,20 +157,20 @@ zharov::Vector< T >& zharov::Vector< T >::operator=(Vector&& o)
   return *this;
 }
 
-template < class T >
+template< class T >
 const T& zharov::Vector< T >::operator[](size_t id) const noexcept
 {
   return data_[id];
 }
 
-template < class T >
+template< class T >
 T& zharov::Vector< T >::operator[](size_t id) noexcept
 {
   const Vector* cthis = this;
   return const_cast< T& >((*cthis)[id]);
 }
 
-template < class T >
+template< class T >
 const T& zharov::Vector< T >::at(size_t id) const
 {
   if (id < getSize())
@@ -180,14 +180,14 @@ const T& zharov::Vector< T >::at(size_t id) const
   throw std::out_of_range("Bad index");
 }
 
-template < class T >
+template< class T >
 T& zharov::Vector< T >::at(size_t id)
 {
   const Vector< T >* cthis = this;
   return const_cast< T& >(cthis->at(id));
 }
 
-template < class T >
+template< class T >
 bool zharov::Vector< T >::has(const T& val) const
 {
   for (auto i = cbegin(); i != cend(); ++i)
@@ -200,7 +200,7 @@ bool zharov::Vector< T >::has(const T& val) const
   return false;
 }
 
-template < class T >
+template< class T >
 void zharov::Vector< T >::swap(Vector< T >& rhs) noexcept
 {
   std::swap(data_, rhs.data_);
@@ -208,25 +208,25 @@ void zharov::Vector< T >::swap(Vector< T >& rhs) noexcept
   std::swap(capacity_, rhs.capacity_);
 }
 
-template < class T >
+template< class T >
 bool zharov::Vector< T >::isEmpty() const noexcept
 {
   return !size_;
 }
 
-template < class T >
+template< class T >
 size_t zharov::Vector< T >::getSize() const noexcept
 {
   return size_;
 }
 
-template < class T >
+template< class T >
 size_t zharov::Vector< T >::getCapacity() const noexcept
 {
   return capacity_;
 }
 
-template < class T >
+template< class T >
 void zharov::Vector< T >::reserve(size_t new_capacity)
 {
   T* new_data = static_cast< T* >(::operator new(sizeof(T) * new_capacity));
@@ -256,49 +256,49 @@ void zharov::Vector< T >::reserve(size_t new_capacity)
   capacity_ = new_capacity;
 }
 
-template < class T >
+template< class T >
 void zharov::Vector< T >::shrinkToFit()
 {
   reserve(size_);
 }
 
-template < class T >
+template< class T >
 zharov::VIter< T > zharov::Vector< T >::begin()
 {
   return VIter< T >(data_);
 }
 
-template < class T >
+template< class T >
 zharov::VCIter< T > zharov::Vector< T >::begin() const
 {
   return VCIter< T >(data_);
 }
 
-template < class T >
+template< class T >
 zharov::VCIter< T > zharov::Vector< T >::cbegin() const
 {
   return VCIter< T >(data_);
 }
 
-template < class T >
+template< class T >
 zharov::VIter< T > zharov::Vector< T >::end()
 {
   return VIter< T >(data_ + size_);
 }
 
-template < class T >
+template< class T >
 zharov::VCIter< T > zharov::Vector< T >::end() const
 {
   return VCIter< T >(data_ + size_);
 }
 
-template < class T >
+template< class T >
 zharov::VCIter< T > zharov::Vector< T >::cend() const
 {
   return VCIter< T >(data_ + size_);
 }
 
-template < class T >
+template< class T >
 void zharov::Vector< T >::pushBack(const T& v)
 {
   if (isEmpty())
@@ -312,8 +312,8 @@ void zharov::Vector< T >::pushBack(const T& v)
   unsafePushBack(v);
 }
 
-template < class T >
-template < class IT >
+template< class T >
+template< class IT >
 void zharov::Vector< T >::pushBackRange(IT b, size_t c)
 {
   if (size_ + c > capacity_)
@@ -327,7 +327,7 @@ void zharov::Vector< T >::pushBackRange(IT b, size_t c)
   }
 }
 
-template < class T >
+template< class T >
 void zharov::Vector< T >::pushBackCount(size_t k, const T& v)
 {
   if (size_ + k > capacity_)
@@ -340,7 +340,7 @@ void zharov::Vector< T >::pushBackCount(size_t k, const T& v)
   }
 }
 
-template < class T >
+template< class T >
 void zharov::Vector< T >::unsafePushBack(const T& v)
 {
   assert(size_ < capacity_);
@@ -348,15 +348,15 @@ void zharov::Vector< T >::unsafePushBack(const T& v)
   ++size_;
 }
 
-template < class T >
+template< class T >
 void zharov::Vector< T >::popBack()
 {
   data_[size_ - 1].~T();
   --size_;
 }
 
-template < class T >
-template < class U >
+template< class T >
+template< class U >
 zharov::VIter< T > zharov::Vector< T >::generalInsert(VIter< T > pos, U&& v)
 {
   if (pos == end())
@@ -379,9 +379,9 @@ zharov::VIter< T > zharov::Vector< T >::generalInsert(VIter< T > pos, U&& v)
   return VIter< T >(data_ + ind);
 }
 
-template < class T >
-zharov::VIter< T > zharov::Vector< T >::insert(
-  VIter< T > pos, VCIter< T > start, VCIter< T > finish)
+template< class T >
+zharov::VIter< T >
+  zharov::Vector< T >::insert(VIter< T > pos, VCIter< T > start, VCIter< T > finish)
 {
   if (start > finish)
   {
@@ -410,31 +410,31 @@ zharov::VIter< T > zharov::Vector< T >::insert(
   return VIter< T >(data_ + ind);
 }
 
-template < class T >
+template< class T >
 void zharov::Vector< T >::insert(size_t id, const T& v)
 {
   generalInsert(begin() + id, v);
 }
 
-template < class T >
+template< class T >
 zharov::VIter< T > zharov::Vector< T >::insert(VIter< T > pos, const T& v)
 {
   return generalInsert(pos, v);
 }
 
-template < class T >
+template< class T >
 zharov::VIter< T > zharov::Vector< T >::insert(VIter< T > pos, T&& v)
 {
   return generalInsert(pos, v);
 }
 
-template < class T >
+template< class T >
 void zharov::Vector< T >::insert(size_t id, const Vector< T >& v, size_t start, size_t end)
 {
   insert(begin() + id, v.begin() + start, v.begin() + end);
 }
 
-template < class T >
+template< class T >
 void zharov::Vector< T >::erase(VIter< T > pos)
 {
   Vector< T > cpy(size_ - 1);
@@ -449,8 +449,8 @@ void zharov::Vector< T >::erase(VIter< T > pos)
   swap(cpy);
 }
 
-template < class T >
-template < class Cmp >
+template< class T >
+template< class Cmp >
 void zharov::Vector< T >::erase(VIter< T > pos, Cmp cmp)
 {
   if (cmp(*pos))
@@ -459,7 +459,7 @@ void zharov::Vector< T >::erase(VIter< T > pos, Cmp cmp)
   }
 }
 
-template < class T >
+template< class T >
 void zharov::Vector< T >::erase(VIter< T > start, VIter< T > finish)
 {
   if (start > finish)
@@ -487,19 +487,19 @@ void zharov::Vector< T >::erase(VIter< T > start, VIter< T > finish)
   swap(cpy);
 }
 
-template < class T >
+template< class T >
 void zharov::Vector< T >::erase(size_t id)
 {
   erase(begin() + id);
 }
 
-template < class T >
+template< class T >
 void zharov::Vector< T >::erase(size_t start, size_t end)
 {
   erase(begin() + start, begin() + end);
 }
 
-template < class T >
+template< class T >
 bool zharov::operator==(const Vector< T >& lhs, const Vector< T >& rhs)
 {
   bool res = lhs.getSize() == rhs.getSize();
