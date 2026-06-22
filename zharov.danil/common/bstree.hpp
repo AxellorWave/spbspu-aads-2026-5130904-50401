@@ -11,10 +11,10 @@ namespace zharov
     template< class Key, class Value >
     struct Node
     {
-      std::pair< const Key, Value > data_;
-      Node< Key, Value >* left_;
-      Node< Key, Value >* right_;
-      Node< Key, Value >* parent_;
+      std::pair< const Key, Value > data;
+      Node< Key, Value >* left;
+      Node< Key, Value >* right;
+      Node< Key, Value >* parent;
 
       static Node< Key, Value >* fake;
 
@@ -137,18 +137,18 @@ template< class Key, class Value >
 zharov::detail::Node< Key, Value >::Node(const Key& key,
   const Value& val,
   Node< Key, Value >* parent):
-  data_(key, val),
-  left_(fake),
-  right_(fake),
-  parent_(parent)
+  data(key, val),
+  left(fake),
+  right(fake),
+  parent(parent)
 {}
 
 template< class Key, class Value >
 zharov::detail::Node< Key, Value >::Node(Key&& key, Value&& val, Node< Key, Value >* parent):
-  data_(key, val),
-  left_(fake),
-  right_(fake),
-  parent_(parent)
+  data(key, val),
+  left(fake),
+  right(fake),
+  parent(parent)
 {}
 
 template< class Key, class Value >
@@ -164,9 +164,9 @@ zharov::detail::Node< Key, Value >* zharov::BSTree< Key, Value, Compare >::initF
   if (Node::fake == nullptr)
   {
     Node::fake = new detail::Node< Key, Value >(Key(), Value(), nullptr);
-    Node::fake->left_ = detail::Node< Key, Value >::fake;
-    Node::fake->right_ = detail::Node< Key, Value >::fake;
-    Node::fake->parent_ = detail::Node< Key, Value >::fake;
+    Node::fake->left = detail::Node< Key, Value >::fake;
+    Node::fake->right = detail::Node< Key, Value >::fake;
+    Node::fake->parent = detail::Node< Key, Value >::fake;
   }
   return detail::Node< Key, Value >::fake;
 }
@@ -214,8 +214,8 @@ void zharov::BSTree< Key, Value, Compare >::deleteNodes(detail::Node< Key, Value
   {
     return;
   }
-  deleteNodes(node->left_);
-  deleteNodes(node->right_);
+  deleteNodes(node->left);
+  deleteNodes(node->right);
   delete node;
 }
 
@@ -245,9 +245,9 @@ zharov::detail::Node< Key, Value >* zharov::BSTree< Key, Value, Compare >::clone
   {
     return Node::fake;
   }
-  Node* node = new Node(root->data_.first, root->data_.second, parent);
-  node->left_ = clone(root->left_, node);
-  node->right_ = clone(root->right_, node);
+  Node* node = new Node(root->data.first, root->data.second, parent);
+  node->left = clone(root->left, node);
+  node->right = clone(root->right, node);
   return node;
 }
 
@@ -291,29 +291,29 @@ void zharov::BSTree< Key, Value, Compare >::pushImpl(K&& k, V&& v)
   Node* curr = root_;
   while (true)
   {
-    if (comp_(k, curr->data_.first))
+    if (comp_(k, curr->data.first))
     {
-      if (curr->left_->isFake())
+      if (curr->left->isFake())
       {
-        curr->left_ = new Node(std::forward< K >(k), std::forward< V >(v), curr);
+        curr->left = new Node(std::forward< K >(k), std::forward< V >(v), curr);
         ++size_;
         return;
       }
-      curr = curr->left_;
+      curr = curr->left;
     }
-    else if (comp_(curr->data_.first, k))
+    else if (comp_(curr->data.first, k))
     {
-      if (curr->right_->isFake())
+      if (curr->right->isFake())
       {
-        curr->right_ = new Node(std::forward< K >(k), std::forward< V >(v), curr);
+        curr->right = new Node(std::forward< K >(k), std::forward< V >(v), curr);
         ++size_;
         return;
       }
-      curr = curr->right_;
+      curr = curr->right;
     }
     else
     {
-      curr->data_.second = std::forward< V >(v);
+      curr->data.second = std::forward< V >(v);
       return;
     }
   }
@@ -338,13 +338,13 @@ zharov::detail::Node< Key, Value >* zharov::BSTree< Key, Value, Compare >::findN
   detail::Node< Key, Value >* curr = root_;
   while (!curr->isFake())
   {
-    if (comp_(k, curr->data_.first))
+    if (comp_(k, curr->data.first))
     {
-      curr = curr->left_;
+      curr = curr->left;
     }
-    else if (comp_(curr->data_.first, k))
+    else if (comp_(curr->data.first, k))
     {
-      curr = curr->right_;
+      curr = curr->right;
     }
     else
     {
@@ -381,16 +381,16 @@ const Value& zharov::BSTree< Key, Value, Compare >::at(const Key& k) const
   {
     throw std::logic_error("Key no found");
   }
-  return node->data_.second;
+  return node->data.second;
 }
 
 template< class Key, class Value, class Compare >
 zharov::detail::Node< Key, Value >* zharov::BSTree< Key, Value, Compare >::fallLeft(
   detail::Node< Key, Value >* node) const
 {
-  while (!node->left_->isFake())
+  while (!node->left->isFake())
   {
-    node = node->left_;
+    node = node->left;
   }
   return node;
 }
@@ -404,31 +404,31 @@ void zharov::BSTree< Key, Value, Compare >::pop(const Key& k)
     throw std::out_of_range("Key not found");
   }
 
-  if (!node->left_->isFake() && !node->right_->isFake())
+  if (!node->left->isFake() && !node->right->isFake())
   {
-    detail::Node< Key, Value >* n = fallLeft(node->right_);
-    const_cast< Key& >(node->data_.first) = std::move(const_cast< Key& >(n->data_.first));
-    node->data_.second = std::move(n->data_.second);
+    detail::Node< Key, Value >* n = fallLeft(node->right);
+    const_cast< Key& >(node->data.first) = std::move(const_cast< Key& >(n->data.first));
+    node->data.second = std::move(n->data.second);
     node = n;
   }
 
-  detail::Node< Key, Value >* child = (!node->left_->isFake()) ? node->left_ : node->right_;
+  detail::Node< Key, Value >* child = (!node->left->isFake()) ? node->left : node->right;
   if (!child->isFake())
   {
-    child->parent_ = node->parent_;
+    child->parent = node->parent;
   }
 
-  if (node->parent_->isFake())
+  if (node->parent->isFake())
   {
     root_ = child;
   }
-  else if (node->parent_->left_ == node)
+  else if (node->parent->left == node)
   {
-    node->parent_->left_ = child;
+    node->parent->left = child;
   }
   else
   {
-    node->parent_->right_ = child;
+    node->parent->right = child;
   }
 
   delete node;
@@ -442,8 +442,8 @@ size_t zharov::BSTree< Key, Value, Compare >::getHight(detail::Node< Key, Value 
   {
     return 0;
   }
-  size_t left = getHight(node->left_);
-  size_t right = getHight(node->right_);
+  size_t left = getHight(node->left);
+  size_t right = getHight(node->right);
   return 1 + (left > right ? left : right);
 }
 
@@ -467,13 +467,13 @@ zharov::BSTIterator< Key, Value >::BSTIterator(detail::Node< Key, Value >* node)
 template< class Key, class Value >
 std::pair< const Key, Value >& zharov::BSTIterator< Key, Value >::operator*()
 {
-  return curr_->data_;
+  return curr_->data;
 }
 
 template< class Key, class Value >
 std::pair< const Key, Value >* zharov::BSTIterator< Key, Value >::operator->()
 {
-  return std::addressof(curr_->data_);
+  return std::addressof(curr_->data);
 }
 
 template< class Key, class Value >
@@ -484,21 +484,21 @@ zharov::BSTIterator< Key, Value >& zharov::BSTIterator< Key, Value >::operator++
     return *this;
   }
   detail::Node< Key, Value >* next = curr_;
-  if (!next->right_->isFake())
+  if (!next->right->isFake())
   {
-    next = next->right_;
-    while (!next->left_->isFake())
+    next = next->right;
+    while (!next->left->isFake())
     {
-      next = next->left_;
+      next = next->left;
     }
   }
   else
   {
-    detail::Node< Key, Value >* parent = next->parent_;
-    while (!parent->isFake() && parent->left_ != next)
+    detail::Node< Key, Value >* parent = next->parent;
+    while (!parent->isFake() && parent->left != next)
     {
       next = parent;
-      parent = next->parent_;
+      parent = next->parent;
     }
     next = parent;
     if (next->isFake())
@@ -526,21 +526,21 @@ zharov::BSTIterator< Key, Value >& zharov::BSTIterator< Key, Value >::operator--
     return *this;
   }
   detail::Node< Key, Value >* next = curr_;
-  if (!next->left_->isFake())
+  if (!next->left->isFake())
   {
-    next = next->left_;
-    while (!next->right_->isFake())
+    next = next->left;
+    while (!next->right->isFake())
     {
-      next = next->right_;
+      next = next->right;
     }
   }
   else
   {
-    detail::Node< Key, Value >* parent = next->parent_;
-    while (!parent->isFake() && parent->right_ != next)
+    detail::Node< Key, Value >* parent = next->parent;
+    while (!parent->isFake() && parent->right != next)
     {
       next = parent;
-      parent = next->parent_;
+      parent = next->parent;
     }
     next = parent;
     if (next->isFake())
@@ -580,13 +580,13 @@ zharov::BSTConstIterator< Key, Value >::BSTConstIterator(detail::Node< Key, Valu
 template< class Key, class Value >
 const std::pair< const Key, Value >& zharov::BSTConstIterator< Key, Value >::operator*() const
 {
-  return curr_->data_;
+  return curr_->data;
 }
 
 template< class Key, class Value >
 const std::pair< const Key, Value >* zharov::BSTConstIterator< Key, Value >::operator->() const
 {
-  return std::addressof(curr_->data_);
+  return std::addressof(curr_->data);
 }
 
 template< class Key, class Value >
@@ -597,21 +597,21 @@ zharov::BSTConstIterator< Key, Value >& zharov::BSTConstIterator< Key, Value >::
     return *this;
   }
   detail::Node< Key, Value >* next = curr_;
-  if (!next->right_->isFake())
+  if (!next->right->isFake())
   {
-    next = next->right_;
-    while (!next->left_->isFake())
+    next = next->right;
+    while (!next->left->isFake())
     {
-      next = next->left_;
+      next = next->left;
     }
   }
   else
   {
-    detail::Node< Key, Value >* parent = next->parent_;
-    while (!parent->isFake() && parent->left_ != next)
+    detail::Node< Key, Value >* parent = next->parent;
+    while (!parent->isFake() && parent->left != next)
     {
       next = parent;
-      parent = next->parent_;
+      parent = next->parent;
     }
     next = parent;
     if (next->isFake())
@@ -639,21 +639,21 @@ zharov::BSTConstIterator< Key, Value >& zharov::BSTConstIterator< Key, Value >::
     return *this;
   }
   detail::Node< Key, Value >* next = curr_;
-  if (!next->left_->isFake())
+  if (!next->left->isFake())
   {
-    next = next->left_;
-    while (!next->right_->isFake())
+    next = next->left;
+    while (!next->right->isFake())
     {
-      next = next->right_;
+      next = next->right;
     }
   }
   else
   {
-    detail::Node< Key, Value >* parent = next->parent_;
-    while (!parent->isFake() && parent->right_ != next)
+    detail::Node< Key, Value >* parent = next->parent;
+    while (!parent->isFake() && parent->right != next)
     {
       next = parent;
-      parent = next->parent_;
+      parent = next->parent;
     }
     next = parent;
     if (next->isFake())
@@ -739,31 +739,31 @@ zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::ro
 {
   using Node = detail::Node< Key, Value >;
   Node* x = it.curr_;
-  if (!x || x->right_->isFake())
+  if (!x || x->right->isFake())
   {
     return it;
   }
-  Node* y = x->right_;
-  x->right_ = y->left_;
-  if (!y->left_->isFake())
+  Node* y = x->right;
+  x->right = y->left;
+  if (!y->left->isFake())
   {
-    y->left_->parent_ = x;
+    y->left->parent = x;
   }
-  y->parent_ = x->parent_;
-  if (x->parent_->isFake())
+  y->parent = x->parent;
+  if (x->parent->isFake())
   {
     root_ = y;
   }
-  else if (x == x->parent_->left_)
+  else if (x == x->parent->left)
   {
-    x->parent_->left_ = y;
+    x->parent->left = y;
   }
   else
   {
-    x->parent_->right_ = y;
+    x->parent->right = y;
   }
-  y->left_ = x;
-  x->parent_ = y;
+  y->left = x;
+  x->parent = y;
   return const_iterator(y);
 }
 
@@ -773,31 +773,31 @@ zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::ro
 {
   using Node = detail::Node< Key, Value >;
   Node* y = it.curr_;
-  if (!y || y->left_->isFake())
+  if (!y || y->left->isFake())
   {
     return it;
   }
-  Node* x = y->left_;
-  y->left_ = x->right_;
-  if (!x->right_->isFake())
+  Node* x = y->left;
+  y->left = x->right;
+  if (!x->right->isFake())
   {
-    x->right_->parent_ = y;
+    x->right->parent = y;
   }
-  x->parent_ = y->parent_;
-  if (y->parent_->isFake())
+  x->parent = y->parent;
+  if (y->parent->isFake())
   {
     root_ = x;
   }
-  else if (y == y->parent_->left_)
+  else if (y == y->parent->left)
   {
-    y->parent_->left_ = x;
+    y->parent->left = x;
   }
   else
   {
-    y->parent_->right_ = x;
+    y->parent->right = x;
   }
-  x->right_ = y;
-  y->parent_ = x;
+  x->right = y;
+  y->parent = x;
   return const_iterator(x);
 }
 
@@ -807,11 +807,11 @@ zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::ro
 {
   using Node = detail::Node< Key, Value >;
   Node* x = it.curr_;
-  if (!x || x->right_->isFake() || x->right_->left_->isFake())
+  if (!x || x->right->isFake() || x->right->left->isFake())
   {
     return it;
   }
-  rotateRight(const_iterator(x->right_));
+  rotateRight(const_iterator(x->right));
   return rotateLeft(it);
 }
 
@@ -821,11 +821,11 @@ zharov::BSTConstIterator< Key, Value > zharov::BSTree< Key, Value, Compare >::ro
 {
   using Node = detail::Node< Key, Value >;
   Node* x = it.curr_;
-  if (!x || x->left_->isFake() || x->left_->right_->isFake())
+  if (!x || x->left->isFake() || x->left->right->isFake())
   {
     return it;
   }
-  rotateLeft(const_iterator(x->left_));
+  rotateLeft(const_iterator(x->left));
   return rotateRight(it);
 }
 
@@ -841,11 +841,11 @@ bool zharov::BSTree< Key, Value, Compare >::isStructEqualImpl(const detail::Node
   {
     return false;
   }
-  if (a->data_.first != b->data_.first || a->data_.second != b->data_.second)
+  if (a->data.first != b->data.first || a->data.second != b->data.second)
   {
     return false;
   }
-  return isStructEqualImpl(a->left_, b->left_) && isStructEqualImpl(a->right_, b->right_);
+  return isStructEqualImpl(a->left, b->left) && isStructEqualImpl(a->right, b->right);
 }
 
 template< class Key, class Value, class Compare >
