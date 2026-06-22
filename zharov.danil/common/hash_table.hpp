@@ -21,8 +21,8 @@ namespace zharov
   class Iter
   {
   public:
-    std::pair< const Key, Value >& operator*() const;
-    std::pair< const Key, Value >* operator->() const;
+    std::pair< const Key, Value >& operator*();
+    std::pair< const Key, Value >* operator->();
     Iter& operator++();
     Iter operator++(int);
     Iter& operator--();
@@ -416,13 +416,13 @@ zharov::CIter< Key, Value, Hash, Equal >::CIter(State* states,
 {}
 
 template < class Key, class Value, class Hash, class Equal >
-std::pair< const Key, Value >& zharov::Iter< Key, Value, Hash, Equal >::operator*() const
+std::pair< const Key, Value >& zharov::Iter< Key, Value, Hash, Equal >::operator*()
 {
   return slots_[curr_];
 }
 
 template < class Key, class Value, class Hash, class Equal >
-std::pair< const Key, Value >* zharov::Iter< Key, Value, Hash, Equal >::operator->() const
+std::pair< const Key, Value >* zharov::Iter< Key, Value, Hash, Equal >::operator->()
 {
   return slots_ + curr_;
 }
