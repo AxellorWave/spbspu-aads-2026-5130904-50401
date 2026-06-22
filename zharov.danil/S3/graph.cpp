@@ -41,24 +41,41 @@ void zharov::Graph::rmVertex(const std::string& v)
 
 void zharov::Graph::addEdge(const std::string& v1, const std::string& v2, size_t w)
 {
+  bool v1_new = !vertexes.has(v1);
+  bool v2_new = !vertexes.has(v2);
   addVertex(v1);
-  addVertex(v2);
-  zharov::key_t key = std::make_pair(v1, v2);
-  if (edges.contains(key))
+  try
   {
-    edges.at(key).pushBack(w);
+    addVertex(v2);
+    zharov::key_t key = std::make_pair(v1, v2);
+    if (edges.contains(key))
+    {
+      edges.at(key).pushBack(w);
+    }
+    else
+    {
+      try
+      {
+        edges.add(key, Vector< size_t >{w});
+      }
+      catch (...)
+      {
+        edges.rehash();
+        edges.add(key, Vector< size_t >{w});
+      }
+    }
   }
-  else
+  catch (...)
   {
-    try
+    if (v2_new)
     {
-      edges.add(key, Vector< size_t >{w});
+      rmVertex(v2);
     }
-    catch (...)
+    if (v1_new)
     {
-      edges.rehash();
-      edges.add(key, Vector< size_t >{w});
+      rmVertex(v1);
     }
+    throw;
   }
 }
 
