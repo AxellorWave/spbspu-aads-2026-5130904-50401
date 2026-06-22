@@ -26,20 +26,17 @@ namespace
 
 void zharov::graphs(std::ostream& out, std::istream&, const graphs_table& graphs)
 {
-  if (graphs.size() == 0)
-  {
-    out << "\n";
-    return;
-  }
   zharov::Vector< std::string > names;
   for (auto i = graphs.begin(); i != graphs.end(); ++i)
   {
     names.pushBack(i->first);
   }
   sort(names, std::less< std::string >{});
+  std::string sep;
   for (auto i = names.begin(); i != names.end(); ++i)
   {
-    out << *i << "\n";
+    out << sep << *i;
+    sep = "\n";
   }
 }
 
@@ -55,13 +52,11 @@ void zharov::vertexes(std::ostream& out, std::istream& in, const graphs_table& g
   }
 
   sort(names, std::less< std::string >{});
-  if (names.isEmpty())
-  {
-    out << "\n";
-  }
+  std::string sep;
   for (auto i = names.begin(); i != names.end(); ++i)
   {
-    out << *i << "\n";
+    out << sep << *i;
+    sep = "\n";
   }
 }
 
@@ -86,22 +81,19 @@ void zharov::outbound(std::ostream& out, std::istream& in, const graphs_table& g
       }
     }
   }
-  if (names.isEmpty())
-  {
-    out << "\n";
-  }
   sort(names, std::less< std::pair< std::string, size_t > >{});
+  std::string sep;
   for (auto i = names.begin(); i != names.end();)
   {
     std::string temp = i->first;
-    out << i->first << " " << i->second;
+    out << sep << i->first << " " << i->second;
     ++i;
     while (i != names.end() && i->first == temp)
     {
       out << " " << i->second;
       ++i;
     }
-    out << "\n";
+    sep = "\n";
   }
 }
 
@@ -126,22 +118,19 @@ void zharov::inbound(std::ostream& out, std::istream& in, const graphs_table& gr
       }
     }
   }
-  if (names.isEmpty())
-  {
-    out << "\n";
-  }
   sort(names, std::less< std::pair< std::string, size_t > >{});
+  std::string sep;
   for (auto i = names.begin(); i != names.end();)
   {
     std::string temp = i->first;
-    out << i->first << " " << i->second;
+    out << sep << i->first << " " << i->second;
     ++i;
     while (i != names.end() && i->first == temp)
     {
       out << " " << i->second;
       ++i;
     }
-    out << "\n";
+    sep = "\n";
   }
 }
 
