@@ -7,12 +7,15 @@
 
 namespace zharov
 {
-  enum class State
+  namespace detail
   {
-    EMPTY,
-    OCCUPIED,
-    TOMBSTONE
-  };
+    enum class State
+    {
+      EMPTY,
+      OCCUPIED,
+      TOMBSTONE
+    };
+  }
 
   template < class Key, class Value, class Hash, class Equal >
   class HashTable;
@@ -32,11 +35,11 @@ namespace zharov
 
   private:
     friend class HashTable< Key, Value, Hash, Equal >;
-    State* states_;
+    detail::State* states_;
     std::pair< const Key, Value >* slots_;
     size_t curr_;
     size_t capacity_;
-    Iter(State* states, std::pair< const Key, Value >* slots, size_t curr, size_t capacity);
+    Iter(detail::State* states, std::pair< const Key, Value >* slots, size_t curr, size_t capacity);
   };
 
   template < class Key, class Value, class Hash, class Equal >
@@ -54,11 +57,11 @@ namespace zharov
 
   private:
     friend class HashTable< Key, Value, Hash, Equal >;
-    State* states_;
+    detail::State* states_;
     std::pair< const Key, Value >* slots_;
     size_t curr_;
     size_t capacity_;
-    CIter(State* states, std::pair< const Key, Value >* slots, size_t curr, size_t capacity);
+    CIter(detail::State* states, std::pair< const Key, Value >* slots, size_t curr, size_t capacity);
   };
 
   template < class Key, class Value, class Hash, class Equal >
@@ -101,7 +104,7 @@ namespace zharov
   private:
     Hash hasher_;
     Equal comparator_;
-    State* states_;
+    detail::State* states_;
     std::pair< const Key, Value >* slots_;
     size_t capacity_;
     size_t size_;
@@ -127,7 +130,7 @@ zharov::HashTable< Key, Value, Hash, Equal >::HashTable(size_t capacity):
 {
   try
   {
-    states_ = new State[capacity_]{};
+    states_ = new zharov::detail::State[capacity_]{};
     slots_ = static_cast< std::pair< const Key, Value >* >(
       ::operator new(sizeof(std::pair< const Key, Value >) * capacity_));
   }
@@ -145,7 +148,7 @@ zharov::HashTable< Key, Value, Hash, Equal >::HashTable(const HashTable& table):
 {
   for (size_t i = 0; i < capacity_; ++i)
   {
-    if (table.states_[i] == State::OCCUPIED)
+    if (table.states_[i] == zharov::detail::State::OCCUPIED)
     {
       new (slots_ + i) std::pair< const Key, Value >(table.slots_[i].first, table.slots_[i].second);
       ++size_;
@@ -175,7 +178,7 @@ zharov::HashTable< Key, Value, Hash, Equal >::~HashTable()
   using pair_t = std::pair< const Key, Value >;
   for (size_t i = 0; i < capacity_; ++i)
   {
-    if (states_[i] == State::OCCUPIED)
+    if (states_[i] == zharov::detail::State::OCCUPIED)
     {
       (slots_ + i)->~pair_t();
     }
@@ -244,11 +247,11 @@ bool zharov::HashTable< Key, Value, Hash, Equal >::contains(const Key& k) const
   for (; i < capacity_; ++i)
   {
     pos = (hash + (i + i * i) / 2) % capacity_;
-    if (states_[pos] == State::OCCUPIED && comparator_(slots_[pos].first, k))
+    if (states_[pos] == zharov::detail::State::OCCUPIED && comparator_(slots_[pos].first, k))
     {
       return true;
     }
-    else if (states_[pos] == State::EMPTY)
+    else if (states_[pos] == zharov::detail::State::EMPTY)
     {
       return false;
     }
@@ -286,13 +289,13 @@ void zharov::HashTable< Key, Value, Hash, Equal >::addImpl(K&& k, V&& v)
   for (; i < capacity_; ++i)
   {
     pos = (hash + (i + i * i) / 2) % capacity_;
-    if (states_[pos] == State::EMPTY || states_[pos] == State::TOMBSTONE)
+    if (states_[pos] == zharov::detail::State::EMPTY || states_[pos] == zharov::detail::State::TOMBSTONE)
     {
       break;
     }
   }
   new (slots_ + pos) std::pair< const Key, Value >(std::forward< K >(k), std::forward< V >(v));
-  states_[pos] = State::OCCUPIED;
+  states_[pos] = zharov::detail::State::OCCUPIED;
   ++size_;
 }
 
@@ -305,15 +308,15 @@ void zharov::HashTable< Key, Value, Hash, Equal >::remove(const Key& k)
   for (; i < capacity_; ++i)
   {
     pos = (hash + (i + i * i) / 2) % capacity_;
-    if (states_[pos] == State::EMPTY)
+    if (states_[pos] == zharov::detail::State::EMPTY)
     {
       throw std::logic_error("Key not found");
     }
-    else if (states_[pos] == State::OCCUPIED && comparator_(k, slots_[pos].first))
+    else if (states_[pos] == zharov::detail::State::OCCUPIED && comparator_(k, slots_[pos].first))
     {
       using pair_t = std::pair< const Key, Value >;
       (slots_ + pos)->~pair_t();
-      states_[pos] = State::TOMBSTONE;
+      states_[pos] = zharov::detail::State::TOMBSTONE;
       --size_;
       return;
     }
@@ -328,7 +331,7 @@ void zharov::HashTable< Key, Value, Hash, Equal >::rehash(size_t slots)
   HashTable< Key, Value, Hash, Equal > new_table(slots);
   for (size_t i = 0; i < capacity_; ++i)
   {
-    if (states_[i] == State::OCCUPIED)
+    if (states_[i] == zharov::detail::State::OCCUPIED)
     {
       new_table.add(const_cast< Key&& >(std::move(slots_[i].first)), std::move(slots_[i].second));
     }
@@ -371,11 +374,11 @@ typename zharov::HashTable< Key, Value, Hash, Equal >::const_iterator
   for (size_t i = 0; i < capacity_; ++i)
   {
     size_t pos = (hash + (i + i * i) / 2) % capacity_;
-    if (states_[pos] == State::OCCUPIED && comparator_(slots_[pos].first, k))
+    if (states_[pos] == zharov::detail::State::OCCUPIED && comparator_(slots_[pos].first, k))
     {
       return const_iterator(states_, slots_, pos, capacity_);
     }
-    else if (states_[pos] == State::EMPTY)
+    else if (states_[pos] == zharov::detail::State::EMPTY)
     {
       break;
     }
@@ -394,7 +397,7 @@ Value& zharov::HashTable< Key, Value, Hash, Equal >::operator[](const Key& k)
 }
 
 template < class Key, class Value, class Hash, class Equal >
-zharov::Iter< Key, Value, Hash, Equal >::Iter(State* states,
+zharov::Iter< Key, Value, Hash, Equal >::Iter(zharov::detail::State* states,
   std::pair< const Key, Value >* slots,
   size_t curr,
   size_t capacity):
@@ -405,7 +408,7 @@ zharov::Iter< Key, Value, Hash, Equal >::Iter(State* states,
 {}
 
 template < class Key, class Value, class Hash, class Equal >
-zharov::CIter< Key, Value, Hash, Equal >::CIter(State* states,
+zharov::CIter< Key, Value, Hash, Equal >::CIter(zharov::detail::State* states,
   std::pair< const Key, Value >* slots,
   size_t curr,
   size_t capacity):
@@ -431,7 +434,7 @@ template < class Key, class Value, class Hash, class Equal >
 zharov::Iter< Key, Value, Hash, Equal >& zharov::Iter< Key, Value, Hash, Equal >::operator++()
 {
   ++curr_;
-  while (curr_ < capacity_ && states_[curr_] != State::OCCUPIED)
+  while (curr_ < capacity_ && states_[curr_] != zharov::detail::State::OCCUPIED)
   {
     ++curr_;
   }
@@ -450,7 +453,7 @@ template < class Key, class Value, class Hash, class Equal >
 zharov::Iter< Key, Value, Hash, Equal >& zharov::Iter< Key, Value, Hash, Equal >::operator--()
 {
   --curr_;
-  while (curr_ != 0 && states_[curr_] != State::OCCUPIED)
+  while (curr_ != 0 && states_[curr_] != zharov::detail::State::OCCUPIED)
   {
     --curr_;
   }
@@ -494,7 +497,7 @@ template < class Key, class Value, class Hash, class Equal >
 zharov::CIter< Key, Value, Hash, Equal >& zharov::CIter< Key, Value, Hash, Equal >::operator++()
 {
   ++curr_;
-  while (curr_ < capacity_ && states_[curr_] != State::OCCUPIED)
+  while (curr_ < capacity_ && states_[curr_] != zharov::detail::State::OCCUPIED)
   {
     ++curr_;
   }
@@ -513,7 +516,7 @@ template < class Key, class Value, class Hash, class Equal >
 zharov::CIter< Key, Value, Hash, Equal >& zharov::CIter< Key, Value, Hash, Equal >::operator--()
 {
   --curr_;
-  while (curr_ != 0 && states_[curr_] != State::OCCUPIED)
+  while (curr_ != 0 && states_[curr_] != zharov::detail::State::OCCUPIED)
   {
     --curr_;
   }
@@ -545,7 +548,7 @@ template < class Key, class Value, class Hash, class Equal >
 zharov::Iter< Key, Value, Hash, Equal > zharov::HashTable< Key, Value, Hash, Equal >::begin()
 {
   Iter< Key, Value, Hash, Equal > it(states_, slots_, 0, capacity_);
-  while (it.curr_ < it.capacity_ && it.states_[it.curr_] != State::OCCUPIED)
+  while (it.curr_ < it.capacity_ && it.states_[it.curr_] != zharov::detail::State::OCCUPIED)
   {
     ++it.curr_;
   }
@@ -556,7 +559,7 @@ template < class Key, class Value, class Hash, class Equal >
 zharov::CIter< Key, Value, Hash, Equal > zharov::HashTable< Key, Value, Hash, Equal >::begin() const
 {
   CIter< Key, Value, Hash, Equal > it(states_, slots_, 0, capacity_);
-  while (it.curr_ < it.capacity_ && it.states_[it.curr_] != State::OCCUPIED)
+  while (it.curr_ < it.capacity_ && it.states_[it.curr_] != zharov::detail::State::OCCUPIED)
   {
     ++it.curr_;
   }
@@ -568,7 +571,7 @@ zharov::CIter< Key, Value, Hash, Equal >
   zharov::HashTable< Key, Value, Hash, Equal >::cbegin() const
 {
   CIter< Key, Value, Hash, Equal > it(states_, slots_, 0, capacity_);
-  while (it.curr_ < it.capacity_ && it.states_[it.curr_] != State::OCCUPIED)
+  while (it.curr_ < it.capacity_ && it.states_[it.curr_] != zharov::detail::State::OCCUPIED)
   {
     ++it.curr_;
   }
