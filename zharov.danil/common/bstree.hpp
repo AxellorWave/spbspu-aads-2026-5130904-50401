@@ -96,12 +96,10 @@ namespace zharov
 
     void push(const Key& k, const Value& v);
     void push(Key&& k, Value&& v);
-    detail::Node< Key, Value >* findNode(const Key& k) const;
     bool has(const Key& k) const;
     const Value& get(const Key& k) const;
     Value& at(const Key& k);
     const Value& at(const Key& k) const;
-    detail::Node< Key, Value >* fallLeft(detail::Node< Key, Value >* node) const;
     void pop(const Key& k);
     bool isStructEqual(const BSTree& other) const;
     const_iterator rotateLeft(const_iterator it);
@@ -123,6 +121,8 @@ namespace zharov
     size_t size_;
     Compare comp_;
 
+    detail::Node< Key, Value >* findNode(const Key& k) const;
+    detail::Node< Key, Value >* fallLeft(detail::Node< Key, Value >* node) const;
     detail::Node< Key, Value >* initFake();
     detail::Node< Key, Value >*
       clone(detail::Node< Key, Value >* root, detail::Node< Key, Value >* parent);
