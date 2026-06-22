@@ -1,8 +1,8 @@
-#include <iostream>
-#include <bstree.hpp>
 #include <fstream>
 #include <functional>
+#include <iostream>
 #include <limits>
+#include <bstree.hpp>
 #include "commands.hpp"
 
 int main(int argc, char** argv)
