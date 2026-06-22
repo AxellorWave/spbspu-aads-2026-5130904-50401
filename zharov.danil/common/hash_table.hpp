@@ -109,6 +109,8 @@ namespace zharov
     size_t capacity_;
     size_t size_;
 
+    void destroyAt(size_t pos);
+
     template < class K, class V >
     void addImpl(K&& k, V&& v);
   };
@@ -170,12 +172,11 @@ zharov::HashTable< Key, Value, Hash, Equal >::HashTable(HashTable&& table) noexc
 template < class Key, class Value, class Hash, class Equal >
 zharov::HashTable< Key, Value, Hash, Equal >::~HashTable()
 {
-  using pair_t = std::pair< const Key, Value >;
   for (size_t i = 0; i < capacity_; ++i)
   {
     if (states_[i] == zharov::detail::State::OCCUPIED)
     {
-      (slots_ + i)->~pair_t();
+      destroyAt(i);
     }
   }
   delete[] states_;
@@ -267,6 +268,13 @@ void zharov::HashTable< Key, Value, Hash, Equal >::add(Key&& k, Value&& v)
 }
 
 template < class Key, class Value, class Hash, class Equal >
+void zharov::HashTable< Key, Value, Hash, Equal >::destroyAt(size_t pos)
+{
+  using pair_t = std::pair< const Key, Value >;
+  (slots_ + pos)->~pair_t();
+}
+
+template < class Key, class Value, class Hash, class Equal >
 template < class K, class V >
 void zharov::HashTable< Key, Value, Hash, Equal >::addImpl(K&& k, V&& v)
 {
@@ -309,8 +317,7 @@ void zharov::HashTable< Key, Value, Hash, Equal >::remove(const Key& k)
     }
     else if (states_[pos] == zharov::detail::State::OCCUPIED && comparator_(k, slots_[pos].first))
     {
-      using pair_t = std::pair< const Key, Value >;
-      (slots_ + pos)->~pair_t();
+      destroyAt(pos);
       states_[pos] = zharov::detail::State::TOMBSTONE;
       --size_;
       return;
