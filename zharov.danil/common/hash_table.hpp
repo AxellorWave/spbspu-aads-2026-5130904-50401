@@ -343,7 +343,7 @@ template< class Key, class Value, class Hash, class Equal >
 template< class K, class V >
 void zharov::HashTable< Key, Value, Hash, Equal >::addImpl(K&& k, V&& v)
 {
-  if (loadFactor() >= maxLoadFactor_)
+  if (loadFactor() >= maxLoadFactor_ || tombstoneFactor() > maxTombstoneFactor_)
   {
     rehash();
   }
@@ -387,10 +387,6 @@ void zharov::HashTable< Key, Value, Hash, Equal >::remove(const Key& k)
       states_[pos] = zharov::detail::State::TOMBSTONE;
       --size_;
       ++tombstones_;
-      if (tombstoneFactor() > maxTombstoneFactor_)
-      {
-        rehash();
-      }
       return;
     }
   }
