@@ -19,8 +19,8 @@ namespace zharov
     void addEdge(const std::string& v1, const std::string& v2, size_t w);
     void rmEdge(const std::string& v1, const std::string& v2, size_t w);
 
-    zharov::HashTable< key_t, Vector< size_t >, Blake2Hasher< key_t >, std::equal_to< key_t > > edges_;
-    zharov::Vector< std::string > vertexes_;
+    zharov::HashTable< key_t, Vector< size_t >, Blake2Hasher< key_t >, std::equal_to< key_t > > edges;
+    zharov::Vector< std::string > vertexes;
   };
 }
 

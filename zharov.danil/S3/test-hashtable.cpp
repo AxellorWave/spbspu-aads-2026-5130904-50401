@@ -1,14 +1,15 @@
 #include <functional>
+#include <stdexcept>
 #include <string>
 #include <boost/test/unit_test.hpp>
 #include <hash_table.hpp>
-#include <stdexcept>
 #include "hasher.hpp"
 
 BOOST_AUTO_TEST_SUITE(DefaultConstructorSuite)
 BOOST_AUTO_TEST_CASE(DefaultConstructor)
 {
-  zharov::HashTable< size_t, std::string, zharov::Blake2Hasher< size_t >, std::equal_to< size_t > > table;
+  zharov::HashTable< size_t, std::string, zharov::Blake2Hasher< size_t >, std::equal_to< size_t > >
+    table;
   BOOST_CHECK_EQUAL(table.size(), 0);
   BOOST_CHECK_EQUAL(table.capacity(), 16);
 }
@@ -34,7 +35,8 @@ BOOST_AUTO_TEST_CASE(CopyConstructor)
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > original;
   original.add(1, "one");
   original.add(2, "two");
-  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > copy(original);
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > copy(
+    original);
   BOOST_CHECK_EQUAL(copy.size(), 2);
   BOOST_CHECK_EQUAL(copy.capacity(), original.capacity());
   BOOST_CHECK_EQUAL(copy.at(1), "one");
@@ -47,7 +49,8 @@ BOOST_AUTO_TEST_CASE(MoveConstructor)
 {
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > original;
   original.add(1, "one");
-  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > moved(std::move(original));
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > moved(
+    std::move(original));
   BOOST_CHECK_EQUAL(moved.size(), 1);
   BOOST_CHECK_EQUAL(moved.at(1), "one");
   BOOST_CHECK_EQUAL(original.size(), 0);
@@ -214,7 +217,8 @@ BOOST_AUTO_TEST_CASE(AtConstReturnsValue)
 {
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
   table.add(200, "constant");
-  const zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > >& constTable = table;
+  const zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > >&
+    constTable = table;
   BOOST_CHECK_EQUAL(constTable.at(200), "constant");
 }
 BOOST_AUTO_TEST_CASE(AtThrowsWhenNotFound)
@@ -320,7 +324,8 @@ BOOST_AUTO_TEST_CASE(ConstIteratorNonModifiable)
 {
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
   table.add(99, "const");
-  const zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > >& constTable = table;
+  const zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > >&
+    constTable = table;
   auto cit = constTable.cbegin();
   BOOST_CHECK_EQUAL(cit->second, "const");
 }
@@ -368,7 +373,8 @@ BOOST_AUTO_TEST_CASE(FindExistingKey)
 {
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
   table.add(10, "ten");
-  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > >::iterator it = table.find(10);
+  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > >::iterator
+    it = table.find(10);
   BOOST_CHECK(it != table.end());
   BOOST_CHECK_EQUAL(it->second, "ten");
 }
@@ -382,15 +388,18 @@ BOOST_AUTO_TEST_CASE(FindConstExistingKey)
 {
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
   table.add(7, "seven");
-  const zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > >& ct = table;
-  zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > >::const_iterator cit = ct.find(7);
+  const zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > >& ct =
+    table;
+  zharov::HashTable< size_t, std::string, std::hash< size_t >,
+    std::equal_to< size_t > >::const_iterator cit = ct.find(7);
   BOOST_CHECK(cit != ct.end());
   BOOST_CHECK_EQUAL(cit->second, "seven");
 }
 BOOST_AUTO_TEST_CASE(FindConstMissingKey)
 {
   zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > > table;
-  const zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > >& ct = table;
+  const zharov::HashTable< size_t, std::string, std::hash< size_t >, std::equal_to< size_t > >& ct =
+    table;
   BOOST_CHECK(ct.find(0) == ct.end());
 }
 BOOST_AUTO_TEST_SUITE_END()
