@@ -38,7 +38,7 @@ namespace zharov
     template< class, class, class >
     friend class BSTree;
 
-    BSTConstIterator(detail::Node< Key, Value >* node = nullptr);
+    BSTConstIterator();
     const std::pair< const Key, Value >& operator*() const;
     const std::pair< const Key, Value >* operator->() const;
     BSTConstIterator& operator++();
@@ -49,6 +49,7 @@ namespace zharov
     bool operator!=(const BSTConstIterator& other) const;
 
   private:
+    BSTConstIterator(detail::Node< Key, Value >* node);
     detail::Node< Key, Value >* curr_;
   };
 
@@ -59,7 +60,7 @@ namespace zharov
     template< class, class, class >
     friend class BSTree;
 
-    BSTIterator(detail::Node< Key, Value >* node = nullptr);
+    BSTIterator();
     std::pair< const Key, Value >& operator*();
     std::pair< const Key, Value >* operator->();
     BSTIterator& operator++();
@@ -70,6 +71,7 @@ namespace zharov
     bool operator!=(const BSTIterator& other) const;
 
   private:
+    BSTIterator(detail::Node< Key, Value >* node);
     detail::Node< Key, Value >* curr_;
   };
 
@@ -460,6 +462,11 @@ size_t zharov::BSTree< Key, Value, Compare >::height() const
 }
 
 template< class Key, class Value >
+zharov::BSTIterator< Key, Value >::BSTIterator():
+  curr_(nullptr)
+{}
+
+template< class Key, class Value >
 zharov::BSTIterator< Key, Value >::BSTIterator(detail::Node< Key, Value >* node):
   curr_(node)
 {}
@@ -571,6 +578,11 @@ bool zharov::BSTIterator< Key, Value >::operator!=(const BSTIterator& other) con
 {
   return curr_ != other.curr_;
 }
+
+template< class Key, class Value >
+zharov::BSTConstIterator< Key, Value >::BSTConstIterator():
+  curr_(nullptr)
+{}
 
 template< class Key, class Value >
 zharov::BSTConstIterator< Key, Value >::BSTConstIterator(detail::Node< Key, Value >* node):
