@@ -161,16 +161,11 @@ template < class Key, class Value, class Hash, class Equal >
 zharov::HashTable< Key, Value, Hash, Equal >::HashTable(HashTable&& table) noexcept:
   hasher_(table.hasher_),
   comparator_(table.comparator_),
-  states_(table.states_),
-  slots_(table.slots_),
-  capacity_(table.capacity_),
-  size_(table.size_)
-{
-  table.states_ = nullptr;
-  table.slots_ = nullptr;
-  table.capacity_ = 0;
-  table.size_ = 0;
-}
+  states_(std::exchange(table.states_, nullptr)),
+  slots_(std::exchange(table.slots_, nullptr)),
+  capacity_(std::exchange(table.capacity_, 0)),
+  size_(std::exchange(table.size_, 0))
+{}
 
 template < class Key, class Value, class Hash, class Equal >
 zharov::HashTable< Key, Value, Hash, Equal >::~HashTable()
